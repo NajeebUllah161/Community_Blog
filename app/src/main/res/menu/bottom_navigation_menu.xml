@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/page_home"
+        android:id="@+id/item_home"
         android:enabled="true"
         android:icon="@drawable/ic_home"
         android:title="@string/home" />
     <item
-        android:id="@+id/page_notification"
+        android:id="@+id/item_notification"
         android:enabled="true"
         android:icon="@drawable/ic_notification"
         android:title="@string/notification" />
     <item
-        android:id="@+id/page_add_post"
+        android:id="@+id/item_add_post"
         android:enabled="true"
         android:icon="@drawable/ic_add"
-        android:title="@string/add" />
+        android:title="@string/add_post" />
     <item
-        android:id="@+id/page_search"
+        android:id="@+id/item_search"
         android:enabled="true"
         android:icon="@drawable/ic_magnifier"
         android:title="@string/search" />
     <item
-        android:id="@+id/page_userprofile"
+        android:id="@+id/item_userprofile"
         android:enabled="true"
         android:icon="@drawable/ic_user"
         android:title="@string/profile" />
