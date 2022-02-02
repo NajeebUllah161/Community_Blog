@@ -9,7 +9,7 @@
         android:id="@+id/story_itemview"
         android:layout_width="@dimen/_130sdp"
         android:layout_height="@dimen/_85sdp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginRight="15dp"
         android:scaleType="centerCrop"
         android:src="@drawable/status_img"
         app:layout_constraintEnd_toEndOf="parent"
@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:riv_corner_radius="10dip"
         app:riv_mutate_background="true"
-        app:riv_tile_mode="repeat" />
+        app:riv_tile_mode="clamp" />
 
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -43,8 +43,8 @@
 
     <ImageView
         android:id="@+id/storyType"
-        android:layout_width="@dimen/_30sdp"
-        android:layout_height="@dimen/_20sdp"
+        android:layout_width="30dp"
+        android:layout_height="20dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="@+id/story_itemview"
@@ -55,11 +55,11 @@
         android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
+        android:layout_marginStart="8dp"
         android:layout_marginBottom="8dp"
         android:text="John Doe"
         android:textColor="@color/white"
-        android:textSize="@dimen/_16sdp"
+        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/story_itemview"
         app:layout_constraintStart_toStartOf="@+id/story_itemview" />
 

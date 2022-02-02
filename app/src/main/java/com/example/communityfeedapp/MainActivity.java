@@ -30,13 +30,12 @@ public class MainActivity extends AppCompatActivity {
 
 
         actionBar = getSupportActionBar();
-        Objects.requireNonNull(actionBar).setTitle("Home");
 
         // When we open the application first
         // time the fragment should be shown to the user
         // in this case it is home fragment
         FragmentTransaction defaultFragmentTransaction = getSupportFragmentManager().beginTransaction();
-        defaultFragmentTransaction.replace(R.id.container_framelayout, new HomeFragment(), "");
+        defaultFragmentTransaction.replace(R.id.container_framelayout, new HomeFragment());
         defaultFragmentTransaction.commit();
 
         binding.bottomNavigationBar.setOnItemSelectedListener(item -> {
@@ -46,27 +45,22 @@ public class MainActivity extends AppCompatActivity {
 
             switch (itemId) {
                 case R.id.item_home:
-                    actionBar.setTitle("Home");
                     fragmentTransaction.replace(R.id.container_framelayout, new HomeFragment());
                     fragmentTransaction.commit();
                     return true;
                 case R.id.item_notification:
-                    actionBar.setTitle("Notification");
                     fragmentTransaction.replace(R.id.container_framelayout, new NotificationFragment());
                     fragmentTransaction.commit();
                     return true;
                 case R.id.item_add_post:
-                    actionBar.setTitle("Add Post");
                     fragmentTransaction.replace(R.id.container_framelayout, new AddPostFragment());
                     fragmentTransaction.commit();
                     return true;
                 case R.id.item_search:
-                    actionBar.setTitle("Search");
                     fragmentTransaction.replace(R.id.container_framelayout, new SearchFragment());
                     fragmentTransaction.commit();
                     return true;
                 case R.id.item_userprofile:
-                    actionBar.setTitle("Profile");
                     fragmentTransaction.replace(R.id.container_framelayout, new ProfileFragment());
                     fragmentTransaction.commit();
                     return true;
