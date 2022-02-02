@@ -36,8 +36,8 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         storyRv = view.findViewById(R.id.storyRv);
         storyModelArrayList = new ArrayList<>();
-        storyModelArrayList.add(new StoryModel(R.drawable.status_img,R.drawable.ic_live,R.drawable.profile,"Najeeb"));
-        storyModelArrayList.add(new StoryModel(R.drawable.status_img,R.drawable.ic_live,R.drawable.status_img,"Kaleem"));
+        storyModelArrayList.add(new StoryModel(R.drawable.status_img,R.drawable.ic_live,R.drawable.profile,"John Doe"));
+        storyModelArrayList.add(new StoryModel(R.drawable.profile,R.drawable.ic_live,R.drawable.status_img,"Ashley Joe"));
 
         StoryAdapter adapter = new StoryAdapter(storyModelArrayList,getContext());
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL,false);
