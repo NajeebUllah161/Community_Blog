@@ -1,6 +1,7 @@
 package com.example.communityfeedapp.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,20 +45,22 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.StoryViewHol
 
     @Override
     public int getItemCount() {
+
+        Log.d("Count Story", String.valueOf(storyModelArrayList.size()));
         return storyModelArrayList.size();
     }
 
-    public class StoryViewHolder extends RecyclerView.ViewHolder {
+    public static class StoryViewHolder extends RecyclerView.ViewHolder {
         ImageView storyImg, profile, storyType;
         TextView name;
 
         public StoryViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            storyImg = itemView.findViewById(R.id.story_itemview);
-            profile = itemView.findViewById(R.id.profile_image_itemview);
+            storyImg = itemView.findViewById(R.id.story_img);
+            profile = itemView.findViewById(R.id.story_profile_img);
             storyType = itemView.findViewById(R.id.storyType);
-            name = itemView.findViewById(R.id.name);
+            name = itemView.findViewById(R.id.story_name_txt);
         }
     }
 }

@@ -5,20 +5,28 @@
       <map>
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/drawable/black_shade.xml" value="0.2169230769230769" />
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/drawable/ic_add.xml" value="0.2203125" />
+        <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/drawable/ic_bookmark.xml" value="0.2169230769230769" />
+        <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/drawable/ic_chat.xml" value="0.2169230769230769" />
+        <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/drawable/ic_comment.xml" value="0.2169230769230769" />
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/drawable/ic_home.xml" value="0.2203125" />
+        <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/drawable/ic_like.xml" value="0.2169230769230769" />
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/drawable/ic_magnifier.xml" value="0.2203125" />
+        <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/drawable/ic_more.xml" value="0.2169230769230769" />
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/drawable/ic_notification.xml" value="0.2203125" />
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/drawable/ic_plus.xml" value="0.2169230769230769" />
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/drawable/ic_shade.xml" value="0.2169230769230769" />
+        <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/drawable/ic_share.xml" value="0.2169230769230769" />
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/drawable/ic_user.xml" value="0.2203125" />
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/drawable/ic_white_circle.xml" value="0.2169230769230769" />
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/drawable/orange_circle.xml" value="0.2169230769230769" />
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/drawable/plus.xml" value="0.2169230769230769" />
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/drawable/rectangle_rounded.xml" value="0.15" />
+        <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/drawable/saved.xml" value="0.2169230769230769" />
+        <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/drawable/unsaved.xml" value="0.2169230769230769" />
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/drawable/white_circle.xml" value="0.2169230769230769" />
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/layout/abs_layout.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/layout/activity_main.xml" value="0.17" />
-        <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/layout/dashboard_rv_sample.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/layout/dashboard_rv_sample.xml" value="0.25" />
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/layout/fragment_add.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/layout/fragment_home.xml" value="0.22" />
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/layout/fragment_notification.xml" value="0.19010416666666666" />
