@@ -30,8 +30,8 @@
         android:id="@+id/userName_dashboard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:includeFontPadding="false"
         android:layout_marginStart="8dp"
+        android:includeFontPadding="false"
         android:text="Alica Addams"
         android:textColor="@color/black"
         android:textSize="20sp"
@@ -124,6 +124,17 @@
         android:text="54"
         app:layout_constraintStart_toEndOf="@id/comment"
         app:layout_constraintTop_toBottomOf="@+id/postImg" />
+
+    <!--    <View-->
+    <!--        android:id="@+id/view_Db_bottom"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="0.5dp"-->
+    <!--        android:layout_marginTop="16dp"-->
+    <!--        android:background="@android:color/darker_gray"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintHorizontal_bias="0.5"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/share" />-->
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
