@@ -24,7 +24,7 @@
                 android:layout_marginTop="8dp"
                 android:text="Discover"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_24sdp"
+                android:textSize="@dimen/_24ssp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/profile_image" />

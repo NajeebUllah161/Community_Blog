@@ -51,24 +51,24 @@ public class HomeFragment extends Fragment {
                 R.drawable.profile,
                 "John Doe"));
         storyModelArrayList.add(new StoryModel(
-                R.drawable.post_1,
+                R.drawable.post_6,
                 R.drawable.ic_live,
-                R.drawable.profile1,
+                R.drawable.profile3,
                 "Ashley Joe"));
         storyModelArrayList.add(new StoryModel(
-                R.drawable.post_2,
+                R.drawable.post_5,
                 R.drawable.ic_live,
                 R.drawable.profile2,
                 "James Hudson"));
         storyModelArrayList.add(new StoryModel(
-                R.drawable.post_2,
+                R.drawable.post_3,
                 R.drawable.ic_live,
-                R.drawable.profile3,
+                R.drawable.post_7,
                 "Leo Santos"));
         storyModelArrayList.add(new StoryModel(
                 R.drawable.post_4,
                 R.drawable.ic_live,
-                R.drawable.profile,
+                R.drawable.post_8,
                 "Callum"));
 
         StoryAdapter adapter = new StoryAdapter(storyModelArrayList, getContext());
@@ -80,13 +80,13 @@ public class HomeFragment extends Fragment {
 
         // Setting up Dashboard RecyclerView
         dashboardRv = view.findViewById(R.id.dashboard_Rv);
-        dashboardModelArrayList.add(new DashboardModel(R.drawable.profile1, R.drawable.post_1, R.drawable.saved,
+        dashboardModelArrayList.add(new DashboardModel(R.drawable.post_7, R.drawable.post_4, R.drawable.saved,
                 "Denis Kane",
                 "Traveller",
                 "464",
                 "12",
                 "15"));
-        dashboardModelArrayList.add(new DashboardModel(R.drawable.profile2, R.drawable.post_2, R.drawable.unsaved,
+        dashboardModelArrayList.add(new DashboardModel(R.drawable.profile2, R.drawable.post_6, R.drawable.unsaved,
                 "Lisa Melis",
                 "Vlogger",
                 "763",

@@ -14,8 +14,6 @@ import com.example.communityfeedapp.fragments.NotificationFragment;
 import com.example.communityfeedapp.fragments.ProfileFragment;
 import com.example.communityfeedapp.fragments.SearchFragment;
 
-import java.util.Objects;
-
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
@@ -27,9 +25,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-
-        actionBar = getSupportActionBar();
 
         // When we open the application first
         // time the fragment should be shown to the user
@@ -46,26 +41,22 @@ public class MainActivity extends AppCompatActivity {
             switch (itemId) {
                 case R.id.item_home:
                     fragmentTransaction.replace(R.id.container_framelayout, new HomeFragment());
-                    fragmentTransaction.commit();
-                    return true;
+                    break;
                 case R.id.item_notification:
                     fragmentTransaction.replace(R.id.container_framelayout, new NotificationFragment());
-                    fragmentTransaction.commit();
-                    return true;
+                    break;
                 case R.id.item_add_post:
                     fragmentTransaction.replace(R.id.container_framelayout, new AddPostFragment());
-                    fragmentTransaction.commit();
-                    return true;
+                    break;
                 case R.id.item_search:
                     fragmentTransaction.replace(R.id.container_framelayout, new SearchFragment());
-                    fragmentTransaction.commit();
-                    return true;
+                    break;
                 case R.id.item_userprofile:
                     fragmentTransaction.replace(R.id.container_framelayout, new ProfileFragment());
-                    fragmentTransaction.commit();
-                    return true;
+                    break;
             }
-            return false;
+            fragmentTransaction.commit();
+            return true;
         });
     }
 }
