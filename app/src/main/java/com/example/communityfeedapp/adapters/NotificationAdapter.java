@@ -1,6 +1,7 @@
 package com.example.communityfeedapp.adapters;
 
 import android.content.Context;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +39,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
 
 
         holder.profileImg.setImageResource(model.getProfileImg());
-        holder.notificationTitle.setText(model.getNotificationTitle());
+        holder.notificationTitle.setText(Html.fromHtml(model.getNotificationTitle()));
         holder.notificationTime.setText(model.getNotificationTime());
 
     }

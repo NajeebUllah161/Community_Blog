@@ -1,5 +1,7 @@
 package com.example.communityfeedapp.fragments;
 
+import android.annotation.SuppressLint;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,12 +41,32 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
+        storyRv = view.findViewById(R.id.storyRv);
+        dashboardRv = view.findViewById(R.id.dashboard_Rv);
+
+        return view;
+    }
+
+    private void clearArrayLists() {
+        storyModelArrayList.clear();
+        dashboardModelArrayList.clear();
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        new LoadData().execute();
+
+    }
+
+    private void setupRecyclerViews() {
+
         // Clear ArrayLists
         clearArrayLists();
 
         // Setting up Story RecyclerView
-        storyRv = view.findViewById(R.id.storyRv);
-
         storyModelArrayList.add(new StoryModel(
                 R.drawable.status_img,
                 R.drawable.ic_live,
@@ -79,7 +101,6 @@ public class HomeFragment extends Fragment {
 
 
         // Setting up Dashboard RecyclerView
-        dashboardRv = view.findViewById(R.id.dashboard_Rv);
         dashboardModelArrayList.add(new DashboardModel(R.drawable.post_7, R.drawable.post_4, R.drawable.saved,
                 "Denis Kane",
                 "Traveller",
@@ -139,12 +160,16 @@ public class HomeFragment extends Fragment {
         // dashboardRv.setNestedScrollingEnabled(false);
         dashboardRv.setAdapter(dashboardAdapter);
 
-        return view;
     }
 
-    private void clearArrayLists() {
-        storyModelArrayList.clear();
-        dashboardModelArrayList.clear();
+    @SuppressLint("StaticFieldLeak")
+    public class LoadData extends AsyncTask<Void, Void, Void> {
 
+        @Override
+        protected Void doInBackground(Void... voids) {
+            setupRecyclerViews();
+            return null;
+        }
     }
+
 }

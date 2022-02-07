@@ -41,17 +41,17 @@ public class Notification2Fragment extends Fragment {
 
         list = new ArrayList<>();
 
-        list.add(new NotificationModel(R.drawable.profile2, "Najeeb Ullah has commented on your photo", "just now"));
-        list.add(new NotificationModel(R.drawable.profile3, "Ibraheem Khan has liked your photo", "2 minutes ago"));
-        list.add(new NotificationModel(R.drawable.profile, "Aroosa has commented on your photo", "5 minutes ago"));
-        list.add(new NotificationModel(R.drawable.post_3, "Najeeb Ullah has commented on your photo", "just now"));
-        list.add(new NotificationModel(R.drawable.post_4, "Habib has liked you post", "just now"));
-        list.add(new NotificationModel(R.drawable.post_5, "Khurram has commented on your photo", "just now"));
-        list.add(new NotificationModel(R.drawable.post_6, "Asim started following you", "just now"));
-        list.add(new NotificationModel(R.drawable.post_7, "Raja Abdullah has commented on your photo", "just now"));
-        list.add(new NotificationModel(R.drawable.post_8, "Maskeen has commented on your photo", "just now"));
-        list.add(new NotificationModel(R.drawable.post_9, "Salman has mentioned you in a comment", "just now"));
-        list.add(new NotificationModel(R.drawable.post_3, "Abdul Jameel has commented on your photo", "just now"));
+        list.add(new NotificationModel(R.drawable.profile2, "<b>Najeeb Ullah</b> has commented on your photo", "just now"));
+        list.add(new NotificationModel(R.drawable.profile3, "<b>Ibraheem Khan</b> has liked your photo", "2 minutes ago"));
+        list.add(new NotificationModel(R.drawable.profile, "<b>Aroosa</b> has commented on your photo", "5 minutes ago"));
+        list.add(new NotificationModel(R.drawable.post_3, "<b>Najeeb Ullah</b> has commented on your photo", "just now"));
+        list.add(new NotificationModel(R.drawable.post_4, "<b>Habib</b> has liked you post", "just now"));
+        list.add(new NotificationModel(R.drawable.post_5, "<b>Khurram</b> has commented on your photo", "just now"));
+        list.add(new NotificationModel(R.drawable.post_6, "<b>Asim</b> started following you", "just now"));
+        list.add(new NotificationModel(R.drawable.post_7, "<b>Raja Abdullah</b> has commented on your photo", "just now"));
+        list.add(new NotificationModel(R.drawable.post_8, "<b>Maskeen</b> has commented on your photo", "just now"));
+        list.add(new NotificationModel(R.drawable.post_9, "<b>Salman</b> has mentioned you in a comment", "just now"));
+        list.add(new NotificationModel(R.drawable.post_3, "<b>Abdul Jameel</b> has commented on your photo", "just now"));
 
         NotificationAdapter adapter = new NotificationAdapter(list, getContext());
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
