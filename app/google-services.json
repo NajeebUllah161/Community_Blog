@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "448496240959",
+    "project_id": "communityfeedapp",
+    "storage_bucket": "communityfeedapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:448496240959:android:5b67bac2217ba58a34eb8a",
+        "android_client_info": {
+          "package_name": "com.example.communityfeedapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "448496240959-fa64mf35vf8bntplhrmaj31eedku599a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0mkncw3UZdSpPz2LZ3Qh3pfBsnxOMJ5g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "448496240959-fa64mf35vf8bntplhrmaj31eedku599a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
