@@ -18,8 +18,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.communityfeedapp.R;
 import com.example.communityfeedapp.adapters.FriendAdapter;
 import com.example.communityfeedapp.databinding.FragmentProfileBinding;
-import com.example.communityfeedapp.models.CreateUser;
 import com.example.communityfeedapp.models.FriendModel;
+import com.example.communityfeedapp.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,7 +33,8 @@ import java.util.ArrayList;
 
 public class ProfileFragment extends Fragment {
 
-    private static final int GALLERY_REQUEST_CODE = 11;
+    private static final int COVER_PHOTO_REQUEST_CODE = 11;
+    private static final int PROFILE_PHOTO_REQUEST_CODE = 12;
     ArrayList<FriendModel> list;
     FragmentProfileBinding binding;
     FirebaseAuth auth;
@@ -68,11 +69,17 @@ public class ProfileFragment extends Fragment {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.exists()) {
-                            CreateUser getUser = snapshot.getValue(CreateUser.class);
+                            User getUser = snapshot.getValue(User.class);
                             Picasso.get()
                                     .load(getUser.getCoverPhoto())
                                     .placeholder(R.drawable.placeholder)
                                     .into(binding.coverPhoto);
+                            Picasso.get()
+                                    .load(getUser.getProfileImage())
+                                    .placeholder(R.drawable.placeholder)
+                                    .into(binding.profileImgUserSample);
+                            binding.userName.setText(getUser.getName());
+                            binding.profession.setText(getUser.getProfession());
                         }
                     }
 
@@ -101,7 +108,13 @@ public class ProfileFragment extends Fragment {
         binding.changeCoverPhoto.setOnClickListener(v -> {
             Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
             galleryIntent.setType("image/*");
-            startActivityForResult(galleryIntent, GALLERY_REQUEST_CODE);
+            startActivityForResult(galleryIntent, COVER_PHOTO_REQUEST_CODE);
+        });
+
+        binding.profileImgUserSample.setOnClickListener(v -> {
+            Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
+            galleryIntent.setType("image/*");
+            startActivityForResult(galleryIntent, PROFILE_PHOTO_REQUEST_CODE);
         });
 
         return binding.getRoot();
@@ -111,8 +124,8 @@ public class ProfileFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == GALLERY_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == COVER_PHOTO_REQUEST_CODE) {
                 if (data.getData() != null) {
                     Uri uri = data.getData();
                     binding.coverPhoto.setImageURI(uri);
@@ -139,8 +152,33 @@ public class ProfileFragment extends Fragment {
                                             Toast.LENGTH_SHORT).show());
 
                 }
+            } else if (requestCode == PROFILE_PHOTO_REQUEST_CODE) {
+                if (data.getData() != null) {
+                    Uri uri = data.getData();
+                    binding.profileImgUserSample.setImageURI(uri);
+
+                    final StorageReference storageReference = firebaseStorage
+                            .getReference()
+                            .child("profile_images/" + auth.getCurrentUser().getUid() + "/profile_image");
+
+                    storageReference.putFile(uri)
+                            .addOnSuccessListener(taskSnapshot -> {
+                                Toast.makeText(getContext(),
+                                        "Profile image saved",
+                                        Toast.LENGTH_SHORT).show();
+                                storageReference.getDownloadUrl()
+                                        .addOnSuccessListener(uri1 -> firebaseDatabase
+                                                .getReference()
+                                                .child("Users/" + auth.getCurrentUser().getUid() + "/profileImage")
+                                                .setValue(uri1.toString()));
+                            })
+                            .addOnFailureListener(e ->
+                                    Toast.makeText(getContext(),
+                                            "Error uploading file : " + e.getMessage(),
+                                            Toast.LENGTH_SHORT).show());
+
+                }
             }
         }
     }
-
 }

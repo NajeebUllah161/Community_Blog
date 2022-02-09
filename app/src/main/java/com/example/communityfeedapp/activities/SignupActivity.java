@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.communityfeedapp.MainActivity;
 import com.example.communityfeedapp.databinding.ActivitySignupBinding;
-import com.example.communityfeedapp.models.CreateUser;
+import com.example.communityfeedapp.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -40,7 +40,7 @@ public class SignupActivity extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     Log.d("SignupActivity", "OnCompleteSignUp");
                 }).addOnSuccessListener(authResult -> {
-            CreateUser user = new CreateUser(
+            User user = new User(
                     binding.nameET.getText().toString(),
                     binding.professionET.getText().toString(),
                     binding.emailET.getText().toString(),

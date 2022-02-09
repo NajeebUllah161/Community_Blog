@@ -1,9 +1,26 @@
 package com.example.communityfeedapp.models;
 
-public class CreateUser {
+public class User {
     private String name, profession, email, password;
+    private String coverPhoto;
+    private String profileImage;
 
-    public CreateUser() {
+    public User() {
+    }
+
+    public User(String name, String profession, String email, String password) {
+        this.name = name;
+        this.profession = profession;
+        this.email = email;
+        this.password = password;
+    }
+
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
     }
 
     public String getCoverPhoto() {
@@ -12,15 +29,6 @@ public class CreateUser {
 
     public void setCoverPhoto(String coverPhoto) {
         this.coverPhoto = coverPhoto;
-    }
-
-    private String coverPhoto;
-
-    public CreateUser(String name, String profession, String email, String password) {
-        this.name = name;
-        this.profession = profession;
-        this.email = email;
-        this.password = password;
     }
 
     public String getName() {
