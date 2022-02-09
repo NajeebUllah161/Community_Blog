@@ -1,24 +1,44 @@
 package com.example.communityfeedapp.fragments;
 
+import static android.app.Activity.RESULT_OK;
+
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.communityfeedapp.R;
 import com.example.communityfeedapp.adapters.FriendAdapter;
+import com.example.communityfeedapp.databinding.FragmentProfileBinding;
+import com.example.communityfeedapp.models.CreateUser;
 import com.example.communityfeedapp.models.FriendModel;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 public class ProfileFragment extends Fragment {
 
-    RecyclerView recyclerView;
+    private static final int GALLERY_REQUEST_CODE = 11;
     ArrayList<FriendModel> list;
+    FragmentProfileBinding binding;
+    FirebaseAuth auth;
+    FirebaseStorage firebaseStorage;
+    FirebaseDatabase firebaseDatabase;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -28,6 +48,11 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
+        auth = FirebaseAuth.getInstance();
+        firebaseStorage = FirebaseStorage.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance();
 
     }
 
@@ -35,8 +60,28 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_profile, container, false);
-        recyclerView = view.findViewById(R.id.myFriend_Rv);
+        binding = FragmentProfileBinding.inflate(inflater, container, false);
+
+        // Get coverPhoto from firebase database
+        firebaseDatabase.getReference().child("Users/" + auth.getCurrentUser().getUid())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            CreateUser getUser = snapshot.getValue(CreateUser.class);
+                            Picasso.get()
+                                    .load(getUser.getCoverPhoto())
+                                    .placeholder(R.drawable.placeholder)
+                                    .into(binding.coverPhoto);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
         list = new ArrayList<>();
 
         list.add(new FriendModel(R.drawable.profile));
@@ -47,10 +92,55 @@ public class ProfileFragment extends Fragment {
         list.add(new FriendModel(R.drawable.post_4));
 
         FriendAdapter adapter = new FriendAdapter(list, getContext());
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setAdapter(adapter);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),
+                LinearLayoutManager.HORIZONTAL,
+                false);
+        binding.myFriendRv.setLayoutManager(linearLayoutManager);
+        binding.myFriendRv.setAdapter(adapter);
 
-        return view;
+        binding.changeCoverPhoto.setOnClickListener(v -> {
+            Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
+            galleryIntent.setType("image/*");
+            startActivityForResult(galleryIntent, GALLERY_REQUEST_CODE);
+        });
+
+        return binding.getRoot();
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == GALLERY_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                if (data.getData() != null) {
+                    Uri uri = data.getData();
+                    binding.coverPhoto.setImageURI(uri);
+
+
+                    final StorageReference storageReference = firebaseStorage
+                            .getReference()
+                            .child("cover_photos/" + auth.getCurrentUser().getUid() + "/cover_photo");
+
+                    storageReference.putFile(uri)
+                            .addOnSuccessListener(taskSnapshot -> {
+                                Toast.makeText(getContext(),
+                                        "Cover photo saved",
+                                        Toast.LENGTH_SHORT).show();
+                                storageReference.getDownloadUrl()
+                                        .addOnSuccessListener(uri1 -> firebaseDatabase
+                                                .getReference()
+                                                .child("Users/" + auth.getCurrentUser().getUid() + "/coverPhoto")
+                                                .setValue(uri1.toString()));
+                            })
+                            .addOnFailureListener(e ->
+                                    Toast.makeText(getContext(),
+                                            "Error uploading file : " + e.getMessage(),
+                                            Toast.LENGTH_SHORT).show());
+
+                }
+            }
+        }
+    }
+
 }

@@ -10,7 +10,7 @@
     <ImageView
         android:id="@+id/imageView5"
         android:layout_width="wrap_content"
-        android:layout_height="270dp"
+        android:layout_height="@dimen/_160sdp"
         android:layout_marginTop="8dp"
         android:adjustViewBounds="true"
         app:layout_constraintBottom_toTopOf="@+id/textView14"
@@ -68,6 +68,7 @@
             android:id="@+id/nameET"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="textPersonName"
             android:background="@android:color/transparent"
             android:hint="Name"
             android:paddingBottom="5dp" />
@@ -93,6 +94,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/professionET"
             android:layout_width="match_parent"
+            android:inputType="textPersonName"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:hint="Profession"
@@ -119,6 +121,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/emailET"
             android:layout_width="match_parent"
+            android:inputType="textWebEmailAddress"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:hint="Email"
@@ -145,6 +148,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/pwdET"
             android:layout_width="match_parent"
+            android:inputType="textWebPassword"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:hint="Password"
@@ -156,6 +160,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
+        android:layout_marginBottom="8dp"
         android:background="@drawable/input_text_bg"
         android:backgroundTint="@color/teal_700"
         android:text="SignUp"

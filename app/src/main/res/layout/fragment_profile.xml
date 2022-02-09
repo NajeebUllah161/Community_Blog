@@ -27,7 +27,7 @@
 
 
             <ImageView
-                android:id="@+id/imageView3"
+                android:id="@+id/coverPhoto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:scaleType="centerCrop"
@@ -54,6 +54,16 @@
         diagonal:layout_constraintStart_toStartOf="parent"
         diagonal:layout_constraintTop_toTopOf="@+id/linearLayout"
         diagonal:layout_constraintVertical_bias="1.0" />
+
+    <ImageView
+        android:id="@+id/changeCoverPhoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/ic_image"
+        diagonal:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+        diagonal:layout_constraintStart_toStartOf="@+id/linearLayout" />
 
     <ImageView
         android:id="@+id/imageView4"
