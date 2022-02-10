@@ -7,6 +7,7 @@
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/drawable/circle.xml" value="0.2" />
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/drawable/follow_active_btn.xml" value="0.20462962962962963" />
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/drawable/follow_btn_bg.xml" value="0.21574074074074073" />
+        <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/drawable/gray_circle.xml" value="0.20462962962962963" />
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/drawable/ic_add.xml" value="0.2203125" />
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/drawable/ic_add_friend.xml" value="0.2" />
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/drawable/ic_bookmark.xml" value="0.2169230769230769" />
@@ -41,7 +42,7 @@
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/layout/activity_main.xml" value="0.17" />
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/layout/activity_signup.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/layout/dashboard_rv_sample.xml" value="0.2" />
-        <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/layout/fragment_add.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/layout/fragment_add.xml" value="0.33" />
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/layout/fragment_home.xml" value="0.2" />
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/layout/fragment_notification.xml" value="0.19010416666666666" />
         <entry key="..\:/Users/NAJEEB/Desktop/Growtech-services/Commuity_Feed/app/src/main/res/layout/fragment_notification2.xml" value="0.20416666666666666" />
