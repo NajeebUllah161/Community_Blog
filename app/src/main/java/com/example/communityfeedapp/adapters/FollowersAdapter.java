@@ -43,11 +43,11 @@ public class FollowersAdapter extends RecyclerView.Adapter<FollowersAdapter.view
         FirebaseDatabase
                 .getInstance()
                 .getReference()
-                .child("Users/"+followModel.getFollowedBy())
+                .child("Users/" + followModel.getFollowedBy())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        User user =  snapshot.getValue(User.class);
+                        User user = snapshot.getValue(User.class);
                         Picasso.get()
                                 .load(user.getProfileImage())
                                 .placeholder(R.drawable.placeholder)

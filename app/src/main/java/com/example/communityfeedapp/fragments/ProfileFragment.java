@@ -85,7 +85,8 @@ public class ProfileFragment extends Fragment {
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for(DataSnapshot dataSnapshot: snapshot.getChildren()){
+                        list.clear();
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             FollowModel followModel = dataSnapshot.getValue(FollowModel.class);
                             list.add(followModel);
                         }
@@ -115,6 +116,7 @@ public class ProfileFragment extends Fragment {
                                     .into(binding.profileImgUserSample);
                             binding.userName.setText(getUser.getName());
                             binding.profession.setText(getUser.getProfession());
+                            binding.followersTv.setText(getUser.getFollowersCount() + "");
                         }
                     }
 
