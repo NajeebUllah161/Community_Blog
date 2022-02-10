@@ -11,16 +11,21 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.communityfeedapp.R;
 import com.example.communityfeedapp.databinding.FriendRvSampleBinding;
 import com.example.communityfeedapp.models.FollowModel;
-import com.example.communityfeedapp.models.FriendModel;
+import com.example.communityfeedapp.models.User;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 public class FollowersAdapter extends RecyclerView.Adapter<FollowersAdapter.viewHolder> {
 
-    ArrayList<FriendModel> list;
+    ArrayList<FollowModel> list;
     Context context;
 
-    public FollowersAdapter(ArrayList<FriendModel> list, Context context) {
+    public FollowersAdapter(ArrayList<FollowModel> list, Context context) {
         this.list = list;
         this.context = context;
     }
@@ -34,7 +39,26 @@ public class FollowersAdapter extends RecyclerView.Adapter<FollowersAdapter.view
 
     @Override
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
-        // FollowModel model = list.get(position);
+        FollowModel followModel = list.get(position);
+        FirebaseDatabase
+                .getInstance()
+                .getReference()
+                .child("Users/"+followModel.getFollowedBy())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        User user =  snapshot.getValue(User.class);
+                        Picasso.get()
+                                .load(user.getProfileImage())
+                                .placeholder(R.drawable.placeholder)
+                                .into(holder.binding.profileImgFriendRv);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
 
 
     }

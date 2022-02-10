@@ -1,26 +1,29 @@
 package com.example.communityfeedapp;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
-import androidx.appcompat.app.ActionBar;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.communityfeedapp.activities.LoginActivity;
 import com.example.communityfeedapp.databinding.ActivityMainBinding;
 import com.example.communityfeedapp.fragments.AddPostFragment;
 import com.example.communityfeedapp.fragments.HomeFragment;
 import com.example.communityfeedapp.fragments.NotificationFragment;
 import com.example.communityfeedapp.fragments.ProfileFragment;
 import com.example.communityfeedapp.fragments.SearchFragment;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
-    ActionBar actionBar;
+    FirebaseAuth auth = FirebaseAuth.getInstance();
 
     @SuppressLint("NonConstantResourceId")
     @Override
@@ -73,7 +76,20 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_items,menu);
+        getMenuInflater().inflate(R.menu.menu_items, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.setting:
+                auth.signOut();
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

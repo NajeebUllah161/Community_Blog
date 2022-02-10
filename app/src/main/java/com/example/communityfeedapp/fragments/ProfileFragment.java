@@ -16,9 +16,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.communityfeedapp.R;
-import com.example.communityfeedapp.adapters.FriendAdapter;
+import com.example.communityfeedapp.adapters.FollowersAdapter;
 import com.example.communityfeedapp.databinding.FragmentProfileBinding;
-import com.example.communityfeedapp.models.FriendModel;
+import com.example.communityfeedapp.models.FollowModel;
 import com.example.communityfeedapp.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -35,7 +35,7 @@ public class ProfileFragment extends Fragment {
 
     private static final int COVER_PHOTO_REQUEST_CODE = 11;
     private static final int PROFILE_PHOTO_REQUEST_CODE = 12;
-    ArrayList<FriendModel> list;
+    ArrayList<FollowModel> list;
     FragmentProfileBinding binding;
     FirebaseAuth auth;
     FirebaseStorage firebaseStorage;
@@ -74,7 +74,7 @@ public class ProfileFragment extends Fragment {
         list.add(new FriendModel(R.drawable.post_4));
          */
 
-        FriendAdapter adapter = new FriendAdapter(list, getContext());
+        FollowersAdapter adapter = new FollowersAdapter(list, getContext());
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),
                 LinearLayoutManager.HORIZONTAL,
                 false);
@@ -85,7 +85,11 @@ public class ProfileFragment extends Fragment {
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-
+                        for(DataSnapshot dataSnapshot: snapshot.getChildren()){
+                            FollowModel followModel = dataSnapshot.getValue(FollowModel.class);
+                            list.add(followModel);
+                        }
+                        adapter.notifyDataSetChanged();
                     }
 
                     @Override
