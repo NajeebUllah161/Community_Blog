@@ -46,7 +46,7 @@ public class SearchFragment extends Fragment {
         // Inflate the layout for this fragment
         binding = FragmentSearchBinding.inflate(inflater, container, false);
 
-        UserAdapter userAdapter = new UserAdapter(getContext(),list);
+        UserAdapter userAdapter = new UserAdapter(getContext(), list);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         binding.usersRv.setLayoutManager(linearLayoutManager);
         binding.usersRv.setAdapter(userAdapter);
@@ -54,7 +54,13 @@ public class SearchFragment extends Fragment {
         firebaseDatabase.getReference().child("Users").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    User user = dataSnapshot.getValue(User.class);
+                    user.setUserId(dataSnapshot.getKey());
+                    list.add(user);
 
+                }
+                userAdapter.notifyDataSetChanged();
             }
 
             @Override

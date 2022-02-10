@@ -3,6 +3,8 @@ package com.example.communityfeedapp.models;
 public class User {
     private String name, profession, email, password;
     private String coverPhoto;
+    private String userId;
+    private int followersCount;
     private String profileImage;
 
     public User() {
@@ -13,6 +15,22 @@ public class User {
         this.profession = profession;
         this.email = email;
         this.password = password;
+    }
+
+    public int getFollowersCount() {
+        return followersCount;
+    }
+
+    public void setFollowersCount(int followersCount) {
+        this.followersCount = followersCount;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getProfileImage() {

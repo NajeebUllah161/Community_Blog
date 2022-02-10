@@ -63,7 +63,38 @@ public class ProfileFragment extends Fragment {
         // Inflate the layout for this fragment
         binding = FragmentProfileBinding.inflate(inflater, container, false);
 
-        // Get coverPhoto from firebase database
+        list = new ArrayList<>();
+
+        /*
+        list.add(new FriendModel(R.drawable.profile));
+        list.add(new FriendModel(R.drawable.profile2));
+        list.add(new FriendModel(R.drawable.profile3));
+        list.add(new FriendModel(R.drawable.profile));
+        list.add(new FriendModel(R.drawable.post_3));
+        list.add(new FriendModel(R.drawable.post_4));
+         */
+
+        FriendAdapter adapter = new FriendAdapter(list, getContext());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),
+                LinearLayoutManager.HORIZONTAL,
+                false);
+        binding.myFriendRv.setLayoutManager(linearLayoutManager);
+        binding.myFriendRv.setAdapter(adapter);
+
+        firebaseDatabase.getReference().child("Users/" + auth.getCurrentUser().getUid() + "/followers")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
+        // Fetch User data from firebase database
         firebaseDatabase.getReference().child("Users/" + auth.getCurrentUser().getUid())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -88,22 +119,6 @@ public class ProfileFragment extends Fragment {
 
                     }
                 });
-
-        list = new ArrayList<>();
-
-        list.add(new FriendModel(R.drawable.profile));
-        list.add(new FriendModel(R.drawable.profile2));
-        list.add(new FriendModel(R.drawable.profile3));
-        list.add(new FriendModel(R.drawable.profile));
-        list.add(new FriendModel(R.drawable.post_3));
-        list.add(new FriendModel(R.drawable.post_4));
-
-        FriendAdapter adapter = new FriendAdapter(list, getContext());
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),
-                LinearLayoutManager.HORIZONTAL,
-                false);
-        binding.myFriendRv.setLayoutManager(linearLayoutManager);
-        binding.myFriendRv.setAdapter(adapter);
 
         binding.changeCoverPhoto.setOnClickListener(v -> {
             Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -134,6 +149,7 @@ public class ProfileFragment extends Fragment {
                     final StorageReference storageReference = firebaseStorage
                             .getReference()
                             .child("cover_photos/" + auth.getCurrentUser().getUid() + "/cover_photo");
+                    // Log.d("CurrentUser",auth.getCurrentUser().getUid());
 
                     storageReference.putFile(uri)
                             .addOnSuccessListener(taskSnapshot -> {

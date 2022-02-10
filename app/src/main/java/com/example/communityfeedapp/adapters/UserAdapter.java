@@ -4,16 +4,23 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.communityfeedapp.R;
 import com.example.communityfeedapp.databinding.UserSampleBinding;
+import com.example.communityfeedapp.models.FollowModel;
 import com.example.communityfeedapp.models.User;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.viewHolder> {
     Context context;
@@ -43,6 +50,47 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.viewHolder> {
                 .into(holder.binding.profileImgUserSample);
         holder.binding.nameUserSample.setText(user.getName());
         holder.binding.professionUserSample.setText(user.getProfession());
+
+        // Handling follow button
+        holder.binding.followBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FollowModel followModel = new FollowModel();
+                followModel.setFollowedBy(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                followModel.setFollowedAt(new Date().getTime());
+
+                FirebaseDatabase.getInstance().getReference()
+                        .child("Users/" + user.getUserId() + "/followers/" + followModel.getFollowedBy())
+                        .setValue(followModel)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                FirebaseDatabase.getInstance().getReference()
+                                        .child("Users/" + user.getUserId() + "/followersCount")
+                                        .setValue(user.getFollowersCount() + 1)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void unused) {
+                                                Toast.makeText(context, "You Followed" + user.getName(), Toast.LENGTH_SHORT).show();
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+
+                                            }
+                                        });
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+
+                            }
+                        });
+
+            }
+        });
 
 
     }

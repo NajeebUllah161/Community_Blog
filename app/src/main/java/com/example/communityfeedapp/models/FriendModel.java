@@ -15,4 +15,5 @@ public class FriendModel {
     public void setProfile(int profile) {
         this.profile = profile;
     }
+
 }
