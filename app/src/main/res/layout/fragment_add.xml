@@ -47,8 +47,6 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profileImgAddPost"
-        diagonal:layout_constraintStart_toStartOf="parent"
-        diagonal:layout_constraintTop_toTopOf="parent"
         android:layout_width="@dimen/_50sdp"
         android:layout_height="@dimen/_50sdp"
         android:layout_marginTop="8dp"
