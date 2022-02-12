@@ -1,5 +1,6 @@
 package com.example.communityfeedapp.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +18,7 @@ public class LoginActivity extends AppCompatActivity {
     ActivityLoginBinding binding;
     FirebaseAuth auth;
     FirebaseUser currentUser;
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,19 +28,29 @@ public class LoginActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
+        progressDialog = new ProgressDialog(LoginActivity.this);
+
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setTitle("Logging In");
+        progressDialog.setMessage("Please Wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.setCanceledOnTouchOutside(false);
 
         binding.loginBtn.setOnClickListener(v -> {
+            progressDialog.show();
             auth.signInWithEmailAndPassword(binding.emailET.getText().toString(), binding.pwdET.getText().toString())
                     .addOnCompleteListener(task -> {
                         Log.d("LoginActivity", "OnCompleteLogin");
                     })
                     .addOnSuccessListener(authResult -> {
                         Log.d("LoginActivity", "OnSuccessLogin");
+                        progressDialog.show();
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
                         finish();
                     })
                     .addOnFailureListener(e -> {
+                        progressDialog.show();
                         Toast.makeText(LoginActivity.this, "Error : " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     });
         });

@@ -65,15 +65,6 @@ public class ProfileFragment extends Fragment {
 
         list = new ArrayList<>();
 
-        /*
-        list.add(new FriendModel(R.drawable.profile));
-        list.add(new FriendModel(R.drawable.profile2));
-        list.add(new FriendModel(R.drawable.profile3));
-        list.add(new FriendModel(R.drawable.profile));
-        list.add(new FriendModel(R.drawable.post_3));
-        list.add(new FriendModel(R.drawable.post_4));
-         */
-
         FollowersAdapter adapter = new FollowersAdapter(list, getContext());
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),
                 LinearLayoutManager.HORIZONTAL,

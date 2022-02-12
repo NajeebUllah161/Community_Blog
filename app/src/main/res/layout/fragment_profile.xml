@@ -61,7 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="24dp"
-        android:src="@drawable/ic_image"
+        android:src="@drawable/ic_img_cover_icon"
         diagonal:layout_constraintBottom_toBottomOf="@+id/linearLayout"
         diagonal:layout_constraintStart_toStartOf="@+id/linearLayout" />
 
@@ -307,7 +307,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/acme"
-        android:text="My Friends"
+        android:text="My Followers"
         android:textColor="@color/black"
         android:textSize="18sp"
         diagonal:layout_constraintStart_toStartOf="@+id/textView11"
