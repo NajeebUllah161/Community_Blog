@@ -1,5 +1,6 @@
 package com.example.communityfeedapp.fragments;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -97,10 +98,13 @@ public class HomeFragment extends Fragment {
         dashboardRv.setAdapter(postAdapter);
 
         firebaseDatabase.getReference().child("posts").addValueEventListener(new ValueEventListener() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                postList.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Post post = dataSnapshot.getValue(Post.class);
+                    post.setPostId(dataSnapshot.getKey());
                     postList.add(post);
                 }
                 postAdapter.notifyDataSetChanged();

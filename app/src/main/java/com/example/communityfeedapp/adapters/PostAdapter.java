@@ -1,18 +1,25 @@
 package com.example.communityfeedapp.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.communityfeedapp.R;
+import com.example.communityfeedapp.activities.CommentActivity;
 import com.example.communityfeedapp.databinding.DashboardRvSampleBinding;
 import com.example.communityfeedapp.models.Post;
 import com.example.communityfeedapp.models.User;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -39,6 +46,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         return new PostViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
 
@@ -48,6 +56,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 .placeholder(R.drawable.placeholder)
                 .into(holder.binding.postImg);
 
+        holder.binding.like.setText(model.getPostLikes() + "");
         String description = model.getPostDescription();
         if (description.equals("")) {
             holder.binding.postDescriptionDesign.setVisibility(View.GONE);
@@ -62,26 +71,70 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User user = snapshot.getValue(User.class);
-                Picasso.get()
-                        .load(user.getProfileImage())
-                        .placeholder(R.drawable.placeholder)
-                        .into(holder.binding.profileImageDashboard);
-                holder.binding.userNameDashboard.setText(user.getName());
-                holder.binding.aboutDbTv.setText(user.getProfession());
+                if (user != null) {
+                    Picasso.get()
+                            .load(user.getProfileImage())
+                            .placeholder(R.drawable.placeholder)
+                            .into(holder.binding.profileImageDashboard);
+
+                    holder.binding.userNameDashboard.setText(user.getName());
+                    holder.binding.aboutDbTv.setText(user.getProfession());
+                } else {
+                    Toast.makeText(context, "No user exists", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 
+        FirebaseDatabase.getInstance()
+                .getReference()
+                .child("posts/" + model.getPostId() + "/likes/" + FirebaseAuth
+                        .getInstance()
+                        .getCurrentUser()
+                        .getUid())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            holder.binding.like.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart_filled, 0, 0, 0);
+                        } else {
+                            holder.binding.like.setOnClickListener(view -> FirebaseDatabase.getInstance().getReference()
+                                    .child("posts/" + model.getPostId() + "/likes/" + FirebaseAuth.getInstance()
+                                            .getCurrentUser()
+                                            .getUid()).setValue(true).addOnSuccessListener(unused -> FirebaseDatabase.getInstance().getReference()
+                                            .child("posts/" + model.getPostId() + "/postLikes")
+                                            .setValue(model.getPostLikes() + 1)
+                                            .addOnSuccessListener(unused1 -> holder.binding.like.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart_filled, 0, 0, 0)).addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                }
+                                            })).addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show()));
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+        holder.binding.comment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, CommentActivity.class);
+                context.startActivity(intent);
+            }
+        });
 
     }
 
     @Override
     public int getItemCount() {
-        Log.d("Count Dashboard", String.valueOf(postModelArrayList.size()));
+        // Log.d("Count Dashboard", String.valueOf(postModelArrayList.size()));
         return postModelArrayList.size();
     }
 

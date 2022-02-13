@@ -1,5 +1,6 @@
 package com.example.communityfeedapp.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,6 +61,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.viewHolder> {
                 .getReference()
                 .child("Users/" + user.getUserId() + "/followers/" + FirebaseAuth.getInstance().getUid())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @SuppressLint("SetTextI18n")
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.exists()) {
@@ -69,52 +71,31 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.viewHolder> {
                             holder.binding.followBtn.setEnabled(false);
                         } else {
                             // Handling follow button
-                            holder.binding.followBtn.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    FollowModel followModel = new FollowModel();
-                                    followModel.setFollowedBy(FirebaseAuth.getInstance().getCurrentUser().getUid());
-                                    followModel.setFollowedAt(new Date().getTime());
-                                    // Log.d("Checkpoint",followModel.getFollowedBy());
+                            holder.binding.followBtn.setOnClickListener(v -> {
+                                FollowModel followModel = new FollowModel();
+                                followModel.setFollowedBy(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                                followModel.setFollowedAt(new Date().getTime());
+                                // Log.d("Checkpoint",followModel.getFollowedBy());
 
-                                    FirebaseDatabase.getInstance().getReference()
-                                            .child("Users/" + user.getUserId() + "/followers/" + FirebaseAuth
-                                                    .getInstance()
-                                                    .getCurrentUser()
-                                                    .getUid())
-                                            .setValue(followModel)
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void unused) {
-                                                    FirebaseDatabase.getInstance().getReference()
-                                                            .child("Users/" + user.getUserId() + "/followersCount")
-                                                            .setValue(user.getFollowersCount() + 1)
-                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                @Override
-                                                                public void onSuccess(Void unused) {
-                                                                    holder.binding.followBtn.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.follow_active_btn));
-                                                                    holder.binding.followBtn.setText("Following");
-                                                                    holder.binding.followBtn.setTextColor(context.getResources().getColor(R.color.gray));
-                                                                    holder.binding.followBtn.setEnabled(false);
-                                                                    Toast.makeText(context, "You Followed: " + user.getName(), Toast.LENGTH_SHORT).show();
-                                                                }
-                                                            })
-                                                            .addOnFailureListener(new OnFailureListener() {
-                                                                @Override
-                                                                public void onFailure(@NonNull Exception e) {
+                                FirebaseDatabase.getInstance().getReference()
+                                        .child("Users/" + user.getUserId() + "/followers/" + FirebaseAuth
+                                                .getInstance()
+                                                .getCurrentUser()
+                                                .getUid())
+                                        .setValue(followModel)
+                                        .addOnSuccessListener(unused -> FirebaseDatabase.getInstance().getReference()
+                                                .child("Users/" + user.getUserId() + "/followersCount")
+                                                .setValue(user.getFollowersCount() + 1)
+                                                .addOnSuccessListener(unused1 -> {
+                                                    holder.binding.followBtn.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.follow_active_btn));
+                                                    holder.binding.followBtn.setText("Following");
+                                                    holder.binding.followBtn.setTextColor(context.getResources().getColor(R.color.gray));
+                                                    holder.binding.followBtn.setEnabled(false);
+                                                    Toast.makeText(context, "You Followed: " + user.getName(), Toast.LENGTH_SHORT).show();
+                                                })
+                                                .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show()))
+                                        .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show());
 
-                                                                }
-                                                            });
-                                                }
-                                            })
-                                            .addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-
-                                                }
-                                            });
-
-                                }
                             });
 
 
@@ -123,7 +104,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.viewHolder> {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-
+                        Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
 

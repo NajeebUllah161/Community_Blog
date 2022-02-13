@@ -5,7 +5,24 @@ public class Post {
     private String postImage;
     private String postedBy;
     private String postDescription;
-    private Long postedAt;
+    private long postedAt;
+    private int postLikes;
+
+    public long getPostedAt() {
+        return postedAt;
+    }
+
+    public void setPostedAt(long postedAt) {
+        this.postedAt = postedAt;
+    }
+
+    public int getPostLikes() {
+        return postLikes;
+    }
+
+    public void setPostLikes(int postLikes) {
+        this.postLikes = postLikes;
+    }
 
     public Post() {
     }
@@ -42,15 +59,8 @@ public class Post {
         this.postDescription = postDescription;
     }
 
-    public Long getPostedAt() {
-        return postedAt;
-    }
 
-    public void setPostedAt(Long postedAt) {
-        this.postedAt = postedAt;
-    }
-
-    public Post(String postId, String postImage, String postedBy, String postDescription, Long postedAt) {
+    public Post(String postId, String postImage, String postedBy, String postDescription, long postedAt) {
         this.postId = postId;
         this.postImage = postImage;
         this.postedBy = postedBy;

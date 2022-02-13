@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -48,15 +49,20 @@ public class FollowersAdapter extends RecyclerView.Adapter<FollowersAdapter.view
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         User user = snapshot.getValue(User.class);
-                        Picasso.get()
-                                .load(user.getProfileImage())
-                                .placeholder(R.drawable.placeholder)
-                                .into(holder.binding.profileImgFriendRv);
+                        if (user != null) {
+                            Picasso.get()
+                                    .load(user.getProfileImage())
+                                    .placeholder(R.drawable.placeholder)
+                                    .into(holder.binding.profileImgFriendRv);
+                        }
+                        else{
+                            Toast.makeText(context, "User doesn't exit", Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-
+                        Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
 

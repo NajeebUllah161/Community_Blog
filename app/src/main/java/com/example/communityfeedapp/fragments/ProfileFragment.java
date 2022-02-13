@@ -2,6 +2,7 @@ package com.example.communityfeedapp.fragments;
 
 import static android.app.Activity.RESULT_OK;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -74,6 +75,7 @@ public class ProfileFragment extends Fragment {
 
         firebaseDatabase.getReference().child("Users/" + auth.getCurrentUser().getUid() + "/followers")
                 .addValueEventListener(new ValueEventListener() {
+                    @SuppressLint("NotifyDataSetChanged")
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         list.clear();
@@ -93,21 +95,27 @@ public class ProfileFragment extends Fragment {
         // Fetch User data from firebase database
         firebaseDatabase.getReference().child("Users/" + auth.getCurrentUser().getUid())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @SuppressLint("SetTextI18n")
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.exists()) {
                             User getUser = snapshot.getValue(User.class);
-                            Picasso.get()
-                                    .load(getUser.getCoverPhoto())
-                                    .placeholder(R.drawable.placeholder)
-                                    .into(binding.coverPhoto);
-                            Picasso.get()
-                                    .load(getUser.getProfileImage())
-                                    .placeholder(R.drawable.placeholder)
-                                    .into(binding.profileImgUserSample);
-                            binding.userName.setText(getUser.getName());
-                            binding.profession.setText(getUser.getProfession());
-                            binding.followersTv.setText(getUser.getFollowersCount() + "");
+                            if (getUser != null) {
+                                Picasso.get()
+                                        .load(getUser.getCoverPhoto())
+                                        .placeholder(R.drawable.placeholder)
+                                        .into(binding.coverPhoto);
+
+                                Picasso.get()
+                                        .load(getUser.getProfileImage())
+                                        .placeholder(R.drawable.placeholder)
+                                        .into(binding.profileImgUserSample);
+                                binding.userName.setText(getUser.getName());
+                                binding.profession.setText(getUser.getProfession());
+                                binding.followersTv.setText(getUser.getFollowersCount() + "");
+                            } else {
+                                Toast.makeText(getContext(), "No user exists", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
 
