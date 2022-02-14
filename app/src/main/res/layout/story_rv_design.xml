@@ -31,15 +31,19 @@
         app:layout_constraintStart_toStartOf="@+id/story_img"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <View
-        android:id="@+id/view_storyview"
+    <com.example.communityfeedapp.utils.CircularStatusView
+        android:id="@+id/statusCircle"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@drawable/white_circle"
         app:layout_constraintBottom_toBottomOf="@+id/story_profile_img"
         app:layout_constraintEnd_toEndOf="@+id/story_profile_img"
         app:layout_constraintStart_toStartOf="@+id/story_profile_img"
-        app:layout_constraintTop_toTopOf="@+id/story_profile_img" />
+        app:layout_constraintTop_toTopOf="@+id/story_profile_img"
+        app:portion_color="@color/teal_700"
+        app:portion_spacing="5dp"
+        app:portion_width="2dp"
+        app:portions_count="4" />
 
     <ImageView
         android:id="@+id/storyType"

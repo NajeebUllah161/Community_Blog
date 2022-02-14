@@ -7,22 +7,31 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.communityfeedapp.R;
-import com.example.communityfeedapp.models.StoryModel;
+import com.example.communityfeedapp.databinding.StoryRvDesignBinding;
+import com.example.communityfeedapp.models.Story;
+import com.example.communityfeedapp.models.User;
+import com.example.communityfeedapp.models.UserStories;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.StoryViewHolder> {
 
-    ArrayList<StoryModel> storyModelArrayList;
+    ArrayList<Story> storyArrayList;
     Context context;
 
-    public StoryAdapter(ArrayList<StoryModel> list, Context context) {
-        this.storyModelArrayList = list;
+    public StoryAdapter(ArrayList<Story> list, Context context) {
+        this.storyArrayList = list;
         this.context = context;
     }
 
@@ -35,32 +44,58 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.StoryViewHol
 
     @Override
     public void onBindViewHolder(@NonNull StoryViewHolder holder, int position) {
-        StoryModel storyModel = storyModelArrayList.get(position);
-        holder.storyImg.setImageResource(storyModel.getStory());
-        holder.profile.setImageResource(storyModel.getProfile());
-        holder.storyType.setImageResource(storyModel.getStoryType());
-        holder.name.setText(storyModel.getName());
+        Story story = storyArrayList.get(position);
+        int storiesSize = story.getStories().size();
+        UserStories lastStory = story.getStories().get(storiesSize - 1);
+        Picasso.get()
+                .load(lastStory.getImage())
+                .placeholder(R.drawable.placeholder)
+                .into(holder.binding.storyImg);
+        holder.binding.statusCircle.setPortionsCount(storiesSize);
+
+        FirebaseDatabase.getInstance().getReference()
+                .child("Users/" + story.getStoryBy())
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        User user = snapshot.getValue(User.class);
+                        Picasso.get()
+                                .load(user.getProfileImage())
+                                .placeholder(R.drawable.placeholder)
+                                .into(holder.binding.storyProfileImg);
+                        holder.binding.storyNameTxt.setText(user.getName());
+                        holder.binding.storyImg.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                //StoryView Implementation
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
 
     }
 
     @Override
     public int getItemCount() {
 
-        Log.d("Count Story", String.valueOf(storyModelArrayList.size()));
-        return storyModelArrayList.size();
+        Log.d("Count Story", String.valueOf(storyArrayList.size()));
+        return storyArrayList.size();
     }
 
-    public static class StoryViewHolder extends RecyclerView.ViewHolder {
-        ImageView storyImg, profile, storyType;
-        TextView name;
+    public class StoryViewHolder extends RecyclerView.ViewHolder {
+
+        StoryRvDesignBinding binding;
 
         public StoryViewHolder(@NonNull View itemView) {
             super(itemView);
+            binding = StoryRvDesignBinding.bind(itemView);
 
-            storyImg = itemView.findViewById(R.id.story_img);
-            profile = itemView.findViewById(R.id.story_profile_img);
-            storyType = itemView.findViewById(R.id.storyType);
-            name = itemView.findViewById(R.id.story_name_txt);
         }
     }
 }

@@ -86,7 +86,7 @@
                         android:layout_height="wrap_content">
 
                         <com.makeramen.roundedimageview.RoundedImageView
-                            android:id="@+id/story"
+                            android:id="@+id/addStoryImg"
                             android:layout_width="@dimen/_130sdp"
                             android:layout_height="@dimen/_85sdp"
                             android:layout_marginStart="16dp"
@@ -98,17 +98,17 @@
                             app:riv_border_width="1dip"
                             app:riv_corner_radius="10dip"
                             app:riv_mutate_background="true"
-                            app:riv_tile_mode="repeat" />
+                            app:riv_tile_mode="clamp" />
 
                         <View
                             android:id="@+id/view3"
                             android:layout_width="0dp"
                             android:layout_height="0dp"
                             android:background="@drawable/rectangle_rounded"
-                            app:layout_constraintBottom_toBottomOf="@id/story"
-                            app:layout_constraintEnd_toEndOf="@id/story"
-                            app:layout_constraintStart_toStartOf="@+id/story"
-                            app:layout_constraintTop_toTopOf="@+id/story" />
+                            app:layout_constraintBottom_toBottomOf="@id/addStoryImg"
+                            app:layout_constraintEnd_toEndOf="@id/addStoryImg"
+                            app:layout_constraintStart_toStartOf="@+id/addStoryImg"
+                            app:layout_constraintTop_toTopOf="@+id/addStoryImg" />
 
                         <View
                             android:id="@+id/view4"
@@ -125,10 +125,10 @@
                             android:layout_width="@dimen/_30sdp"
                             android:layout_height="@dimen/_30sdp"
                             android:src="@drawable/ic_plus"
-                            app:layout_constraintBottom_toBottomOf="@+id/story"
-                            app:layout_constraintEnd_toEndOf="@+id/story"
-                            app:layout_constraintStart_toStartOf="@+id/story"
-                            app:layout_constraintTop_toTopOf="@+id/story"
+                            app:layout_constraintBottom_toBottomOf="@+id/addStoryImg"
+                            app:layout_constraintEnd_toEndOf="@+id/addStoryImg"
+                            app:layout_constraintStart_toStartOf="@+id/addStoryImg"
+                            app:layout_constraintTop_toTopOf="@+id/addStoryImg"
                             app:layout_constraintVertical_bias="0.29000002" />
 
                         <TextView
