@@ -65,5 +65,7 @@ dependencies {
     //Time ago library
     implementation 'com.github.marlonlom:timeago:4.0.3'
 
+    // Circular Status effect
+
 }
 apply plugin: 'com.google.gms.google-services'
