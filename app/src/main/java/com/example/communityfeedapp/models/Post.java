@@ -7,6 +7,15 @@ public class Post {
     private String postDescription;
     private long postedAt;
     private int postLikes;
+    private int commentCount;
+
+    public int getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(int commentCount) {
+        this.commentCount = commentCount;
+    }
 
     public long getPostedAt() {
         return postedAt;

@@ -22,14 +22,14 @@
 
             <ImageView
                 android:id="@+id/imgCommentScreen"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="170dp"
                 android:scaleType="centerCrop"
+                android:src="@drawable/post_5"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:srcCompat="@tools:sample/backgrounds/scenic" />
+                app:layout_constraintTop_toTopOf="parent" />
 
 
             <View
@@ -64,7 +64,7 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="8dp"
                 android:src="@drawable/profile"
                 app:civ_border_color="@color/white"
                 app:civ_border_width="3dp"
@@ -128,7 +128,9 @@
                 android:id="@+id/commentRv"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"

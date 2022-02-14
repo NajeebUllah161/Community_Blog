@@ -122,54 +122,32 @@ public class AddPostFragment extends Fragment {
             startActivityForResult(intent, 10);
         });
 
-        binding.postBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        binding.postBtn.setOnClickListener(view -> {
 
-                progressDialog.show();
+            progressDialog.show();
 
-                final StorageReference storageReference = firebaseStorage.getReference().child("posts")
-                        .child(auth.getCurrentUser().getUid())
-                        .child(new Date().getTime() + "");
+            final StorageReference storageReference = firebaseStorage.getReference().child("posts")
+                    .child(auth.getCurrentUser().getUid())
+                    .child(new Date().getTime() + "");
 
-                storageReference.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                Post post = new Post();
-                                post.setPostImage(uri.toString());
-                                post.setPostedBy(auth.getCurrentUser().getUid());
-                                post.setPostDescription(binding.postDescription.getText().toString());
-                                post.setPostedAt(new Date().getTime());
+            storageReference.putFile(uri).addOnSuccessListener(taskSnapshot -> storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+                Post post = new Post();
+                post.setPostImage(uri.toString());
+                post.setPostedBy(auth.getCurrentUser().getUid());
+                post.setPostDescription(binding.postDescription.getText().toString());
+                post.setPostedAt(new Date().getTime());
 
-                                firebaseDatabase.getReference().child("posts")
-                                        .push()
-                                        .setValue(post).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void unused) {
-                                        progressDialog.dismiss();
-                                        Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        progressDialog.dismiss();
-                                    }
-                                });
-                            }
-                        });
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        progressDialog.dismiss();
-                        Toast.makeText(getContext(), "Failed to Post", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                firebaseDatabase.getReference().child("posts")
+                        .push()
+                        .setValue(post).addOnSuccessListener(unused -> {
+                            progressDialog.dismiss();
+                            Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
+                        }).addOnFailureListener(e -> progressDialog.dismiss());
+            })).addOnFailureListener(e -> {
+                progressDialog.dismiss();
+                Toast.makeText(getContext(), "Failed to Post", Toast.LENGTH_SHORT).show();
+            });
 
-            }
         });
 
         return binding.getRoot();

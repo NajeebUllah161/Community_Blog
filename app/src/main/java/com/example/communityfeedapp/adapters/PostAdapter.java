@@ -57,6 +57,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 .into(holder.binding.postImg);
 
         holder.binding.like.setText(model.getPostLikes() + "");
+        holder.binding.comment.setText(model.getCommentCount()+"");
         String description = model.getPostDescription();
         if (description.equals("")) {
             holder.binding.postDescriptionDesign.setVisibility(View.GONE);
@@ -126,6 +127,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, CommentActivity.class);
+                intent.putExtra("postId",model.getPostId());
+                intent.putExtra("postedBy",model.getPostedBy());
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
             }
         });
