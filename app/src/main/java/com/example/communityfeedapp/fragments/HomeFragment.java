@@ -86,7 +86,7 @@ public class HomeFragment extends Fragment {
         storyRv = view.findViewById(R.id.storyRv);
 
         StoryAdapter adapter = new StoryAdapter(storyArrayList, getContext());
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, true);
         storyRv.setLayoutManager(linearLayoutManager);
         storyRv.setNestedScrollingEnabled(false);
         storyRv.setAdapter(adapter);

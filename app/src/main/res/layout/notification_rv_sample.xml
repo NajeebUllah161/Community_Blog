@@ -2,12 +2,15 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/openNotification"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    android:background="#EFEFEF">
 
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/profile_img_notification2Rv"
+        android:id="@+id/profile_img_notificationRv"
         android:layout_width="@dimen/_50sdp"
         android:layout_height="@dimen/_50sdp"
         android:layout_marginTop="8dp"
@@ -21,10 +24,10 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@drawable/orange_circle"
-        app:layout_constraintBottom_toBottomOf="@+id/profile_img_notification2Rv"
-        app:layout_constraintEnd_toEndOf="@+id/profile_img_notification2Rv"
-        app:layout_constraintStart_toStartOf="@+id/profile_img_notification2Rv"
-        app:layout_constraintTop_toTopOf="@+id/profile_img_notification2Rv" />
+        app:layout_constraintBottom_toBottomOf="@+id/profile_img_notificationRv"
+        app:layout_constraintEnd_toEndOf="@+id/profile_img_notificationRv"
+        app:layout_constraintStart_toStartOf="@+id/profile_img_notificationRv"
+        app:layout_constraintTop_toTopOf="@+id/profile_img_notificationRv" />
 
     <TextView
         android:id="@+id/notificationTitle"
@@ -35,10 +38,10 @@
         android:text="Najeeb Ullah mentioned you in a comment"
         android:textColor="@color/black"
         android:textSize="@dimen/_14ssp"
-        app:layout_constraintBottom_toBottomOf="@+id/profile_img_notification2Rv"
+        app:layout_constraintBottom_toBottomOf="@+id/profile_img_notificationRv"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/profile_img_notification2Rv"
-        app:layout_constraintTop_toTopOf="@+id/profile_img_notification2Rv"
+        app:layout_constraintStart_toEndOf="@+id/profile_img_notificationRv"
+        app:layout_constraintTop_toTopOf="@+id/profile_img_notificationRv"
         app:layout_constraintVertical_bias="0.19" />
 
     <TextView

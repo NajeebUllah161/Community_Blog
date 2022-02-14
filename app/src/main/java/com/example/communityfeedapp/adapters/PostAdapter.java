@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.communityfeedapp.R;
 import com.example.communityfeedapp.activities.CommentActivity;
 import com.example.communityfeedapp.databinding.DashboardRvSampleBinding;
+import com.example.communityfeedapp.models.Notification;
 import com.example.communityfeedapp.models.Post;
 import com.example.communityfeedapp.models.User;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -27,6 +28,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
 
@@ -57,7 +59,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 .into(holder.binding.postImg);
 
         holder.binding.like.setText(model.getPostLikes() + "");
-        holder.binding.comment.setText(model.getCommentCount()+"");
+        holder.binding.comment.setText(model.getCommentCount() + "");
         String description = model.getPostDescription();
         if (description.equals("")) {
             holder.binding.postDescriptionDesign.setVisibility(View.GONE);
@@ -109,12 +111,27 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                                             .getUid()).setValue(true).addOnSuccessListener(unused -> FirebaseDatabase.getInstance().getReference()
                                             .child("posts/" + model.getPostId() + "/postLikes")
                                             .setValue(model.getPostLikes() + 1)
-                                            .addOnSuccessListener(unused1 -> holder.binding.like.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart_filled, 0, 0, 0)).addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
-                                                }
-                                            })).addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show()));
+                                            .addOnSuccessListener(unused1 -> {
+                                                holder.binding.like.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart_filled, 0, 0, 0);
+                                                Notification notification = new Notification();
+
+                                                notification.setNotificationBy(FirebaseAuth
+                                                        .getInstance()
+                                                        .getCurrentUser()
+                                                        .getUid());
+                                                notification.setNotificaitonAt(new Date().getTime());
+                                                notification.setPostId(model.getPostId());
+                                                notification.setPostedBy(model.getPostedBy());
+                                                notification.setNotificationType("like");
+
+                                                FirebaseDatabase.getInstance().getReference()
+                                                        .child("notification")
+                                                        .child(model.getPostedBy())
+                                                        .push()
+                                                        .setValue(notification);
+                                            })
+                                            .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show()))
+                                    .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show()));
                         }
                     }
 
@@ -127,8 +144,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, CommentActivity.class);
-                intent.putExtra("postId",model.getPostId());
-                intent.putExtra("postedBy",model.getPostedBy());
+                intent.putExtra("postId", model.getPostId());
+                intent.putExtra("postedBy", model.getPostedBy());
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
             }

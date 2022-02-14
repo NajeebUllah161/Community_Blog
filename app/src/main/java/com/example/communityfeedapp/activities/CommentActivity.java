@@ -15,6 +15,7 @@ import com.example.communityfeedapp.R;
 import com.example.communityfeedapp.adapters.CommentAdapter;
 import com.example.communityfeedapp.databinding.ActivityCommentBinding;
 import com.example.communityfeedapp.models.Comment;
+import com.example.communityfeedapp.models.Notification;
 import com.example.communityfeedapp.models.Post;
 import com.example.communityfeedapp.models.User;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -125,6 +126,19 @@ public class CommentActivity extends AppCompatActivity {
                                             .addOnSuccessListener(unused1 -> {
                                                 binding.commentEt.setText("");
                                                 Toast.makeText(CommentActivity.this, "Commented", Toast.LENGTH_SHORT).show();
+
+                                                Notification notification = new Notification();
+                                                notification.setNotificationBy(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                                                notification.setNotificaitonAt(new Date().getTime());
+                                                notification.setPostId(postId);
+                                                notification.setPostedBy(postedBy);
+                                                notification.setNotificationType("comment");
+
+                                                FirebaseDatabase.getInstance().getReference()
+                                                        .child("notification")
+                                                        .child(postedBy)
+                                                        .push()
+                                                        .setValue(notification);
 
                                             }).addOnFailureListener(e -> Toast.makeText(CommentActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show());
                                 }

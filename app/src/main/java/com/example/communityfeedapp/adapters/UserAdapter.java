@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.communityfeedapp.R;
 import com.example.communityfeedapp.databinding.UserSampleBinding;
 import com.example.communityfeedapp.models.FollowModel;
+import com.example.communityfeedapp.models.Notification;
 import com.example.communityfeedapp.models.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -92,6 +93,19 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.viewHolder> {
                                                     holder.binding.followBtn.setTextColor(context.getResources().getColor(R.color.gray));
                                                     holder.binding.followBtn.setEnabled(false);
                                                     Toast.makeText(context, "You Followed: " + user.getName(), Toast.LENGTH_SHORT).show();
+
+                                                    Notification notification = new Notification();
+                                                    notification.setNotificationBy(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                                                    notification.setNotificaitonAt(new Date().getTime());
+                                                    notification.setNotificationType("follow");
+
+                                                    FirebaseDatabase.getInstance()
+                                                            .getReference()
+                                                            .child("notification")
+                                                            .child(user.getUserId())
+                                                            .push()
+                                                            .setValue(notification);
+
                                                 })
                                                 .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show()))
                                         .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show());

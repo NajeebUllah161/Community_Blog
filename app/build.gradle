@@ -74,6 +74,8 @@ dependencies {
     // Storyview
     // implementation 'com.github.OMARIHAMZA:StoryView:1.0.2-alpha'
 
+    //Shimmer Effect
+    // implementation 'com.github.sharish:ShimmerRecyclerView:v1.3'
 
 
 }
