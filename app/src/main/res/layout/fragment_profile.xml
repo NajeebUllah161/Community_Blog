@@ -42,7 +42,7 @@
     </LinearLayout>
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/commentUsersProfImg"
+        android:id="@+id/profileImgOfUser"
         android:layout_width="@dimen/_90sdp"
         android:layout_height="@dimen/_90sdp"
         android:padding="4dp"
@@ -70,11 +70,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_checked"
-        diagonal:layout_constraintBottom_toBottomOf="@+id/commentUsersProfImg"
-        diagonal:layout_constraintEnd_toEndOf="@+id/commentUsersProfImg"
+        diagonal:layout_constraintBottom_toBottomOf="@+id/profileImgOfUser"
+        diagonal:layout_constraintEnd_toEndOf="@+id/profileImgOfUser"
         diagonal:layout_constraintHorizontal_bias="0.9"
-        diagonal:layout_constraintStart_toStartOf="@+id/commentUsersProfImg"
-        diagonal:layout_constraintTop_toTopOf="@+id/commentUsersProfImg"
+        diagonal:layout_constraintStart_toStartOf="@+id/profileImgOfUser"
+        diagonal:layout_constraintTop_toTopOf="@+id/profileImgOfUser"
         diagonal:layout_constraintVertical_bias="0.9" />
 
     <TextView
@@ -86,9 +86,9 @@
         android:text="Ashley John"
         android:textColor="@color/black"
         android:textSize="@dimen/_14ssp"
-        diagonal:layout_constraintEnd_toEndOf="@+id/commentUsersProfImg"
-        diagonal:layout_constraintStart_toStartOf="@+id/commentUsersProfImg"
-        diagonal:layout_constraintTop_toBottomOf="@+id/commentUsersProfImg" />
+        diagonal:layout_constraintEnd_toEndOf="@+id/profileImgOfUser"
+        diagonal:layout_constraintStart_toStartOf="@+id/profileImgOfUser"
+        diagonal:layout_constraintTop_toBottomOf="@+id/profileImgOfUser" />
 
     <TextView
         android:id="@+id/profession"

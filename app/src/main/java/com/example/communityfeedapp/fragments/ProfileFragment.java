@@ -109,7 +109,7 @@ public class ProfileFragment extends Fragment {
                                 Picasso.get()
                                         .load(getUser.getProfileImage())
                                         .placeholder(R.drawable.placeholder)
-                                        .into(binding.profileImgUserSample);
+                                        .into(binding.profileImgOfUser);
                                 binding.userName.setText(getUser.getName());
                                 binding.profession.setText(getUser.getProfession());
                                 binding.followersTv.setText(getUser.getFollowersCount() + "");
@@ -131,7 +131,7 @@ public class ProfileFragment extends Fragment {
             startActivityForResult(galleryIntent, COVER_PHOTO_REQUEST_CODE);
         });
 
-        binding.profileImgUserSample.setOnClickListener(v -> {
+        binding.profileImgOfUser.setOnClickListener(v -> {
             Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
             galleryIntent.setType("image/*");
             startActivityForResult(galleryIntent, PROFILE_PHOTO_REQUEST_CODE);
@@ -176,7 +176,7 @@ public class ProfileFragment extends Fragment {
             } else if (requestCode == PROFILE_PHOTO_REQUEST_CODE) {
                 if (data.getData() != null) {
                     Uri uri = data.getData();
-                    binding.profileImgUserSample.setImageURI(uri);
+                    binding.profileImgOfUser.setImageURI(uri);
 
                     final StorageReference storageReference = firebaseStorage
                             .getReference()

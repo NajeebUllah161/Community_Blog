@@ -44,13 +44,13 @@ public class LoginActivity extends AppCompatActivity {
                     })
                     .addOnSuccessListener(authResult -> {
                         Log.d("LoginActivity", "OnSuccessLogin");
-                        progressDialog.show();
+                        progressDialog.dismiss();
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
                         finish();
                     })
                     .addOnFailureListener(e -> {
-                        progressDialog.show();
+                        progressDialog.dismiss();
                         Toast.makeText(LoginActivity.this, "Error : " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     });
         });

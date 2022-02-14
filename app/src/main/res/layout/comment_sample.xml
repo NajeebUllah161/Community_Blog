@@ -6,9 +6,9 @@
     android:layout_height="wrap_content">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/commentUsersProfImg"
-        android:layout_width="@dimen/_50sdp"
-        android:layout_height="@dimen/_50sdp"
+        android:id="@+id/profileImgOfCommenter"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:padding="4dp"
@@ -21,24 +21,23 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@drawable/gray_circle"
-        app:layout_constraintBottom_toBottomOf="@id/commentUsersProfImg"
-        app:layout_constraintEnd_toEndOf="@+id/commentUsersProfImg"
-        app:layout_constraintStart_toStartOf="@+id/commentUsersProfImg"
-        app:layout_constraintTop_toTopOf="@+id/commentUsersProfImg" />
+        app:layout_constraintBottom_toBottomOf="@id/profileImgOfCommenter"
+        app:layout_constraintEnd_toEndOf="@+id/profileImgOfCommenter"
+        app:layout_constraintStart_toStartOf="@+id/profileImgOfCommenter"
+        app:layout_constraintTop_toTopOf="@+id/profileImgOfCommenter" />
 
     <TextView
         android:id="@+id/commentData"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:text="Angelina Jones"
         android:textColor="@color/black"
         android:textSize="@dimen/_14sdp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/commentUsersProfImg"
-        app:layout_constraintTop_toTopOf="@+id/commentUsersProfImg" />
+        app:layout_constraintStart_toEndOf="@+id/profileImgOfCommenter"
+        app:layout_constraintTop_toTopOf="@+id/profileImgOfCommenter" />
 
     <TextView
         android:id="@+id/time"

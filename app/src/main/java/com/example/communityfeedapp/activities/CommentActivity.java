@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -45,6 +46,11 @@ public class CommentActivity extends AppCompatActivity {
         binding = ActivityCommentBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         intent = getIntent();
+
+        // Setting up toolbar
+        setSupportActionBar(binding.toolbarCommentActivity);
+        CommentActivity.this.setTitle("Comments");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         auth = FirebaseAuth.getInstance();
@@ -154,5 +160,11 @@ public class CommentActivity extends AppCompatActivity {
                         Toast.makeText(CommentActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        finish();
+        return super.onOptionsItemSelected(item);
     }
 }

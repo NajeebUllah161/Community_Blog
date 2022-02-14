@@ -7,7 +7,7 @@
     android:layout_height="wrap_content">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/commentUsersProfImg"
+        android:id="@+id/profileImgUserSample"
         android:layout_width="@dimen/_50sdp"
         android:layout_height="@dimen/_50sdp"
         android:layout_marginStart="8dp"
@@ -22,32 +22,32 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@drawable/gray_circle"
-        app:layout_constraintBottom_toBottomOf="@id/commentUsersProfImg"
-        app:layout_constraintEnd_toEndOf="@+id/commentUsersProfImg"
-        app:layout_constraintStart_toStartOf="@+id/commentUsersProfImg"
-        app:layout_constraintTop_toTopOf="@+id/commentUsersProfImg" />
+        app:layout_constraintBottom_toBottomOf="@id/profileImgUserSample"
+        app:layout_constraintEnd_toEndOf="@+id/profileImgUserSample"
+        app:layout_constraintStart_toStartOf="@+id/profileImgUserSample"
+        app:layout_constraintTop_toTopOf="@+id/profileImgUserSample" />
 
     <TextView
-        android:id="@+id/commentData"
+        android:id="@+id/nameUserSample"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="Angelina Jones"
         android:textColor="@color/black"
         android:textSize="@dimen/_14sdp"
-        diagonal:layout_constraintBottom_toTopOf="@+id/time"
-        diagonal:layout_constraintStart_toEndOf="@+id/commentUsersProfImg"
-        diagonal:layout_constraintTop_toTopOf="@+id/commentUsersProfImg"
+        diagonal:layout_constraintBottom_toTopOf="@+id/professionUserSample"
+        diagonal:layout_constraintStart_toEndOf="@+id/profileImgUserSample"
+        diagonal:layout_constraintTop_toTopOf="@+id/profileImgUserSample"
         diagonal:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
-        android:id="@+id/time"
+        android:id="@+id/professionUserSample"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Clinical Surgeon"
-        diagonal:layout_constraintBottom_toBottomOf="@+id/commentUsersProfImg"
-        diagonal:layout_constraintStart_toStartOf="@+id/commentData"
-        diagonal:layout_constraintTop_toBottomOf="@+id/commentData" />
+        diagonal:layout_constraintBottom_toBottomOf="@+id/profileImgUserSample"
+        diagonal:layout_constraintStart_toStartOf="@+id/nameUserSample"
+        diagonal:layout_constraintTop_toBottomOf="@+id/nameUserSample" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/followBtn"
@@ -58,9 +58,9 @@
         android:paddingHorizontal="10dp"
         android:text="Follow"
         android:textColor="@color/white"
-        diagonal:layout_constraintBottom_toBottomOf="@+id/commentUsersProfImg"
+        diagonal:layout_constraintBottom_toBottomOf="@+id/profileImgUserSample"
         diagonal:layout_constraintEnd_toEndOf="parent"
-        diagonal:layout_constraintTop_toTopOf="@+id/commentUsersProfImg" />
+        diagonal:layout_constraintTop_toTopOf="@+id/profileImgUserSample" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

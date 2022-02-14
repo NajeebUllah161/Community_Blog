@@ -14,6 +14,7 @@ import com.example.communityfeedapp.R;
 import com.example.communityfeedapp.databinding.CommentSampleBinding;
 import com.example.communityfeedapp.models.Comment;
 import com.example.communityfeedapp.models.User;
+import com.github.marlonlom.utilities.timeago.TimeAgo;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -44,7 +45,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
 
         Comment comment = list.get(position);
-        holder.binding.time.setText(comment.getCommentedAt() + "");
+        String timeOfComment = TimeAgo.using(comment.getCommentedAt());
+        holder.binding.time.setText(timeOfComment);
 
         FirebaseDatabase.getInstance()
                 .getReference()
@@ -55,7 +57,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                 Picasso.get()
                         .load(user.getProfileImage())
                         .placeholder(R.drawable.placeholder)
-                        .into(holder.binding.commentUsersProfImg);
+                        .into(holder.binding.profileImgOfCommenter);
                 holder.binding.commentData.setText(Html.fromHtml("<b>" + user.getName() + "</b>" + "  " + comment.getCommentBody()));
             }
 
