@@ -45,39 +45,38 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.StoryViewHol
     @Override
     public void onBindViewHolder(@NonNull StoryViewHolder holder, int position) {
         Story story = storyArrayList.get(position);
-        int storiesSize = story.getStories().size();
-        UserStories lastStory = story.getStories().get(storiesSize - 1);
-        Picasso.get()
-                .load(lastStory.getImage())
-                .placeholder(R.drawable.placeholder)
-                .into(holder.binding.storyImg);
-        holder.binding.statusCircle.setPortionsCount(storiesSize);
+        if (story.getStories().size() > 0) {
+            UserStories lastStory = story.getStories().get(story.getStories().size() - 1);
+            Picasso.get()
+                    .load(lastStory.getImage())
+                    .into(holder.binding.storyImg);
+            holder.binding.statusCircle.setPortionsCount(story.getStories().size());
 
-        FirebaseDatabase.getInstance().getReference()
-                .child("Users/" + story.getStoryBy())
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        User user = snapshot.getValue(User.class);
-                        Picasso.get()
-                                .load(user.getProfileImage())
-                                .placeholder(R.drawable.placeholder)
-                                .into(holder.binding.storyProfileImg);
-                        holder.binding.storyNameTxt.setText(user.getName());
-                        holder.binding.storyImg.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                //StoryView Implementation
-                            }
-                        });
-                    }
+            FirebaseDatabase.getInstance().getReference()
+                    .child("Users/" + story.getStoryBy())
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            User user = snapshot.getValue(User.class);
+                            Picasso.get()
+                                    .load(user.getProfileImage())
+                                    .placeholder(R.drawable.placeholder)
+                                    .into(holder.binding.storyProfileImg);
+                            holder.binding.storyNameTxt.setText(user.getName());
+                            holder.binding.storyImg.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    //StoryView Implementation
+                                }
+                            });
+                        }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
 
     }
 

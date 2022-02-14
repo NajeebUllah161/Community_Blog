@@ -61,6 +61,10 @@ public class HomeFragment extends Fragment {
 
         dialog = new ProgressDialog(getContext());
 
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        auth = FirebaseAuth.getInstance();
+        firebaseStorage = FirebaseStorage.getInstance();
+
     }
 
     @Override
@@ -72,15 +76,11 @@ public class HomeFragment extends Fragment {
         // clear arraylists to avoid duplication of data
         clearArrayLists();
 
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        auth = FirebaseAuth.getInstance();
-        firebaseStorage = FirebaseStorage.getInstance();
 
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         dialog.setTitle("Story Uploading");
         dialog.setMessage("Please wait...");
         dialog.setCancelable(false);
-
 
         // Setting up Story RecyclerView
         storyRv = view.findViewById(R.id.storyRv);
@@ -91,7 +91,8 @@ public class HomeFragment extends Fragment {
         storyRv.setNestedScrollingEnabled(false);
         storyRv.setAdapter(adapter);
 
-        firebaseDatabase.getReference().child("stories")
+        firebaseDatabase.getReference()
+                .child("stories")
                 .addValueEventListener(new ValueEventListener() {
                     @SuppressLint("NotifyDataSetChanged")
                     @Override
@@ -152,32 +153,66 @@ public class HomeFragment extends Fragment {
         addStoryImg = view.findViewById(R.id.addStoryImg);
         addStoryImg.setOnClickListener(view1 -> galleryLauncher.launch("image/*"));
 
-        galleryLauncher = registerForActivityResult(new ActivityResultContracts.GetContent()
-                , result -> {
-                    addStoryImg.setImageURI(result);
-                    dialog.show();
-                    final StorageReference storageReference = firebaseStorage.getReference()
-                            .child("stories/" + auth.getCurrentUser().getUid() + "/" + new Date().getTime() + "");
-                    storageReference.putFile(result)
-                            .addOnSuccessListener(taskSnapshot -> storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+        galleryLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), new ActivityResultCallback<Uri>() {
+            @Override
+            public void onActivityResult(Uri result) {
+                addStoryImg.setImageURI(result);
+                dialog.show();
+                final StorageReference reference = firebaseStorage.getReference()
+                        .child("stories")
+                        .child(FirebaseAuth.getInstance().getUid())
+                        .child(new Date().getTime() + "");
+                reference.putFile(result).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
                                 Story story = new Story();
                                 story.setStoryAt(new Date().getTime());
                                 firebaseDatabase.getReference()
-                                        .child("stories/" + auth.getCurrentUser().getUid() + "/postedBy")
-                                        .setValue(story.getStoryAt())
-                                        .addOnSuccessListener(unused -> {
-                                            UserStories userStories = new UserStories(uri.toString(), story.getStoryAt());
-                                            firebaseDatabase.getReference()
-                                                    .child("stories/" + auth.getCurrentUser().getUid() + "/userStories")
-                                                    .push()
-                                                    .setValue(userStories)
-                                                    .addOnSuccessListener(unused1 -> dialog.dismiss()).addOnFailureListener(e -> {
-                                                dialog.dismiss();
-                                                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                                            });
-                                        }).addOnFailureListener(e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show());
-                            }).addOnFailureListener(e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show())).addOnFailureListener(e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show());
+                                        .child("stories")
+                                        .child(FirebaseAuth.getInstance().getUid())
+                                        .child("postedBy")
+                                        .setValue(story.getStoryAt()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        UserStories stories = new UserStories(uri.toString(), story.getStoryAt());
+
+                                        firebaseDatabase.getReference()
+                                                .child("stories")
+                                                .child(FirebaseAuth.getInstance().getUid())
+                                                .child("userStories")
+                                                .push()
+                                                .setValue(stories);
+                                        dialog.dismiss();
+
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        dialog.dismiss();
+                                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                dialog.dismiss();
+                                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        dialog.dismiss();
+                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 });
+            }
+        });
 
         return view;
     }
