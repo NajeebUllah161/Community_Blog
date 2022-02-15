@@ -66,21 +66,21 @@
                 app:layout_constraintTop_toBottomOf="@+id/view" />
 
             <!-- Use NestedScrollView -->
-            <ScrollView
+            <HorizontalScrollView
                 android:id="@+id/horizontalScrollView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="16dp"
                 android:fillViewport="true"
-                android:scrollbars="none"
                 android:orientation="horizontal"
+                android:scrollbars="none"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/view2">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent">
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="wrap_content"
@@ -145,15 +145,20 @@
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/storyRv"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:orientation="horizontal"/>
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
 
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/storyRv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:orientation="horizontal" />
+
+                    </RelativeLayout>
                 </LinearLayout>
-            </ScrollView>
+            </HorizontalScrollView>
 
             <View
                 android:id="@+id/view5"

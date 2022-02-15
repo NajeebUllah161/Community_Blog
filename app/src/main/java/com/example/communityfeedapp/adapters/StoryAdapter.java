@@ -56,6 +56,7 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.StoryViewHol
                     .child("Users/" + story.getStoryBy())
                     .addValueEventListener(new ValueEventListener() {
                         @Override
+
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             User user = snapshot.getValue(User.class);
                             Picasso.get()

@@ -85,7 +85,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
 
                     FirebaseDatabase.getInstance().getReference()
                             .child("notification")
-                            .child(notification.getNotificationBy())
+                            .child(notification.getPostedBy())
                             .child(notification.getNotificationId())
                             .child("checkOpen")
                             .setValue(true);
