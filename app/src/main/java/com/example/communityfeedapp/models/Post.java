@@ -9,6 +9,17 @@ public class Post {
     private int postLikes;
     private int commentCount;
 
+    public Post() {
+    }
+
+    public Post(String postId, String postImage, String postedBy, String postDescription, long postedAt) {
+        this.postId = postId;
+        this.postImage = postImage;
+        this.postedBy = postedBy;
+        this.postDescription = postDescription;
+        this.postedAt = postedAt;
+    }
+
     public int getCommentCount() {
         return commentCount;
     }
@@ -31,9 +42,6 @@ public class Post {
 
     public void setPostLikes(int postLikes) {
         this.postLikes = postLikes;
-    }
-
-    public Post() {
     }
 
     public String getPostId() {
@@ -66,14 +74,5 @@ public class Post {
 
     public void setPostDescription(String postDescription) {
         this.postDescription = postDescription;
-    }
-
-
-    public Post(String postId, String postImage, String postedBy, String postDescription, long postedAt) {
-        this.postId = postId;
-        this.postImage = postImage;
-        this.postedBy = postedBy;
-        this.postDescription = postDescription;
-        this.postedAt = postedAt;
     }
 }

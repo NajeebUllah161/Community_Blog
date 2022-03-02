@@ -3,9 +3,9 @@ package com.example.communityfeedapp.models;
 import java.util.ArrayList;
 
 public class Story {
+    ArrayList<UserStories> stories;
     private String storyBy;
     private long storyAt;
-    ArrayList<UserStories> stories;
 
     public Story() {
     }

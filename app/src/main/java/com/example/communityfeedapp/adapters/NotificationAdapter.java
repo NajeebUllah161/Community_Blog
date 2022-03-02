@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,7 +49,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         Notification notification = list.get(position);
 
         String type = notification.getNotificationType();
-
+        Log.d("NotificationBy", notification.getNotificationBy());
         FirebaseDatabase.getInstance()
                 .getReference()
                 .child("Users")
@@ -100,10 +101,9 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             }
         });
         Boolean checkOpen = notification.isCheckOpen();
-        if(checkOpen){
+        if (checkOpen) {
             holder.binding.openNotification.setBackgroundColor(Color.parseColor("#FFFFFF"));
-        }
-        else{
+        } else {
             //is not open
 
         }

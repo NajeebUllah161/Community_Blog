@@ -8,8 +8,8 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profileImgUserSample"
-        android:layout_width="@dimen/_50sdp"
-        android:layout_height="@dimen/_50sdp"
+        android:layout_width="@dimen/_50mdp"
+        android:layout_height="@dimen/_50mdp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:padding="4dp"
@@ -34,7 +34,7 @@
         android:layout_marginStart="8dp"
         android:text="Angelina Jones"
         android:textColor="@color/black"
-        android:textSize="@dimen/_14sdp"
+        android:textSize="@dimen/_14mdp"
         diagonal:layout_constraintBottom_toTopOf="@+id/professionUserSample"
         diagonal:layout_constraintStart_toEndOf="@+id/profileImgUserSample"
         diagonal:layout_constraintTop_toTopOf="@+id/profileImgUserSample"

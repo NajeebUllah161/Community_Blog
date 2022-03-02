@@ -16,8 +16,6 @@ import com.example.communityfeedapp.databinding.UserSampleBinding;
 import com.example.communityfeedapp.models.FollowModel;
 import com.example.communityfeedapp.models.Notification;
 import com.example.communityfeedapp.models.User;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;

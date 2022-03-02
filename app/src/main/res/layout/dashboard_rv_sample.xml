@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="15dp">
@@ -9,8 +8,8 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_image_dashboard"
-        android:layout_width="@dimen/_40sdp"
-        android:layout_height="@dimen/_40sdp"
+        android:layout_width="@dimen/_40mdp"
+        android:layout_height="@dimen/_40mdp"
         android:layout_marginTop="8dp"
         android:padding="4dp"
         android:src="@drawable/profile1"
@@ -65,7 +64,7 @@
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/postImg"
         android:layout_width="0dp"
-        android:layout_height="@dimen/_150sdp"
+        android:layout_height="@dimen/_150mdp"
         android:layout_marginTop="16dp"
         android:scaleType="centerCrop"
         android:src="@drawable/post_1"
@@ -73,7 +72,6 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profile_image_dashboard"
-
         app:riv_corner_radius="10dip"
         app:riv_mutate_background="true" />
 

@@ -1,7 +1,5 @@
 package com.example.communityfeedapp.fragments;
 
-import static android.app.Activity.RESULT_OK;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -17,13 +15,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.communityfeedapp.R;
 import com.example.communityfeedapp.databinding.FragmentAddPostBinding;
 import com.example.communityfeedapp.models.Post;
 import com.example.communityfeedapp.models.User;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,10 +28,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import java.util.Date;
+
+import static android.app.Activity.RESULT_OK;
 
 public class AddPostFragment extends Fragment {
 
@@ -126,6 +124,7 @@ public class AddPostFragment extends Fragment {
 
             progressDialog.show();
 
+
             final StorageReference storageReference = firebaseStorage.getReference().child("posts")
                     .child(auth.getCurrentUser().getUid())
                     .child(new Date().getTime() + "");
@@ -140,9 +139,10 @@ public class AddPostFragment extends Fragment {
                 firebaseDatabase.getReference().child("posts")
                         .push()
                         .setValue(post).addOnSuccessListener(unused -> {
-                            progressDialog.dismiss();
-                            Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
-                        }).addOnFailureListener(e -> progressDialog.dismiss());
+                    progressDialog.dismiss();
+                    Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
+                    switchFragment();
+                }).addOnFailureListener(e -> progressDialog.dismiss());
             })).addOnFailureListener(e -> {
                 progressDialog.dismiss();
                 Toast.makeText(getContext(), "Failed to Post", Toast.LENGTH_SHORT).show();
@@ -151,6 +151,13 @@ public class AddPostFragment extends Fragment {
         });
 
         return binding.getRoot();
+    }
+
+    private void switchFragment() {
+        FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.addPost, new HomeFragment());
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
     @Override

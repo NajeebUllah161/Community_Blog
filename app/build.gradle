@@ -42,11 +42,11 @@ dependencies {
 
     //Kotlin dependency
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.4.32"
-    // implementation 'androidx.work:work-runtime-ktx:2.7.1'
-    // implementation 'androidx.work:work-runtime:2.8.0-alpha01'
     // Circular ImageView
     implementation 'de.hdodenhof:circleimageview:3.1.0'
     // Dynamic Sizes
+    implementation 'com.github.MrNouri:DynamicSizes:1.0'
+
     implementation 'com.intuit.sdp:sdp-android:1.0.6'
     implementation 'com.intuit.ssp:ssp-android:1.0.6'
     // Rounded ImageView
@@ -68,14 +68,13 @@ dependencies {
     implementation 'com.github.marlonlom:timeago:4.0.3'
 
     // Circular Status effect
-    // implementation 'com.github.3llomi:CircularStatusView:V1.0.2'
-    // coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+    implementation 'com.github.3llomi:CircularStatusView:V1.0.2'
 
     // Storyview
-    // implementation 'com.github.OMARIHAMZA:StoryView:1.0.2-alpha'
+    implementation 'com.github.OMARIHAMZA:StoryView:1.0.2-alpha'
 
     //Shimmer Effect
-    // implementation 'com.github.sharish:ShimmerRecyclerView:v1.3'
+    implementation 'com.github.sharish:ShimmerRecyclerView:v1.3'
 
 
 }

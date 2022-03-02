@@ -1,14 +1,6 @@
 package com.example.communityfeedapp.models;
 
 public class Notification {
-    public String getNotificationId() {
-        return notificationId;
-    }
-
-    public void setNotificationId(String notificationId) {
-        this.notificationId = notificationId;
-    }
-
     private String notificationBy;
     private long notificaitonAt;
     private String notificationType;
@@ -16,6 +8,14 @@ public class Notification {
     private String notificationId;
     private String postedBy;
     private boolean checkOpen;
+
+    public String getNotificationId() {
+        return notificationId;
+    }
+
+    public void setNotificationId(String notificationId) {
+        this.notificationId = notificationId;
+    }
 
     public String getNotificationBy() {
         return notificationBy;

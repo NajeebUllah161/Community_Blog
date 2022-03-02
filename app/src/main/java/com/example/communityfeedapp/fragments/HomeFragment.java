@@ -17,12 +17,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.cooltechworks.views.shimmer.ShimmerRecyclerView;
 import com.example.communityfeedapp.R;
 import com.example.communityfeedapp.adapters.PostAdapter;
 import com.example.communityfeedapp.adapters.StoryAdapter;
 import com.example.communityfeedapp.models.Post;
 import com.example.communityfeedapp.models.Story;
-import com.example.communityfeedapp.models.User;
 import com.example.communityfeedapp.models.UserStories;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -41,7 +41,8 @@ import java.util.Date;
 
 public class HomeFragment extends Fragment {
 
-    RecyclerView storyRv, dashboardRv;
+    RecyclerView storyRv;
+    ShimmerRecyclerView dashboardRv;
     ArrayList<Story> storyArrayList = new ArrayList<>();
     ArrayList<Post> postList = new ArrayList<>();
     FirebaseDatabase firebaseDatabase;
@@ -73,9 +74,11 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
+        dashboardRv = view.findViewById(R.id.dashboard_Rv);
+        dashboardRv.showShimmerAdapter();
+
         // clear arraylists to avoid duplication of data
         clearArrayLists();
-
 
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         dialog.setTitle("Story Uploading");
@@ -123,13 +126,11 @@ public class HomeFragment extends Fragment {
                 });
 
         // Setting up Dashboard RecyclerView
-        dashboardRv = view.findViewById(R.id.dashboard_Rv);
 
         PostAdapter postAdapter = new PostAdapter(postList, getContext());
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true);
         dashboardRv.setLayoutManager(layoutManager);
         dashboardRv.setNestedScrollingEnabled(false);
-        dashboardRv.setAdapter(postAdapter);
 
         firebaseDatabase.getReference().child("posts").addValueEventListener(new ValueEventListener() {
             @SuppressLint("NotifyDataSetChanged")
@@ -141,6 +142,8 @@ public class HomeFragment extends Fragment {
                     post.setPostId(dataSnapshot.getKey());
                     postList.add(post);
                 }
+                dashboardRv.setAdapter(postAdapter);
+                dashboardRv.hideShimmerAdapter();
                 postAdapter.notifyDataSetChanged();
             }
 

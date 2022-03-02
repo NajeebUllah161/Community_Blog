@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/addPost"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.AddPostFragment">
@@ -47,8 +48,8 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profileImgAddPost"
-        android:layout_width="@dimen/_50sdp"
-        android:layout_height="@dimen/_50sdp"
+        android:layout_width="@dimen/_50mdp"
+        android:layout_height="@dimen/_50mdp"
         android:layout_marginTop="8dp"
         android:padding="4dp"
         android:src="@drawable/profile"
@@ -72,7 +73,7 @@
         android:layout_marginStart="8dp"
         android:text="Angelina Jones"
         android:textColor="@color/black"
-        android:textSize="@dimen/_14sdp"
+        android:textSize="@dimen/_14mdp"
         app:layout_constraintBottom_toTopOf="@+id/userProfessionAddPost"
         app:layout_constraintStart_toEndOf="@+id/profileImgAddPost"
         app:layout_constraintTop_toTopOf="@+id/profileImgAddPost"

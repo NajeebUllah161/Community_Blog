@@ -10,7 +10,7 @@
     <ImageView
         android:id="@+id/imageView5"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/_160sdp"
+        android:layout_height="@dimen/_160mdp"
         android:layout_marginTop="8dp"
         android:adjustViewBounds="true"
         app:layout_constraintBottom_toTopOf="@+id/textView14"
@@ -68,9 +68,9 @@
             android:id="@+id/nameET"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName"
             android:background="@android:color/transparent"
             android:hint="Name"
+            android:inputType="textPersonName"
             android:paddingBottom="5dp" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -94,10 +94,10 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/professionET"
             android:layout_width="match_parent"
-            android:inputType="textPersonName"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:hint="Profession"
+            android:inputType="textPersonName"
             android:paddingBottom="5dp" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -121,10 +121,10 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/emailET"
             android:layout_width="match_parent"
-            android:inputType="textWebEmailAddress"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:hint="Email"
+            android:inputType="textWebEmailAddress"
             android:paddingBottom="5dp" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -148,10 +148,10 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/pwdET"
             android:layout_width="match_parent"
-            android:inputType="textWebPassword"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:hint="Password"
+            android:inputType="textWebPassword"
             android:paddingBottom="5dp" />
     </com.google.android.material.textfield.TextInputLayout>
 

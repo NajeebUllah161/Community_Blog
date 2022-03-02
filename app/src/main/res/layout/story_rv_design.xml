@@ -7,8 +7,8 @@
 
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/story_img"
-        android:layout_width="@dimen/_130sdp"
-        android:layout_height="@dimen/_85sdp"
+        android:layout_width="@dimen/_130mdp"
+        android:layout_height="@dimen/_85mdp"
         android:layout_marginRight="15dp"
         android:scaleType="centerCrop"
         android:src="@drawable/status_img"
@@ -22,8 +22,8 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/story_profile_img"
-        android:layout_width="@dimen/_30sdp"
-        android:layout_height="@dimen/_30sdp"
+        android:layout_width="@dimen/_30mdp"
+        android:layout_height="@dimen/_30mdp"
         android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
         android:padding="4dp"
@@ -31,7 +31,7 @@
         app:layout_constraintStart_toStartOf="@+id/story_img"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.example.communityfeedapp.utils.CircularStatusView
+    <com.devlomi.circularstatusview.CircularStatusView
         android:id="@+id/statusCircle"
         android:layout_width="0dp"
         android:layout_height="0dp"

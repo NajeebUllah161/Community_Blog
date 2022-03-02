@@ -54,8 +54,7 @@ public class FollowersAdapter extends RecyclerView.Adapter<FollowersAdapter.view
                                     .load(user.getProfileImage())
                                     .placeholder(R.drawable.placeholder)
                                     .into(holder.binding.profileImgFriendRv);
-                        }
-                        else{
+                        } else {
                             Toast.makeText(context, "User doesn't exit", Toast.LENGTH_SHORT).show();
                         }
                     }
