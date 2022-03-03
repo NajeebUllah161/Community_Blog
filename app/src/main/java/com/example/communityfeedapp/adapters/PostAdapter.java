@@ -50,10 +50,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
 
         Post model = postModelArrayList.get(position);
-        Picasso.get()
-                .load(model.getPostImage())
-                .placeholder(R.drawable.placeholder)
-                .into(holder.binding.postImg);
+        if (model.getPostImage() != null) {
+            Picasso.get()
+                    .load(model.getPostImage())
+                    .placeholder(R.drawable.placeholder)
+                    .into(holder.binding.postImg);
+        } else {
+            holder.binding.postImg.setVisibility(View.GONE);
+        }
 
         holder.binding.like.setText(model.getPostLikes() + "");
         holder.binding.comment.setText(model.getCommentCount() + "");

@@ -11,6 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_community_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CommunityFeedApp">
+        <activity android:name=".edit_dialogues.EditPostDialogue"></activity>
         <activity
             android:name=".activities.CommentActivity"
             android:exported="false" />

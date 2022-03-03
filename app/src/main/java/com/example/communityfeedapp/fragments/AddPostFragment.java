@@ -129,9 +129,29 @@ public class AddPostFragment extends Fragment {
                     .child(auth.getCurrentUser().getUid())
                     .child(new Date().getTime() + "");
 
-            storageReference.putFile(uri).addOnSuccessListener(taskSnapshot -> storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+            if (uri != null) {
+                storageReference.putFile(uri).addOnSuccessListener(taskSnapshot -> {
+                    storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+                        Post post = new Post();
+                        post.setPostImage(uri.toString());
+                        post.setPostedBy(auth.getCurrentUser().getUid());
+                        post.setPostDescription(binding.postDescription.getText().toString());
+                        post.setPostedAt(new Date().getTime());
+
+                        firebaseDatabase.getReference().child("posts")
+                                .push()
+                                .setValue(post).addOnSuccessListener(unused -> {
+                            progressDialog.dismiss();
+                            Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
+                            switchFragment();
+                        }).addOnFailureListener(e -> progressDialog.dismiss());
+                    });
+                }).addOnFailureListener(e -> {
+                    progressDialog.dismiss();
+                    Toast.makeText(getContext(), "Failed to Post", Toast.LENGTH_SHORT).show();
+                });
+            } else {
                 Post post = new Post();
-                post.setPostImage(uri.toString());
                 post.setPostedBy(auth.getCurrentUser().getUid());
                 post.setPostDescription(binding.postDescription.getText().toString());
                 post.setPostedAt(new Date().getTime());
@@ -143,11 +163,7 @@ public class AddPostFragment extends Fragment {
                     Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
                     switchFragment();
                 }).addOnFailureListener(e -> progressDialog.dismiss());
-            })).addOnFailureListener(e -> {
-                progressDialog.dismiss();
-                Toast.makeText(getContext(), "Failed to Post", Toast.LENGTH_SHORT).show();
-            });
-
+            }
         });
 
         return binding.getRoot();
