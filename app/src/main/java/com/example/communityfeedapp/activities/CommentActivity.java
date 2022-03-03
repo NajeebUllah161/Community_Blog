@@ -66,6 +66,7 @@ public class CommentActivity extends AppCompatActivity {
                                 .load(post.getPostImage())
                                 .placeholder(R.drawable.placeholder)
                                 .into(binding.imgCommentScreen);
+                        binding.headerCommentScreen.setText(post.getPostHeader());
                         binding.descCommentScreen.setText(post.getPostDescription());
                         binding.like.setText(post.getPostLikes() + "");
                         binding.comment.setText(post.getCommentCount() + "");

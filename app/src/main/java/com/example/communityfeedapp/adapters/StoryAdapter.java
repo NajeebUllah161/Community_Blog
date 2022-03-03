@@ -115,7 +115,7 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.StoryViewHol
     @Override
     public int getItemCount() {
 
-        Log.d("Count Story", String.valueOf(storyArrayList.size()));
+        //Log.d("Count Story", String.valueOf(storyArrayList.size()));
         return storyArrayList.size();
     }
 

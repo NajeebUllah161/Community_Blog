@@ -49,7 +49,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         Notification notification = list.get(position);
 
         String type = notification.getNotificationType();
-        Log.d("NotificationBy", notification.getNotificationBy());
+        //Log.d("NotificationBy", notification.getNotificationBy());
         FirebaseDatabase.getInstance()
                 .getReference()
                 .child("Users")

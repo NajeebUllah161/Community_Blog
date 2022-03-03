@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultCallback;
@@ -21,8 +22,11 @@ import com.cooltechworks.views.shimmer.ShimmerRecyclerView;
 import com.example.communityfeedapp.R;
 import com.example.communityfeedapp.adapters.PostAdapter;
 import com.example.communityfeedapp.adapters.StoryAdapter;
+import com.example.communityfeedapp.databinding.FragmentAddPostBinding;
+import com.example.communityfeedapp.databinding.FragmentHomeBinding;
 import com.example.communityfeedapp.models.Post;
 import com.example.communityfeedapp.models.Story;
+import com.example.communityfeedapp.models.User;
 import com.example.communityfeedapp.models.UserStories;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -35,14 +39,14 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.makeramen.roundedimageview.RoundedImageView;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Objects;
 
 public class HomeFragment extends Fragment {
 
-    RecyclerView storyRv;
-    ShimmerRecyclerView dashboardRv;
     ArrayList<Story> storyArrayList = new ArrayList<>();
     ArrayList<Post> postList = new ArrayList<>();
     FirebaseDatabase firebaseDatabase;
@@ -51,6 +55,7 @@ public class HomeFragment extends Fragment {
     RoundedImageView addStoryImg;
     ActivityResultLauncher<String> galleryLauncher;
     ProgressDialog dialog;
+    FragmentHomeBinding binding;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -72,10 +77,9 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        binding = FragmentHomeBinding.inflate(inflater, container, false);
 
-        dashboardRv = view.findViewById(R.id.dashboard_Rv);
-        dashboardRv.showShimmerAdapter();
+        binding.dashboardRv.showShimmerAdapter();
 
         // clear arraylists to avoid duplication of data
         clearArrayLists();
@@ -86,13 +90,12 @@ public class HomeFragment extends Fragment {
         dialog.setCancelable(false);
 
         // Setting up Story RecyclerView
-        storyRv = view.findViewById(R.id.storyRv);
 
         StoryAdapter adapter = new StoryAdapter(storyArrayList, getContext());
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, true);
-        storyRv.setLayoutManager(linearLayoutManager);
-        storyRv.setNestedScrollingEnabled(false);
-        storyRv.setAdapter(adapter);
+        binding.storyRv.setLayoutManager(linearLayoutManager);
+        binding.storyRv.setNestedScrollingEnabled(false);
+        binding.storyRv.setAdapter(adapter);
 
         firebaseDatabase.getReference()
                 .child("stories")
@@ -129,8 +132,8 @@ public class HomeFragment extends Fragment {
 
         PostAdapter postAdapter = new PostAdapter(postList, getContext());
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true);
-        dashboardRv.setLayoutManager(layoutManager);
-        dashboardRv.setNestedScrollingEnabled(false);
+        binding.dashboardRv.setLayoutManager(layoutManager);
+        binding.dashboardRv.setNestedScrollingEnabled(false);
 
         firebaseDatabase.getReference().child("posts").addValueEventListener(new ValueEventListener() {
             @SuppressLint("NotifyDataSetChanged")
@@ -142,8 +145,9 @@ public class HomeFragment extends Fragment {
                     post.setPostId(dataSnapshot.getKey());
                     postList.add(post);
                 }
-                dashboardRv.setAdapter(postAdapter);
-                dashboardRv.hideShimmerAdapter();
+                binding.dashboardRv.setAdapter(postAdapter);
+                binding.dashboardRv.hideShimmerAdapter();
+                loadProfileImg();
                 postAdapter.notifyDataSetChanged();
             }
 
@@ -153,8 +157,7 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        addStoryImg = view.findViewById(R.id.addStoryImg);
-        addStoryImg.setOnClickListener(view1 -> galleryLauncher.launch("image/*"));
+        binding.addStoryImg.setOnClickListener(view1 -> galleryLauncher.launch("image/*"));
 
         galleryLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), new ActivityResultCallback<Uri>() {
             @Override
@@ -217,7 +220,33 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        return view;
+        return binding.getRoot();
+    }
+
+    private void loadProfileImg() {
+
+        FirebaseDatabase.getInstance()
+                .getReference()
+                .child("Users/" + Objects.requireNonNull(auth.getCurrentUser()).getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                User user = snapshot.getValue(User.class);
+                if (user != null) {
+                    Picasso.get()
+                            .load(user.getProfileImage())
+                            .placeholder(R.drawable.placeholder)
+                            .into(binding.profileImage);
+
+                } else {
+                    Toast.makeText(getContext(), "No user exists", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void clearArrayLists() {

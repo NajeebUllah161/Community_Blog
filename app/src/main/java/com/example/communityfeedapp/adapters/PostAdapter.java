@@ -3,6 +3,7 @@ package com.example.communityfeedapp.adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,9 +59,15 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         } else {
             holder.binding.postImg.setVisibility(View.GONE);
         }
-
         holder.binding.like.setText(model.getPostLikes() + "");
         holder.binding.comment.setText(model.getCommentCount() + "");
+        String header = model.getPostHeader();
+        if (header.equals("")) {
+            holder.binding.postTitleDesign.setVisibility(View.GONE);
+        } else {
+            holder.binding.postTitleDesign.setText(Html.fromHtml("<b>" + model.getPostHeader() + "</b>"));
+            holder.binding.postTitleDesign.setVisibility(View.VISIBLE);
+        }
         String description = model.getPostDescription();
         if (description.equals("")) {
             holder.binding.postDescriptionDesign.setVisibility(View.GONE);

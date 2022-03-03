@@ -86,17 +86,32 @@
         app:srcCompat="@drawable/unsaved" />
 
     <TextView
-        android:id="@+id/postDescriptionDesign"
+        android:id="@+id/postTitleDesign"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:text="TextView"
-        android:visibility="gone"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/postImg" />
+
+    <TextView
+        android:id="@+id/postDescriptionDesign"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="8dp"
+        android:text="TextView"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/postTitleDesign" />
 
     <TextView
         android:id="@+id/like"

@@ -1,9 +1,11 @@
 package com.example.communityfeedapp.models;
 
 public class Post {
+
     private String postId;
     private String postImage;
     private String postedBy;
+    private String postHeader;
     private String postDescription;
     private long postedAt;
     private int postLikes;
@@ -75,4 +77,13 @@ public class Post {
     public void setPostDescription(String postDescription) {
         this.postDescription = postDescription;
     }
+
+    public String getPostHeader() {
+        return postHeader;
+    }
+
+    public void setPostHeader(String postHeader) {
+        this.postHeader = postHeader;
+    }
+
 }

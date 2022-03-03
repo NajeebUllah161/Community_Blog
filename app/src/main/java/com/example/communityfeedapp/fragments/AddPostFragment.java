@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.communityfeedapp.R;
@@ -92,6 +93,29 @@ public class AddPostFragment extends Fragment {
                     }
                 });
 
+        binding.postHeader.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                String header = binding.postHeader.getText().toString();
+                String description = binding.postDescription.getText().toString();
+                if (!header.isEmpty() || !description.isEmpty()) {
+                    setButtonEnabled();
+                } else {
+                    setButtonDisabled();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
         binding.postDescription.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -100,8 +124,9 @@ public class AddPostFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                String header = binding.postHeader.getText().toString();
                 String description = binding.postDescription.getText().toString();
-                if (!description.isEmpty()) {
+                if (!description.isEmpty() || !header.isEmpty()) {
                     setButtonEnabled();
                 } else {
                     setButtonDisabled();
@@ -124,7 +149,6 @@ public class AddPostFragment extends Fragment {
 
             progressDialog.show();
 
-
             final StorageReference storageReference = firebaseStorage.getReference().child("posts")
                     .child(auth.getCurrentUser().getUid())
                     .child(new Date().getTime() + "");
@@ -135,6 +159,7 @@ public class AddPostFragment extends Fragment {
                         Post post = new Post();
                         post.setPostImage(uri.toString());
                         post.setPostedBy(auth.getCurrentUser().getUid());
+                        post.setPostHeader(binding.postHeader.getText().toString());
                         post.setPostDescription(binding.postDescription.getText().toString());
                         post.setPostedAt(new Date().getTime());
 
@@ -143,7 +168,7 @@ public class AddPostFragment extends Fragment {
                                 .setValue(post).addOnSuccessListener(unused -> {
                             progressDialog.dismiss();
                             Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
-                            switchFragment();
+                            //switchFragment();
                         }).addOnFailureListener(e -> progressDialog.dismiss());
                     });
                 }).addOnFailureListener(e -> {
@@ -153,6 +178,7 @@ public class AddPostFragment extends Fragment {
             } else {
                 Post post = new Post();
                 post.setPostedBy(auth.getCurrentUser().getUid());
+                post.setPostHeader(binding.postHeader.getText().toString());
                 post.setPostDescription(binding.postDescription.getText().toString());
                 post.setPostedAt(new Date().getTime());
 
@@ -161,7 +187,7 @@ public class AddPostFragment extends Fragment {
                         .setValue(post).addOnSuccessListener(unused -> {
                     progressDialog.dismiss();
                     Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
-                    switchFragment();
+                    //switchFragment();
                 }).addOnFailureListener(e -> progressDialog.dismiss());
             }
         });
@@ -170,7 +196,9 @@ public class AddPostFragment extends Fragment {
     }
 
     private void switchFragment() {
-        FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+        getActivity().findViewById(R.id.postBtn).setVisibility(View.GONE);
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.addPost, new HomeFragment());
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();

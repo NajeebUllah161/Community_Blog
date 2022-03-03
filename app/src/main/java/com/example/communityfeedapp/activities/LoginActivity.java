@@ -40,10 +40,10 @@ public class LoginActivity extends AppCompatActivity {
             progressDialog.show();
             auth.signInWithEmailAndPassword(binding.emailET.getText().toString(), binding.pwdET.getText().toString())
                     .addOnCompleteListener(task -> {
-                        Log.d("LoginActivity", "OnCompleteLogin");
+                        //Log.d("LoginActivity", "OnCompleteLogin");
                     })
                     .addOnSuccessListener(authResult -> {
-                        Log.d("LoginActivity", "OnSuccessLogin");
+                        //Log.d("LoginActivity", "OnSuccessLogin");
                         progressDialog.dismiss();
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);

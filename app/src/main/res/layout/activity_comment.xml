@@ -85,7 +85,7 @@
                 app:layout_constraintStart_toStartOf="parent" />
 
             <TextView
-                android:id="@+id/descCommentScreen"
+                android:id="@+id/headerCommentScreen"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -95,6 +95,18 @@
                 app:layout_constraintEnd_toEndOf="@+id/imgCommentScreen"
                 app:layout_constraintStart_toStartOf="@+id/imgCommentScreen"
                 app:layout_constraintTop_toBottomOf="@+id/imgCommentScreen" />
+
+            <TextView
+                android:id="@+id/descCommentScreen"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="8dp"
+                android:text="TextView"
+                app:layout_constraintEnd_toEndOf="@+id/imgCommentScreen"
+                app:layout_constraintStart_toStartOf="@+id/imgCommentScreen"
+                app:layout_constraintTop_toBottomOf="@+id/headerCommentScreen" />
 
             <TextView
                 android:id="@+id/like"
