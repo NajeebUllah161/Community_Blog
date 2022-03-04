@@ -103,7 +103,7 @@ public class AddPostFragment extends Fragment {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String header = binding.postHeader.getText().toString();
                 String description = binding.postDescription.getText().toString();
-                if (!header.isEmpty() || !description.isEmpty()) {
+                if (!header.isEmpty() || !description.isEmpty() || uri != null) {
                     setButtonEnabled();
                 } else {
                     setButtonDisabled();
@@ -126,7 +126,7 @@ public class AddPostFragment extends Fragment {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String header = binding.postHeader.getText().toString();
                 String description = binding.postDescription.getText().toString();
-                if (!description.isEmpty() || !header.isEmpty()) {
+                if (!description.isEmpty() || !header.isEmpty() || uri != null) {
                     setButtonEnabled();
                 } else {
                     setButtonDisabled();
@@ -163,8 +163,7 @@ public class AddPostFragment extends Fragment {
                         post.setPostDescription(binding.postDescription.getText().toString());
                         post.setPostedAt(new Date().getTime());
 
-                        firebaseDatabase.getReference().child("posts")
-                                .push()
+                        firebaseDatabase.getReference().child("posts").child(String.valueOf(post.getPostedAt()))
                                 .setValue(post).addOnSuccessListener(unused -> {
                             progressDialog.dismiss();
                             Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
@@ -182,8 +181,7 @@ public class AddPostFragment extends Fragment {
                 post.setPostDescription(binding.postDescription.getText().toString());
                 post.setPostedAt(new Date().getTime());
 
-                firebaseDatabase.getReference().child("posts")
-                        .push()
+                firebaseDatabase.getReference().child("posts").child(String.valueOf(post.getPostedAt()))
                         .setValue(post).addOnSuccessListener(unused -> {
                     progressDialog.dismiss();
                     Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
@@ -215,7 +213,6 @@ public class AddPostFragment extends Fragment {
                     binding.postImage.setImageURI(uri);
                     binding.postImage.setVisibility(View.VISIBLE);
                     setButtonEnabled();
-
                 }
             }
         }

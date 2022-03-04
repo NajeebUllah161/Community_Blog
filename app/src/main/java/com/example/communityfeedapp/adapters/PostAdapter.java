@@ -3,18 +3,24 @@ package com.example.communityfeedapp.adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.text.Html;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.communityfeedapp.R;
 import com.example.communityfeedapp.activities.CommentActivity;
 import com.example.communityfeedapp.databinding.DashboardRvSampleBinding;
+import com.example.communityfeedapp.edit_dialogues.EditPostDialogue;
 import com.example.communityfeedapp.models.Notification;
 import com.example.communityfeedapp.models.Post;
 import com.example.communityfeedapp.models.User;
@@ -23,15 +29,21 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.skydoves.powermenu.MenuAnimation;
+import com.skydoves.powermenu.OnMenuItemClickListener;
+import com.skydoves.powermenu.PowerMenu;
+import com.skydoves.powermenu.PowerMenuItem;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
 
     ArrayList<Post> postModelArrayList;
     Context context;
+    PowerMenu powerMenu;
 
     public PostAdapter(ArrayList<Post> list, Context context) {
         this.postModelArrayList = list;
@@ -159,7 +171,56 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             }
         });
 
+//        holder.binding.verticalDotsPost.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Log.d("postId", String.valueOf(model.getPostedAt()));
+//                Intent intent = new Intent(context, EditPostDialogue.class);
+//                context.startActivity(intent);
+//            }
+//        });
+        handlePowerMenu(holder,model);
+
     }
+
+    private void handlePowerMenu(PostViewHolder holder, Post model) {
+
+        List<PowerMenuItem> list = new ArrayList<>();
+        list.add(new PowerMenuItem("Edit profile"));
+        list.add(new PowerMenuItem("Share"));
+        list.add(new PowerMenuItem("Settings"));
+
+        powerMenu = new PowerMenu.Builder(context)
+                .addItemList(list) // list has "Novel", "Poerty", "Art"
+                .setAnimation(MenuAnimation.SHOWUP_BOTTOM_RIGHT) // Animation start point (TOP | LEFT).
+                .setMenuRadius(10f) // sets the corner radius.
+                .setMenuShadow(10f) // sets the shadow.
+                .setTextColor(ContextCompat.getColor(context, R.color.teal_700))
+                .setTextGravity(Gravity.LEFT)
+                .setTextTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD))
+                .setSelectedTextColor(Color.WHITE)
+                .setMenuColor(Color.WHITE)
+                .setSelectedMenuColor(ContextCompat.getColor(context, R.color.black))
+                .setOnMenuItemClickListener(onMenuItemClickListener)
+                .build();
+
+        holder.binding.verticalDotsPost.setOnClickListener(view -> powerMenu.showAsDropDown(view));
+
+
+    }
+
+    private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
+        @Override
+        public void onItemClick(int position, PowerMenuItem item) {
+            Toast.makeText(context, item.getTitle(), Toast.LENGTH_SHORT).show();
+            powerMenu.setSelectedPosition(position); // change selected item
+            if (item.getTitle().equals("Edit profile")) {
+                Intent intent = new Intent(context, EditPostDialogue.class);
+                context.startActivity(intent);
+            }
+            powerMenu.dismiss();
+        }
+    };
 
     @Override
     public int getItemCount() {

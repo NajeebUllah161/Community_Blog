@@ -4,10 +4,10 @@ import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultCallback;
@@ -16,13 +16,10 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.cooltechworks.views.shimmer.ShimmerRecyclerView;
 import com.example.communityfeedapp.R;
 import com.example.communityfeedapp.adapters.PostAdapter;
 import com.example.communityfeedapp.adapters.StoryAdapter;
-import com.example.communityfeedapp.databinding.FragmentAddPostBinding;
 import com.example.communityfeedapp.databinding.FragmentHomeBinding;
 import com.example.communityfeedapp.models.Post;
 import com.example.communityfeedapp.models.Story;

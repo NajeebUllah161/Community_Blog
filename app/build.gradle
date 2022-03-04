@@ -76,6 +76,8 @@ dependencies {
     //Shimmer Effect
     implementation 'com.github.sharish:ShimmerRecyclerView:v1.3'
 
+    //Power Menu
+    implementation "com.github.skydoves:powermenu:2.2.0"
 
 }
 apply plugin: 'com.google.gms.google-services'
