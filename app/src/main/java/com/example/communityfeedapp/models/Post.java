@@ -5,7 +5,7 @@ public class Post {
     private String postId;
     private String postImage;
     private String postedBy;
-    private String postHeader;
+    private String postTitle;
     private String postDescription;
     private long postedAt;
     private int postLikes;
@@ -78,12 +78,12 @@ public class Post {
         this.postDescription = postDescription;
     }
 
-    public String getPostHeader() {
-        return postHeader;
+    public String getPostTitle() {
+        return postTitle;
     }
 
-    public void setPostHeader(String postHeader) {
-        this.postHeader = postHeader;
+    public void setPostTitle(String postTitle) {
+        this.postTitle = postTitle;
     }
 
 }

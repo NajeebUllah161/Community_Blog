@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.Html;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,6 +44,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     Context context;
     PowerMenu powerMenu;
     Intent intent;
+    private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
+        @Override
+        public void onItemClick(int position, PowerMenuItem item) {
+            Toast.makeText(context, item.getTitle(), Toast.LENGTH_SHORT).show();
+            powerMenu.setSelectedPosition(position); // change selected item
+            if (item.getTitle().equals("Edit profile")) {
+                context.startActivity(intent);
+            }
+            powerMenu.dismiss();
+        }
+    };
 
     public PostAdapter(ArrayList<Post> list, Context context) {
         this.postModelArrayList = list;
@@ -79,11 +89,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.binding.like.setText(model.getPostLikes() + "");
         holder.binding.comment.setText(model.getCommentCount() + "");
 
-        String header = model.getPostHeader();
+        String header = model.getPostTitle();
         if (header.equals("")) {
             holder.binding.postTitleDesign.setVisibility(View.GONE);
         } else {
-            holder.binding.postTitleDesign.setText(Html.fromHtml("<b>" + model.getPostHeader() + "</b>"));
+            holder.binding.postTitleDesign.setText(Html.fromHtml("<b>" + model.getPostTitle() + "</b>"));
             holder.binding.postTitleDesign.setVisibility(View.VISIBLE);
         }
 
@@ -204,27 +214,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 .build();
 
         holder.binding.verticalDotsPost.setOnClickListener(view -> {
+
             intent = new Intent(context, EditPostDialogue.class);
             intent.putExtra("postTimeStampId", model.getPostedAt());
-            //Log.d("PostIdTimeStamp", String.valueOf(model.getPostedAt()));
+            intent.putExtra("postImg", model.getPostImage());
+            intent.putExtra("postTitle", model.getPostTitle());
+            intent.putExtra("postDesc", model.getPostDescription());
 
+            //Log.d("PostIdTimeStamp", String.valueOf(model.getPostedAt()));
             powerMenu.showAsDropDown(view);
             //Log.d("Equal",model.getPostedBy()+" " + FirebaseAuth.getInstance().getCurrentUser().getUid());
 
         });
     }
-
-    private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
-        @Override
-        public void onItemClick(int position, PowerMenuItem item) {
-            Toast.makeText(context, item.getTitle(), Toast.LENGTH_SHORT).show();
-            powerMenu.setSelectedPosition(position); // change selected item
-            if (item.getTitle().equals("Edit profile")) {
-                context.startActivity(intent);
-            }
-            powerMenu.dismiss();
-        }
-    };
 
     @Override
     public int getItemCount() {

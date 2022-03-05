@@ -48,7 +48,6 @@ public class AddPostFragment extends Fragment {
         // Required empty public constructor
     }
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +56,6 @@ public class AddPostFragment extends Fragment {
         firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
         progressDialog = new ProgressDialog(getContext());
-
     }
 
     @Override
@@ -93,7 +91,7 @@ public class AddPostFragment extends Fragment {
                     }
                 });
 
-        binding.postHeader.addTextChangedListener(new TextWatcher() {
+        binding.postTitle.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -101,9 +99,9 @@ public class AddPostFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                String header = binding.postHeader.getText().toString();
+                String title = binding.postTitle.getText().toString();
                 String description = binding.postDescription.getText().toString();
-                if (!header.isEmpty() || !description.isEmpty() || uri != null) {
+                if (!title.isEmpty() || !description.isEmpty() || uri != null) {
                     setButtonEnabled();
                 } else {
                     setButtonDisabled();
@@ -124,7 +122,7 @@ public class AddPostFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                String header = binding.postHeader.getText().toString();
+                String header = binding.postTitle.getText().toString();
                 String description = binding.postDescription.getText().toString();
                 if (!description.isEmpty() || !header.isEmpty() || uri != null) {
                     setButtonEnabled();
@@ -159,7 +157,7 @@ public class AddPostFragment extends Fragment {
                         Post post = new Post();
                         post.setPostImage(uri.toString());
                         post.setPostedBy(auth.getCurrentUser().getUid());
-                        post.setPostHeader(binding.postHeader.getText().toString());
+                        post.setPostTitle(binding.postTitle.getText().toString());
                         post.setPostDescription(binding.postDescription.getText().toString());
                         post.setPostedAt(new Date().getTime());
 
@@ -177,7 +175,7 @@ public class AddPostFragment extends Fragment {
             } else {
                 Post post = new Post();
                 post.setPostedBy(auth.getCurrentUser().getUid());
-                post.setPostHeader(binding.postHeader.getText().toString());
+                post.setPostTitle(binding.postTitle.getText().toString());
                 post.setPostDescription(binding.postDescription.getText().toString());
                 post.setPostedAt(new Date().getTime());
 
@@ -194,7 +192,6 @@ public class AddPostFragment extends Fragment {
     }
 
     private void switchFragment() {
-        getActivity().findViewById(R.id.postBtn).setVisibility(View.GONE);
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.addPost, new HomeFragment());
@@ -223,7 +220,6 @@ public class AddPostFragment extends Fragment {
         binding.postBtn.setTextColor(getContext().getResources().getColor(R.color.white));
         binding.postBtn.setEnabled(true);
     }
-
 
     private void setButtonDisabled() {
         binding.postBtn.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.follow_active_btn));

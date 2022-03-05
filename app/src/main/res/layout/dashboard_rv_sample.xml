@@ -54,14 +54,14 @@
         android:id="@+id/verticalDotsPost"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:visibility="gone"
         android:layout_marginEnd="8dp"
         android:contentDescription="TODO"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/profile_image_dashboard"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/profile_image_dashboard"
         app:srcCompat="@drawable/ic_more" />
-    
+
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/postImg"
         android:layout_width="0dp"

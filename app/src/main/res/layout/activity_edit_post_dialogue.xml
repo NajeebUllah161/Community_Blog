@@ -12,7 +12,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:fontFamily="@font/roboto_black"
-        android:text="Create Post"
+        android:text="Edit Post"
         android:textColor="@color/black"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/postBtn"
@@ -27,7 +27,7 @@
         android:layout_marginEnd="16dp"
         android:background="@drawable/follow_active_btn"
         android:enabled="false"
-        android:text="Post"
+        android:text="Update"
         android:textColor="@color/gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -87,7 +87,7 @@
         app:layout_constraintTop_toBottomOf="@+id/userNameAddPost" />
 
     <EditText
-        android:id="@+id/postHeader"
+        android:id="@+id/postTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -121,7 +121,15 @@
         app:layout_constraintBottom_toTopOf="@+id/postImage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/profileImgAddPost"
-        app:layout_constraintTop_toBottomOf="@+id/postHeader" />
+        app:layout_constraintTop_toBottomOf="@+id/postTitle" />
+
+    <ImageView
+        android:id="@+id/removeImg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_cross"
+        app:layout_constraintBottom_toTopOf="@+id/postImage"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <ImageView
         android:id="@+id/postImage"
@@ -130,8 +138,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/post_8"
-        android:visibility="gone"
+        android:src="@drawable/placeholder"
         app:layout_constraintBottom_toTopOf="@+id/view11"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -153,7 +160,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="Add to your post"
+        android:text="Update your post"
         android:textColor="@color/black"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/addImg"
