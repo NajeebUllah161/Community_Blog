@@ -214,6 +214,7 @@ public class EditPostDialogue extends AppCompatActivity {
                         Post post = new Post();
                         post.setPostImage(uri.toString());
                         post.setPostedBy(auth.getCurrentUser().getUid());
+                        post.setCreatedAt(new Date().toString());
                         post.setPostTitle(binding.postTitle.getText().toString());
                         post.setPostDescription(binding.postDescription.getText().toString());
                         post.setPostedAt(timeStamp);
@@ -237,6 +238,7 @@ public class EditPostDialogue extends AppCompatActivity {
                         Post post = new Post();
                         post.setPostImage(uri.toString());
                         post.setPostedBy(auth.getCurrentUser().getUid());
+                        post.setCreatedAt(new Date().toString());
                         post.setPostTitle(binding.postTitle.getText().toString());
                         post.setPostDescription(binding.postDescription.getText().toString());
                         post.setPostedAt(timeStamp);
@@ -257,6 +259,7 @@ public class EditPostDialogue extends AppCompatActivity {
                 //Log.d("Checkpoint", "else");
                 Post post = new Post();
                 post.setPostedBy(auth.getCurrentUser().getUid());
+                post.setCreatedAt(new Date().toString());
                 post.setPostTitle(binding.postTitle.getText().toString());
                 post.setPostDescription(binding.postDescription.getText().toString());
                 post.setPostedAt(timeStamp);
@@ -308,16 +311,6 @@ public class EditPostDialogue extends AppCompatActivity {
         binding.postBtn.setEnabled(false);
     }
 
-    @SuppressLint("StaticFieldLeak")
-    class DownloadImage extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            networkThread();
-            return null;
-        }
-    }
-
     private void networkThread() {
         Bitmap imgBitmap = null;
         URL newUrl = null;
@@ -337,6 +330,16 @@ public class EditPostDialogue extends AppCompatActivity {
             binding.postImage.setImageBitmap(finalImgBitmap);
             hasImage = true;
         });
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    class DownloadImage extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            networkThread();
+            return null;
+        }
     }
 
 }

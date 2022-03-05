@@ -157,6 +157,7 @@ public class AddPostFragment extends Fragment {
                         Post post = new Post();
                         post.setPostImage(uri.toString());
                         post.setPostedBy(auth.getCurrentUser().getUid());
+                        post.setCreatedAt(new Date().toString());
                         post.setPostTitle(binding.postTitle.getText().toString());
                         post.setPostDescription(binding.postDescription.getText().toString());
                         post.setPostedAt(new Date().getTime());
@@ -175,6 +176,7 @@ public class AddPostFragment extends Fragment {
             } else {
                 Post post = new Post();
                 post.setPostedBy(auth.getCurrentUser().getUid());
+                post.setCreatedAt(new Date().toString());
                 post.setPostTitle(binding.postTitle.getText().toString());
                 post.setPostDescription(binding.postDescription.getText().toString());
                 post.setPostedAt(new Date().getTime());

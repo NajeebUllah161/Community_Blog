@@ -7,6 +7,16 @@ public class Post {
     private String postedBy;
     private String postTitle;
     private String postDescription;
+    private String createdAt;
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
     private long postedAt;
     private int postLikes;
     private int commentCount;

@@ -3,6 +3,7 @@ package com.example.communityfeedapp.activities;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -59,17 +60,21 @@ public class CommentActivity extends AppCompatActivity {
         firebaseDatabase.getReference()
                 .child("posts/" + postId)
                 .addValueEventListener(new ValueEventListener() {
+                    @SuppressLint("SetTextI18n")
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         Post post = snapshot.getValue(Post.class);
-                        Picasso.get()
-                                .load(post.getPostImage())
-                                .placeholder(R.drawable.placeholder)
-                                .into(binding.imgCommentScreen);
-                        binding.headerCommentScreen.setText(post.getPostTitle());
-                        binding.descCommentScreen.setText(post.getPostDescription());
-                        binding.like.setText(post.getPostLikes() + "");
-                        binding.comment.setText(post.getCommentCount() + "");
+                        if (post != null) {
+                            Picasso.get()
+                                    .load(post.getPostImage())
+                                    .placeholder(R.drawable.placeholder)
+                                    .into(binding.imgCommentScreen);
+
+                            binding.headerCommentScreen.setText(Html.fromHtml("<b>" + post.getPostTitle() + "</b>"));
+                            binding.descCommentScreen.setText(post.getPostDescription());
+                            binding.like.setText(post.getPostLikes() + "");
+                            binding.comment.setText(post.getCommentCount() + "");
+                        }
                     }
 
                     @Override
