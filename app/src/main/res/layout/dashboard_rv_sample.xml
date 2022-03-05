@@ -54,6 +54,7 @@
         android:id="@+id/verticalDotsPost"
         android:layout_width="24dp"
         android:layout_height="24dp"
+        android:visibility="gone"
         android:layout_marginEnd="8dp"
         android:contentDescription="TODO"
         app:layout_constraintBottom_toBottomOf="@+id/profile_image_dashboard"

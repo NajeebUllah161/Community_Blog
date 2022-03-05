@@ -49,7 +49,6 @@ public class HomeFragment extends Fragment {
     FirebaseDatabase firebaseDatabase;
     FirebaseStorage firebaseStorage;
     FirebaseAuth auth;
-    RoundedImageView addStoryImg;
     ActivityResultLauncher<String> galleryLauncher;
     ProgressDialog dialog;
     FragmentHomeBinding binding;
@@ -159,7 +158,7 @@ public class HomeFragment extends Fragment {
         galleryLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), new ActivityResultCallback<Uri>() {
             @Override
             public void onActivityResult(Uri result) {
-                addStoryImg.setImageURI(result);
+                binding.addStoryImg.setImageURI(result);
                 dialog.show();
                 final StorageReference reference = firebaseStorage.getReference()
                         .child("stories")

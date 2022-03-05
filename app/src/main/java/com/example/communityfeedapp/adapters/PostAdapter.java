@@ -44,6 +44,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     ArrayList<Post> postModelArrayList;
     Context context;
     PowerMenu powerMenu;
+    Intent intent;
 
     public PostAdapter(ArrayList<Post> list, Context context) {
         this.postModelArrayList = list;
@@ -63,6 +64,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
 
         Post model = postModelArrayList.get(position);
+        if (model.getPostedBy().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
+            holder.binding.verticalDotsPost.setVisibility(View.VISIBLE);
+
         if (model.getPostImage() != null) {
             Picasso.get()
                     .load(model.getPostImage())
@@ -71,8 +75,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         } else {
             holder.binding.postImg.setVisibility(View.GONE);
         }
+
         holder.binding.like.setText(model.getPostLikes() + "");
         holder.binding.comment.setText(model.getCommentCount() + "");
+
         String header = model.getPostHeader();
         if (header.equals("")) {
             holder.binding.postTitleDesign.setVisibility(View.GONE);
@@ -80,6 +86,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             holder.binding.postTitleDesign.setText(Html.fromHtml("<b>" + model.getPostHeader() + "</b>"));
             holder.binding.postTitleDesign.setVisibility(View.VISIBLE);
         }
+
         String description = model.getPostDescription();
         if (description.equals("")) {
             holder.binding.postDescriptionDesign.setVisibility(View.GONE);
@@ -171,15 +178,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             }
         });
 
-//        holder.binding.verticalDotsPost.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Log.d("postId", String.valueOf(model.getPostedAt()));
-//                Intent intent = new Intent(context, EditPostDialogue.class);
-//                context.startActivity(intent);
-//            }
-//        });
-        handlePowerMenu(holder,model);
+        handlePowerMenu(holder, model);
 
     }
 
@@ -204,9 +203,15 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 .setOnMenuItemClickListener(onMenuItemClickListener)
                 .build();
 
-        holder.binding.verticalDotsPost.setOnClickListener(view -> powerMenu.showAsDropDown(view));
+        holder.binding.verticalDotsPost.setOnClickListener(view -> {
+            intent = new Intent(context, EditPostDialogue.class);
+            intent.putExtra("postTimeStampId", model.getPostedAt());
+            //Log.d("PostIdTimeStamp", String.valueOf(model.getPostedAt()));
 
+            powerMenu.showAsDropDown(view);
+            //Log.d("Equal",model.getPostedBy()+" " + FirebaseAuth.getInstance().getCurrentUser().getUid());
 
+        });
     }
 
     private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
@@ -215,7 +220,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             Toast.makeText(context, item.getTitle(), Toast.LENGTH_SHORT).show();
             powerMenu.setSelectedPosition(position); // change selected item
             if (item.getTitle().equals("Edit profile")) {
-                Intent intent = new Intent(context, EditPostDialogue.class);
                 context.startActivity(intent);
             }
             powerMenu.dismiss();

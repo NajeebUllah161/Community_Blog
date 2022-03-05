@@ -1,7 +1,6 @@
 package com.example.communityfeedapp.edit_dialogues;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -34,11 +33,11 @@ public class EditPostDialogue extends AppCompatActivity {
 
     ActivityEditPostDialogueBinding binding;
     Uri uri;
-    Context context;
     FirebaseAuth auth;
     FirebaseDatabase firebaseDatabase;
     FirebaseStorage firebaseStorage;
     ProgressDialog progressDialog;
+    long timeStamp;
 
     public EditPostDialogue() {
         // Required empty public constructor
@@ -55,6 +54,8 @@ public class EditPostDialogue extends AppCompatActivity {
         firebaseStorage = FirebaseStorage.getInstance();
         progressDialog = new ProgressDialog(this);
 
+        timeStamp = getIntent().getLongExtra("postTimeStampId", 0);
+        //Log.d("timeStamp", String.valueOf(timeStamp));
         setupFunctions();
     }
 
@@ -155,13 +156,13 @@ public class EditPostDialogue extends AppCompatActivity {
                         post.setPostedBy(auth.getCurrentUser().getUid());
                         post.setPostHeader(binding.postHeader.getText().toString());
                         post.setPostDescription(binding.postDescription.getText().toString());
-                        post.setPostedAt(post.getPostedAt());
+                        post.setPostedAt(timeStamp);
 
-                        firebaseDatabase.getReference().child("posts").child(String.valueOf(post.getPostedAt()))
+                        firebaseDatabase.getReference().child("posts").child(String.valueOf(timeStamp))
                                 .setValue(post).addOnSuccessListener(unused -> {
                             progressDialog.dismiss();
                             Toast.makeText(this, "Post Edited Successfully", Toast.LENGTH_SHORT).show();
-                            //switchFragment();
+                            finish();
                         }).addOnFailureListener(e -> progressDialog.dismiss());
                     });
                 }).addOnFailureListener(e -> {
@@ -173,13 +174,13 @@ public class EditPostDialogue extends AppCompatActivity {
                 post.setPostedBy(auth.getCurrentUser().getUid());
                 post.setPostHeader(binding.postHeader.getText().toString());
                 post.setPostDescription(binding.postDescription.getText().toString());
-                post.setPostedAt(post.getPostedAt());
+                post.setPostedAt(timeStamp);
 
-                firebaseDatabase.getReference().child("posts").child(String.valueOf(post.getPostedAt()))
+                firebaseDatabase.getReference().child("posts").child(String.valueOf(timeStamp))
                         .setValue(post).addOnSuccessListener(unused -> {
                     progressDialog.dismiss();
                     Toast.makeText(this, "Post Edited Successfully", Toast.LENGTH_SHORT).show();
-                    //switchFragment();
+                    finish();
                 }).addOnFailureListener(e -> progressDialog.dismiss());
             }
         });
