@@ -1,5 +1,6 @@
 package com.example.communityfeedapp.fragments;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -7,6 +8,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -58,6 +60,7 @@ public class AddPostFragment extends Fragment {
         progressDialog = new ProgressDialog(getContext());
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -141,6 +144,41 @@ public class AddPostFragment extends Fragment {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("image/*");
             startActivityForResult(intent, 10);
+        });
+
+        binding.addRecording.setOnTouchListener((view, motionEvent) -> {
+            switch (motionEvent.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    binding.audioContainer.setVisibility(View.VISIBLE);
+                    binding.removeRecording.setVisibility(View.VISIBLE);
+                    binding.recordingStatus.setVisibility(View.VISIBLE);
+                    binding.play.setVisibility(View.GONE);
+                    break;
+                case MotionEvent.ACTION_UP:
+                    binding.recordingStatus.setVisibility(View.INVISIBLE);
+                    binding.play.setVisibility(View.VISIBLE);
+                    break;
+            }
+
+            return true;
+        });
+
+        binding.play.setOnClickListener(view -> {
+            binding.play.setVisibility(View.GONE);
+            binding.pause.setVisibility(View.VISIBLE);
+        });
+
+        binding.pause.setOnClickListener(view -> {
+            binding.pause.setVisibility(View.GONE);
+            binding.play.setVisibility(View.VISIBLE);
+        });
+
+        binding.removeRecording.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                binding.audioContainer.setVisibility(View.GONE);
+                binding.removeRecording.setVisibility(View.GONE);
+            }
         });
 
         binding.removeImg.setOnClickListener(view -> {

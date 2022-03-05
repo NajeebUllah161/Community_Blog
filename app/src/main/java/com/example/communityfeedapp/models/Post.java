@@ -8,15 +8,6 @@ public class Post {
     private String postTitle;
     private String postDescription;
     private String createdAt;
-
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-
     private long postedAt;
     private int postLikes;
     private int commentCount;
@@ -30,6 +21,14 @@ public class Post {
         this.postedBy = postedBy;
         this.postDescription = postDescription;
         this.postedAt = postedAt;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 
     public int getCommentCount() {
