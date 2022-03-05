@@ -143,6 +143,11 @@ public class AddPostFragment extends Fragment {
             startActivityForResult(intent, 10);
         });
 
+        binding.removeImg.setOnClickListener(view -> {
+            binding.postImage.setImageResource(0);
+            binding.removeImg.setVisibility(View.GONE);
+        });
+
         binding.postBtn.setOnClickListener(view -> {
 
             progressDialog.show();
@@ -211,6 +216,7 @@ public class AddPostFragment extends Fragment {
                     uri = data.getData();
                     binding.postImage.setImageURI(uri);
                     binding.postImage.setVisibility(View.VISIBLE);
+                    binding.removeImg.setVisibility(View.VISIBLE);
                     setButtonEnabled();
                 }
             }
