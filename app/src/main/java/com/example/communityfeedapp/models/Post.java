@@ -4,15 +4,6 @@ public class Post {
 
     private String postId;
     private String postImage;
-
-    public String getPostRecording() {
-        return postRecording;
-    }
-
-    public void setPostRecording(String postRecording) {
-        this.postRecording = postRecording;
-    }
-
     private String postRecording;
     private String postedBy;
     private String postTitle;
@@ -21,16 +12,22 @@ public class Post {
     private long postedAt;
     private int postLikes;
     private int commentCount;
-
     public Post() {
     }
-
     public Post(String postId, String postImage, String postedBy, String postDescription, long postedAt) {
         this.postId = postId;
         this.postImage = postImage;
         this.postedBy = postedBy;
         this.postDescription = postDescription;
         this.postedAt = postedAt;
+    }
+
+    public String getPostRecording() {
+        return postRecording;
+    }
+
+    public void setPostRecording(String postRecording) {
+        this.postRecording = postRecording;
     }
 
     public String getCreatedAt() {

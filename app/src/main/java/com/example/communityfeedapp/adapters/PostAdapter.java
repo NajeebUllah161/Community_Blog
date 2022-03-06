@@ -5,7 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.text.Html;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +47,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     Context context;
     PowerMenu powerMenu;
     Intent intent;
+    MediaPlayer player;
+    int length;
+
     private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
         @Override
         public void onItemClick(int position, PowerMenuItem item) {
@@ -74,9 +80,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
 
         Post model = postModelArrayList.get(position);
+        //Check to restrict user to only edit his/her post
         if (model.getPostedBy().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
             holder.binding.verticalDotsPost.setVisibility(View.VISIBLE);
 
+        //Setup Image from Firebase
         if (model.getPostImage() != null) {
             Picasso.get()
                     .load(model.getPostImage())
@@ -86,9 +94,62 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             holder.binding.postImg.setVisibility(View.GONE);
         }
 
+        //Setup Audio Recording
+        if (model.getPostRecording() != null) {
+            holder.binding.audioContainer.setVisibility(View.VISIBLE);
+            holder.binding.playAudio.setOnClickListener(view -> {
+                try {
+                    player = new MediaPlayer();
+                    player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    player.setDataSource(model.getPostRecording());
+                    player.prepare();
+                    player.start();
+                    holder.binding.playAudio.setVisibility(View.GONE);
+                    holder.binding.pauseAudio.setVisibility(View.VISIBLE);
+                } catch (Exception e) {
+                    Log.d("Exception", e.getMessage());
+                }
+                player.setOnCompletionListener(mediaPlayer -> {
+                    holder.binding.playAudio.setVisibility(View.VISIBLE);
+                    holder.binding.pauseAudio.setVisibility(View.GONE);
+                });
+            });
+
+            holder.binding.pauseAudio.setOnClickListener(view -> {
+                if(player!=null) {
+                    player.pause();
+                    length = player.getCurrentPosition();
+                    holder.binding.pauseAudio.setVisibility(View.GONE);
+                    holder.binding.resumeAudio.setVisibility(View.VISIBLE);
+                }
+                else{
+                    Log.d("PostAdapter","Player is null");
+                }
+            });
+
+            holder.binding.resumeAudio.setOnClickListener(view -> {
+                if (player != null) {
+                    holder.binding.resumeAudio.setVisibility(View.GONE);
+                    holder.binding.pauseAudio.setVisibility(View.VISIBLE);
+                    player.seekTo(length);
+                    player.start();
+                    player.setOnCompletionListener(mediaPlayer -> {
+                        holder.binding.pauseAudio.setVisibility(View.GONE);
+                        holder.binding.playAudio.setVisibility(View.VISIBLE);
+                    });
+                } else {
+                    Log.d("PostAdapter","Player is null");
+                }
+            });
+        } else {
+            holder.binding.audioContainer.setVisibility(View.GONE);
+        }
+
+        //Populate likes and comments from Firebase
         holder.binding.like.setText(model.getPostLikes() + "");
         holder.binding.comment.setText(model.getCommentCount() + "");
 
+        //Setup post Title from Firebase
         String header = model.getPostTitle();
         if (header.equals("")) {
             holder.binding.postTitleDesign.setVisibility(View.GONE);
@@ -97,6 +158,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             holder.binding.postTitleDesign.setVisibility(View.VISIBLE);
         }
 
+        //Setup post description from Firebase
         String description = model.getPostDescription();
         if (description.equals("")) {
             holder.binding.postDescriptionDesign.setVisibility(View.GONE);

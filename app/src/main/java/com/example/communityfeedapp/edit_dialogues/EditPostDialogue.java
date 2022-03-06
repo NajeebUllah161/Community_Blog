@@ -13,6 +13,7 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -95,19 +96,21 @@ public class EditPostDialogue extends AppCompatActivity {
         }
 
         String title = postTitle;
-        if (title.equals("")) {
-            binding.postTitle.setVisibility(View.GONE);
-        } else {
+        if (!title.equals("")) {
             binding.postTitle.setText(Html.fromHtml("<b>" + postTitle + "</b>"));
             binding.postTitle.setVisibility(View.VISIBLE);
+        } else {
+            //binding.postTitle.setVisibility(View.GONE);
+            Log.d("EditPostDialogue", "Complementary else");
         }
 
         String description = postDescription;
-        if (description.equals("")) {
-            binding.postDescription.setVisibility(View.GONE);
-        } else {
+        if (!description.equals("")) {
             binding.postDescription.setText(postDescription);
             binding.postDescription.setVisibility(View.VISIBLE);
+        } else {
+            //binding.postDescription.setVisibility(View.GONE);
+            Log.d("EditPostDialogue", "Complementary else");
         }
 
     }
