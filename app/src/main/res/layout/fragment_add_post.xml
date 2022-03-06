@@ -175,9 +175,9 @@
         android:id="@+id/audioContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/_8mdp"
         android:background="@drawable/follow_active_btn"
         android:orientation="horizontal"
-        android:layout_marginEnd="@dimen/_8mdp"
         android:padding="@dimen/_4mdp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/addRecording"
@@ -212,6 +212,19 @@
             android:layout_height="wrap_content"
             android:foregroundGravity="center"
             android:src="@drawable/ic_pause"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <ImageView
+            android:id="@+id/resume"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:foregroundGravity="center"
+            android:src="@drawable/ic_resume"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"

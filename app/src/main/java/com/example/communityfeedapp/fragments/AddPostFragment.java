@@ -1,12 +1,18 @@
 package com.example.communityfeedapp.fragments;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,6 +21,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -33,18 +40,33 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
-import java.util.Date;
+import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.Random;
+
+import static android.Manifest.permission.RECORD_AUDIO;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.app.Activity.RESULT_OK;
 
 public class AddPostFragment extends Fragment {
 
+    public static final int RequestPermissionCode = 1;
     FragmentAddPostBinding binding;
     Uri uri;
     FirebaseAuth auth;
     FirebaseDatabase firebaseDatabase;
     FirebaseStorage firebaseStorage;
     ProgressDialog progressDialog;
+    //Recording
+    String AudioSavePathInDevice = null;
+    MediaRecorder mediaRecorder;
+    Random random;
+    String RandomAudioFileName = "ABCDEFGHIJKLMNOP";
+    MediaPlayer mediaPlayer;
+    int length;
 
     public AddPostFragment() {
         // Required empty public constructor
@@ -58,6 +80,10 @@ public class AddPostFragment extends Fragment {
         firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
         progressDialog = new ProgressDialog(getContext());
+
+        //audio recording
+        random = new Random();
+
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -149,14 +175,10 @@ public class AddPostFragment extends Fragment {
         binding.addRecording.setOnTouchListener((view, motionEvent) -> {
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    binding.audioContainer.setVisibility(View.VISIBLE);
-                    binding.removeRecording.setVisibility(View.VISIBLE);
-                    binding.recordingStatus.setVisibility(View.VISIBLE);
-                    binding.play.setVisibility(View.GONE);
+                    startRecording();
                     break;
                 case MotionEvent.ACTION_UP:
-                    binding.recordingStatus.setVisibility(View.INVISIBLE);
-                    binding.play.setVisibility(View.VISIBLE);
+                    stopRecording();
                     break;
             }
 
@@ -164,21 +186,22 @@ public class AddPostFragment extends Fragment {
         });
 
         binding.play.setOnClickListener(view -> {
+            playRecording();
             binding.play.setVisibility(View.GONE);
             binding.pause.setVisibility(View.VISIBLE);
         });
 
         binding.pause.setOnClickListener(view -> {
-            binding.pause.setVisibility(View.GONE);
-            binding.play.setVisibility(View.VISIBLE);
+            pauseRecording();
         });
 
-        binding.removeRecording.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                binding.audioContainer.setVisibility(View.GONE);
-                binding.removeRecording.setVisibility(View.GONE);
-            }
+        binding.resume.setOnClickListener(view -> resumeRecording());
+
+        binding.removeRecording.setOnClickListener(view -> {
+            binding.audioContainer.setVisibility(View.GONE);
+            binding.removeRecording.setVisibility(View.GONE);
+            mediaPlayer = null;
+            AudioSavePathInDevice = null;
         });
 
         binding.removeImg.setOnClickListener(view -> {
@@ -190,50 +213,274 @@ public class AddPostFragment extends Fragment {
 
             progressDialog.show();
 
-            final StorageReference storageReference = firebaseStorage.getReference().child("posts")
+            final StorageReference storageReference = firebaseStorage.getReference().child("postRecordings")
                     .child(auth.getCurrentUser().getUid())
                     .child(new Date().getTime() + "");
 
-            if (uri != null) {
-                storageReference.putFile(uri).addOnSuccessListener(taskSnapshot -> {
+            if (mediaPlayer != null && AudioSavePathInDevice != null) {
+                Uri recordingUri = Uri.fromFile(new File(AudioSavePathInDevice));
+                storageReference.putFile(recordingUri).addOnSuccessListener(taskSnapshot -> {
                     storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
-                        Post post = new Post();
-                        post.setPostImage(uri.toString());
-                        post.setPostedBy(auth.getCurrentUser().getUid());
-                        post.setCreatedAt(new Date().toString());
-                        post.setPostTitle(binding.postTitle.getText().toString());
-                        post.setPostDescription(binding.postDescription.getText().toString());
-                        post.setPostedAt(new Date().getTime());
-
-                        firebaseDatabase.getReference().child("posts").child(String.valueOf(post.getPostedAt()))
-                                .setValue(post).addOnSuccessListener(unused -> {
-                            progressDialog.dismiss();
-                            Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
-                            //switchFragment();
-                        }).addOnFailureListener(e -> progressDialog.dismiss());
+                        uploadPostImgAudioAndData(uri);
+                    }).addOnFailureListener(e -> {
+                        Toast.makeText(getContext(), "Failed to download audio Url", Toast.LENGTH_SHORT).show();
                     });
+
                 }).addOnFailureListener(e -> {
-                    progressDialog.dismiss();
-                    Toast.makeText(getContext(), "Failed to Post", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Failed to Upload Audio", Toast.LENGTH_SHORT).show();
                 });
             } else {
-                Post post = new Post();
-                post.setPostedBy(auth.getCurrentUser().getUid());
-                post.setCreatedAt(new Date().toString());
-                post.setPostTitle(binding.postTitle.getText().toString());
-                post.setPostDescription(binding.postDescription.getText().toString());
-                post.setPostedAt(new Date().getTime());
-
-                firebaseDatabase.getReference().child("posts").child(String.valueOf(post.getPostedAt()))
-                        .setValue(post).addOnSuccessListener(unused -> {
-                    progressDialog.dismiss();
-                    Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
-                    //switchFragment();
-                }).addOnFailureListener(e -> progressDialog.dismiss());
+                uploadPostImgAndData();
             }
         });
 
         return binding.getRoot();
+    }
+
+    private void uploadPostImgAudioAndData(Uri audioUri) {
+
+        final StorageReference storageReference = firebaseStorage.getReference().child("posts")
+                .child(auth.getCurrentUser().getUid())
+                .child(new Date().getTime() + "");
+
+        if (this.uri != null) {
+            storageReference.putFile(this.uri).addOnSuccessListener(taskSnapshot -> {
+                storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+                    Post post = new Post();
+                    post.setPostImage(uri.toString());
+                    post.setPostRecording(audioUri.toString());
+                    post.setPostedBy(auth.getCurrentUser().getUid());
+                    post.setCreatedAt(new Date().toString());
+                    post.setPostTitle(binding.postTitle.getText().toString());
+                    post.setPostDescription(binding.postDescription.getText().toString());
+                    post.setPostedAt(new Date().getTime());
+
+                    firebaseDatabase.getReference().child("posts").child(String.valueOf(post.getPostedAt()))
+                            .setValue(post).addOnSuccessListener(unused -> {
+                        progressDialog.dismiss();
+                        Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
+                        //switchFragment();
+                    }).addOnFailureListener(e -> progressDialog.dismiss());
+                });
+            }).addOnFailureListener(e -> {
+                progressDialog.dismiss();
+                Toast.makeText(getContext(), "Failed to Post", Toast.LENGTH_SHORT).show();
+            });
+        } else {
+            Post post = new Post();
+            post.setPostedBy(auth.getCurrentUser().getUid());
+            post.setCreatedAt(new Date().toString());
+            post.setPostTitle(binding.postTitle.getText().toString());
+            post.setPostDescription(binding.postDescription.getText().toString());
+            post.setPostedAt(new Date().getTime());
+
+            firebaseDatabase.getReference().child("posts").child(String.valueOf(post.getPostedAt()))
+                    .setValue(post).addOnSuccessListener(unused -> {
+                progressDialog.dismiss();
+                Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
+                //switchFragment();
+            }).addOnFailureListener(e -> progressDialog.dismiss());
+        }
+    }
+
+    private void uploadPostImgAndData() {
+
+        final StorageReference storageReference = firebaseStorage.getReference().child("posts")
+                .child(auth.getCurrentUser().getUid())
+                .child(new Date().getTime() + "");
+
+        if (uri != null) {
+            storageReference.putFile(uri).addOnSuccessListener(taskSnapshot -> {
+                storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+                    Post post = new Post();
+                    post.setPostImage(uri.toString());
+                    post.setPostedBy(auth.getCurrentUser().getUid());
+                    post.setCreatedAt(new Date().toString());
+                    post.setPostTitle(binding.postTitle.getText().toString());
+                    post.setPostDescription(binding.postDescription.getText().toString());
+                    post.setPostedAt(new Date().getTime());
+
+                    firebaseDatabase.getReference().child("posts").child(String.valueOf(post.getPostedAt()))
+                            .setValue(post).addOnSuccessListener(unused -> {
+                        progressDialog.dismiss();
+                        Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
+                        //switchFragment();
+                    }).addOnFailureListener(e -> progressDialog.dismiss());
+                });
+            }).addOnFailureListener(e -> {
+                progressDialog.dismiss();
+                Toast.makeText(getContext(), "Failed to Post", Toast.LENGTH_SHORT).show();
+            });
+        } else {
+            Post post = new Post();
+            post.setPostedBy(auth.getCurrentUser().getUid());
+            post.setCreatedAt(new Date().toString());
+            post.setPostTitle(binding.postTitle.getText().toString());
+            post.setPostDescription(binding.postDescription.getText().toString());
+            post.setPostedAt(new Date().getTime());
+
+            firebaseDatabase.getReference().child("posts").child(String.valueOf(post.getPostedAt()))
+                    .setValue(post).addOnSuccessListener(unused -> {
+                progressDialog.dismiss();
+                Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
+                //switchFragment();
+            }).addOnFailureListener(e -> progressDialog.dismiss());
+        }
+    }
+
+    private void resumeRecording() {
+        if (mediaPlayer != null) {
+
+            mediaPlayer.seekTo(length);
+            mediaPlayer.start();
+            binding.resume.setVisibility(View.GONE);
+            binding.pause.setVisibility(View.VISIBLE);
+
+            mediaPlayer.setOnCompletionListener(mediaPlayer -> {
+                binding.play.setVisibility(View.VISIBLE);
+                binding.pause.setVisibility(View.GONE);
+            });
+        } else {
+            Log.d("AddPostFragment", "Audio is not recorded");
+        }
+    }
+
+    private void pauseRecording() {
+        if (mediaPlayer != null) {
+            binding.pause.setVisibility(View.GONE);
+            binding.resume.setVisibility(View.VISIBLE);
+            mediaPlayer.pause();
+            length = mediaPlayer.getCurrentPosition();
+            mediaPlayer.setOnCompletionListener(mediaPlayer -> {
+                binding.play.setVisibility(View.VISIBLE);
+                binding.resume.setVisibility(View.GONE);
+            });
+        } else {
+            Log.d("AddPostFragment", "Audio is not recorded");
+        }
+    }
+
+    private void playRecording() {
+        if (AudioSavePathInDevice != null) {
+            mediaPlayer = new MediaPlayer();
+            try {
+                mediaPlayer.setDataSource(AudioSavePathInDevice);
+                mediaPlayer.prepare();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            mediaPlayer.start();
+            //Toast.makeText(getContext(),"Recording Playing",Toast.LENGTH_LONG).show();
+            mediaPlayer.setOnCompletionListener(mediaPlayer -> {
+                binding.pause.setVisibility(View.GONE);
+                binding.play.setVisibility(View.VISIBLE);
+            });
+        } else {
+            Log.d("AddPostFragment", "Audio is not recorded");
+        }
+    }
+
+    private void stopRecording() {
+
+        if (mediaRecorder != null) {
+            binding.recordingStatus.setVisibility(View.INVISIBLE);
+            binding.play.setVisibility(View.VISIBLE);
+            mediaRecorder.stop();
+            Toast.makeText(getContext(), "Recording Completed", Toast.LENGTH_SHORT).show();
+        } else {
+            Log.d("AddPostFragment", "Audio is not recorded");
+            binding.audioContainer.setVisibility(View.GONE);
+            binding.removeRecording.setVisibility(View.GONE);
+        }
+    }
+
+    private void startRecording() {
+
+        if (checkPermission()) {
+
+            binding.audioContainer.setVisibility(View.VISIBLE);
+            binding.removeRecording.setVisibility(View.VISIBLE);
+            binding.recordingStatus.setVisibility(View.VISIBLE);
+            binding.resume.setVisibility(View.GONE);
+            binding.play.setVisibility(View.GONE);
+
+            AudioSavePathInDevice =
+                    Environment.getExternalStorageDirectory().getAbsolutePath() + "/" +
+                            CreateRandomAudioFileName(5) + "AudioRecording.3gp";
+
+            MediaRecorderReady();
+
+            try {
+                mediaRecorder.prepare();
+                mediaRecorder.start();
+            } catch (IllegalStateException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            //Toast.makeText(getContext(),"Recording started",Toast.LENGTH_LONG).show();
+        } else {
+            requestPermission();
+        }
+    }
+
+    public boolean checkPermission() {
+        int result = ContextCompat.checkSelfPermission(requireContext().getApplicationContext(),
+                WRITE_EXTERNAL_STORAGE);
+        int result1 = ContextCompat.checkSelfPermission(requireContext().getApplicationContext(),
+                RECORD_AUDIO);
+        return result == PackageManager.PERMISSION_GRANTED &&
+                result1 == PackageManager.PERMISSION_GRANTED;
+    }
+
+    public String CreateRandomAudioFileName(int string) {
+        StringBuilder stringBuilder = new StringBuilder(string);
+        int i = 0;
+        while (i < string) {
+            stringBuilder.append(RandomAudioFileName.
+                    charAt(random.nextInt(RandomAudioFileName.length())));
+
+            i++;
+        }
+        return stringBuilder.toString();
+    }
+
+    @SuppressLint("WrongConstant")
+    public void MediaRecorderReady() {
+        mediaRecorder = new MediaRecorder();
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mediaRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
+        mediaRecorder.setOutputFile(AudioSavePathInDevice);
+    }
+
+    private void requestPermission() {
+        ActivityCompat.requestPermissions((Activity) requireContext(), new
+                String[]{WRITE_EXTERNAL_STORAGE, RECORD_AUDIO}, RequestPermissionCode);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NotNull String[] permissions, @NotNull int[] grantResults) {
+        if (requestCode == RequestPermissionCode) {
+            if (grantResults.length > 0) {
+                boolean StoragePermission = grantResults[0] ==
+                        PackageManager.PERMISSION_GRANTED;
+                boolean RecordPermission = grantResults[1] ==
+                        PackageManager.PERMISSION_GRANTED;
+
+                if (StoragePermission && RecordPermission) {
+                    Toast.makeText(getContext(), "Permission Granted",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    binding.audioContainer.setVisibility(View.GONE);
+                    Toast.makeText(getContext(), "Permission Denied", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
     }
 
     private void switchFragment() {

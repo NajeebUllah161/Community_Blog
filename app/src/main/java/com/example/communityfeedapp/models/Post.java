@@ -4,6 +4,16 @@ public class Post {
 
     private String postId;
     private String postImage;
+
+    public String getPostRecording() {
+        return postRecording;
+    }
+
+    public void setPostRecording(String postRecording) {
+        this.postRecording = postRecording;
+    }
+
+    private String postRecording;
     private String postedBy;
     private String postTitle;
     private String postDescription;
