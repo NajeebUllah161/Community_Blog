@@ -196,10 +196,7 @@ public class AddPostFragment extends Fragment {
         binding.resume.setOnClickListener(view -> resumeRecording());
 
         binding.removeRecording.setOnClickListener(view -> {
-            binding.audioContainer.setVisibility(View.GONE);
-            binding.removeRecording.setVisibility(View.GONE);
-            mediaPlayer = null;
-            AudioSavePathInDevice = null;
+            removeRecording();
         });
 
         binding.removeImg.setOnClickListener(view -> {
@@ -237,11 +234,26 @@ public class AddPostFragment extends Fragment {
         return binding.getRoot();
     }
 
+    private void removeRecording() {
+        binding.audioContainer.setVisibility(View.GONE);
+        binding.removeRecording.setVisibility(View.GONE);
+        mediaPlayer = null;
+        AudioSavePathInDevice = null;
+
+        if(binding.postTitle.getText().toString().isEmpty() && binding.postDescription.getText().toString().isEmpty() && uri==null){
+            setButtonDisabled();
+        }
+    }
+
     private void removeImgFromPost() {
         uri = null;
         binding.postImage.setImageURI(null);
         binding.postImage.setImageResource(0);
         binding.removeImg.setVisibility(View.GONE);
+        if(binding.postTitle.getText().toString().isEmpty() && binding.postDescription.getText().toString().isEmpty() && mediaPlayer==null){
+            setButtonDisabled();
+        }
+
     }
 
     private void uploadPostImgAudioAndData(Uri audioUri) {
@@ -397,6 +409,7 @@ public class AddPostFragment extends Fragment {
             Log.d("Length", String.valueOf(length));
             mediaRecorder.stop();
             Toast.makeText(getContext(), "Recording Completed", Toast.LENGTH_SHORT).show();
+            setButtonEnabled();
         } else {
             Log.d("AddPostFragment", "Audio is not recorded");
             binding.audioContainer.setVisibility(View.GONE);

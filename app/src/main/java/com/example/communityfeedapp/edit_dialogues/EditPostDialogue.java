@@ -68,7 +68,7 @@ public class EditPostDialogue extends AppCompatActivity {
     FirebaseAuth auth;
     FirebaseDatabase firebaseDatabase;
     FirebaseStorage firebaseStorage;
-    ProgressDialog progressDialog,populateDataProgressDialogue;
+    ProgressDialog progressDialog, populateDataProgressDialogue;
     String postImg, postTitle, postDescription, postRecording, downloadedRecordingLocation;
     long timeStamp;
     boolean hasImage, hasRecording = false;
@@ -246,11 +246,7 @@ public class EditPostDialogue extends AppCompatActivity {
         });
 
         binding.removeImg.setOnClickListener(view -> {
-            uri = null;
-            binding.postImage.setImageURI(null);
-            binding.postImage.setImageResource(0);
-            hasImage = false;
-            binding.removeImg.setVisibility(View.GONE);
+            removeImage();
         });
 
         binding.addRecording.setOnTouchListener((view, motionEvent) -> {
@@ -321,6 +317,18 @@ public class EditPostDialogue extends AppCompatActivity {
                 uploadPostImgAndData();
             }
         });
+    }
+
+    private void removeImage() {
+        uri = null;
+        binding.postImage.setImageURI(null);
+        binding.postImage.setImageResource(0);
+        hasImage = false;
+        binding.removeImg.setVisibility(View.GONE);
+
+        if(binding.postTitle.getText().toString().isEmpty() && binding.postDescription.getText().toString().isEmpty() && mediaPlayer==null){
+            setButtonDisabled();
+        }
     }
 
     private void uploadPostImgAudioAndData(Uri audioUri) {
@@ -473,6 +481,10 @@ public class EditPostDialogue extends AppCompatActivity {
         mediaPlayer = null;
         AudioSavePathInDevice = null;
         downloadedRecordingLocation = null;
+
+        if(binding.postTitle.getText().toString().isEmpty() && binding.postDescription.getText().toString().isEmpty() && uri==null && !hasImage){
+            setButtonDisabled();
+        }
     }
 
     private void resumeRecording() {
@@ -555,6 +567,7 @@ public class EditPostDialogue extends AppCompatActivity {
             Log.d("Length", String.valueOf(length));
             mediaRecorder.stop();
             Toast.makeText(this, "Recording Completed", Toast.LENGTH_SHORT).show();
+            setButtonEnabled();
         } else {
             Log.d("AddPostFragment", "Audio is not recorded");
             binding.audioContainer.setVisibility(View.GONE);
@@ -715,25 +728,6 @@ public class EditPostDialogue extends AppCompatActivity {
         });
     }
 
-    @SuppressLint("StaticFieldLeak")
-    class DownloadImage extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            downloadPostImage();
-            return null;
-        }
-    }
-
-    class DownloadRecording extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            downloadPostRecording();
-            return null;
-        }
-    }
-
     @SuppressLint("WrongConstant")
     private void downloadPostRecording() {
 
@@ -785,6 +779,25 @@ public class EditPostDialogue extends AppCompatActivity {
             e.printStackTrace();
         }
 
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    class DownloadImage extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            downloadPostImage();
+            return null;
+        }
+    }
+
+    class DownloadRecording extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            downloadPostRecording();
+            return null;
+        }
     }
 
 }
