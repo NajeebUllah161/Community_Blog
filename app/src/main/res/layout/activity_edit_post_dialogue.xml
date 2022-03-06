@@ -155,6 +155,91 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <ImageView
+        android:id="@+id/addRecording"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/_8mdp"
+        android:src="@drawable/ic_recording_icon"
+        app:layout_constraintBottom_toBottomOf="@+id/addImg"
+        app:layout_constraintEnd_toStartOf="@+id/addImg"
+        app:layout_constraintTop_toTopOf="@+id/addImg" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/audioContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/_8mdp"
+        android:background="@drawable/follow_active_btn"
+        android:orientation="horizontal"
+        android:padding="@dimen/_4mdp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/addRecording"
+        app:layout_constraintEnd_toStartOf="@+id/addRecording"
+        app:layout_constraintTop_toTopOf="@+id/addRecording">
+
+        <TextView
+            android:id="@+id/recordingStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Recording"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_play"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/pause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:foregroundGravity="center"
+            android:src="@drawable/ic_pause"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <ImageView
+            android:id="@+id/resume"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:foregroundGravity="center"
+            android:src="@drawable/ic_resume"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ImageView
+        android:id="@+id/removeRecording"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:src="@drawable/ic_cross_audio"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/audioContainer"
+        app:layout_constraintEnd_toEndOf="@+id/audioContainer"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/audioContainer"
+        app:layout_constraintTop_toBottomOf="@+id/view11" />
+
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"

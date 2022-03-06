@@ -206,7 +206,6 @@ public class AddPostFragment extends Fragment {
 
         binding.removeImg.setOnClickListener(view -> {
             removeImgFromPost();
-            binding.removeImg.setVisibility(View.GONE);
         });
 
         binding.postBtn.setOnClickListener(view -> {
@@ -234,6 +233,7 @@ public class AddPostFragment extends Fragment {
                 Log.d("Checkpoint", "mediaPlayer and Path ARE NULL");
                 uploadPostImgAndData();
             }
+
         });
 
         return binding.getRoot();
@@ -243,6 +243,7 @@ public class AddPostFragment extends Fragment {
         uri = null;
         binding.postImage.setImageURI(null);
         binding.postImage.setImageResource(0);
+        binding.removeImg.setVisibility(View.GONE);
     }
 
     private void uploadPostImgAudioAndData(Uri audioUri) {
@@ -491,14 +492,6 @@ public class AddPostFragment extends Fragment {
                 }
             }
         }
-    }
-
-    private void switchFragment() {
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.addPost, new HomeFragment());
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
     }
 
     @Override

@@ -166,10 +166,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/_8mdp"
-        android:layout_marginBottom="8dp"
         android:src="@drawable/ic_recording_icon"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/addImg" />
+        app:layout_constraintBottom_toBottomOf="@+id/addImg"
+        app:layout_constraintEnd_toStartOf="@+id/addImg"
+        app:layout_constraintTop_toTopOf="@+id/addImg" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/audioContainer"

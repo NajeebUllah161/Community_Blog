@@ -80,11 +80,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
 
         Post model = postModelArrayList.get(position);
-        //Check to restrict user to only edit his/her post
+
+        // Check to restrict user to only edit his/her post
         if (model.getPostedBy().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
             holder.binding.verticalDotsPost.setVisibility(View.VISIBLE);
 
-        //Setup Image from Firebase
+        // Setup Image from Firebase
         if (model.getPostImage() != null) {
             Picasso.get()
                     .load(model.getPostImage())
@@ -94,7 +95,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             holder.binding.postImg.setVisibility(View.GONE);
         }
 
-        //Setup Audio Recording
+        // Setup Audio Recording
         if (model.getPostRecording() != null) {
             holder.binding.audioContainer.setVisibility(View.VISIBLE);
             holder.binding.playAudio.setOnClickListener(view -> {
@@ -115,6 +116,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 });
             });
 
+            // Pause recording
             holder.binding.pauseAudio.setOnClickListener(view -> {
                 if(player!=null) {
                     player.pause();
@@ -127,6 +129,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 }
             });
 
+            // Resume recording
             holder.binding.resumeAudio.setOnClickListener(view -> {
                 if (player != null) {
                     holder.binding.resumeAudio.setVisibility(View.GONE);
@@ -145,11 +148,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             holder.binding.audioContainer.setVisibility(View.GONE);
         }
 
-        //Populate likes and comments from Firebase
+        // Populate likes and comments from Firebase
         holder.binding.like.setText(model.getPostLikes() + "");
         holder.binding.comment.setText(model.getCommentCount() + "");
 
-        //Setup post Title from Firebase
+        // Setup post Title from Firebase
         String header = model.getPostTitle();
         if (header.equals("")) {
             holder.binding.postTitleDesign.setVisibility(View.GONE);
@@ -158,7 +161,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             holder.binding.postTitleDesign.setVisibility(View.VISIBLE);
         }
 
-        //Setup post description from Firebase
+        // Setup post description from Firebase
         String description = model.getPostDescription();
         if (description.equals("")) {
             holder.binding.postDescriptionDesign.setVisibility(View.GONE);
@@ -239,15 +242,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                     }
                 });
-        holder.binding.comment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(context, CommentActivity.class);
-                intent.putExtra("postId", model.getPostId());
-                intent.putExtra("postedBy", model.getPostedBy());
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
-            }
+
+        holder.binding.comment.setOnClickListener(view -> {
+            Intent intent = new Intent(context, CommentActivity.class);
+            intent.putExtra("postId", model.getPostId());
+            intent.putExtra("postedBy", model.getPostedBy());
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
         });
 
         handlePowerMenu(holder, model);
@@ -262,7 +263,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         list.add(new PowerMenuItem("Settings"));
 
         powerMenu = new PowerMenu.Builder(context)
-                .addItemList(list) // list has "Novel", "Poerty", "Art"
+                .addItemList(list) // list has "Novel", "Poetry", "Art"
                 .setAnimation(MenuAnimation.SHOWUP_BOTTOM_RIGHT) // Animation start point (TOP | LEFT).
                 .setMenuRadius(10f) // sets the corner radius.
                 .setMenuShadow(10f) // sets the shadow.
@@ -282,6 +283,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             intent.putExtra("postImg", model.getPostImage());
             intent.putExtra("postTitle", model.getPostTitle());
             intent.putExtra("postDesc", model.getPostDescription());
+            intent.putExtra("postRecording",model.getPostRecording());
 
             //Log.d("PostIdTimeStamp", String.valueOf(model.getPostedAt()));
             powerMenu.showAsDropDown(view);
