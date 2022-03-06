@@ -43,9 +43,14 @@ import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
@@ -63,10 +68,10 @@ public class EditPostDialogue extends AppCompatActivity {
     FirebaseAuth auth;
     FirebaseDatabase firebaseDatabase;
     FirebaseStorage firebaseStorage;
-    ProgressDialog progressDialog;
-    String postImg, postTitle, postDescription, postRecording;
+    ProgressDialog progressDialog,populateDataProgressDialogue;
+    String postImg, postTitle, postDescription, postRecording, downloadedRecordingLocation;
     long timeStamp;
-    boolean hasImage = false;
+    boolean hasImage, hasRecording = false;
 
     //Recording
     String AudioSavePathInDevice = null;
@@ -89,6 +94,7 @@ public class EditPostDialogue extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
+        populateDataProgressDialogue = new ProgressDialog(this);
         progressDialog = new ProgressDialog(this);
 
         //audio recording
@@ -113,6 +119,7 @@ public class EditPostDialogue extends AppCompatActivity {
     }
 
     private void populateData() {
+        populateDataProgressDialogue.show();
         if (postImg != null) {
             new DownloadImage().execute();
             //Log.d("postImg", postImg);
@@ -122,12 +129,12 @@ public class EditPostDialogue extends AppCompatActivity {
             binding.removeImg.setVisibility(View.GONE);
         }
 
-        if(postRecording!=null){
-
-
-        }else{
-
-
+        if (postRecording != null) {
+            new DownloadRecording().execute();
+        } else {
+            populateDataProgressDialogue.dismiss();
+            binding.audioContainer.setVisibility(View.GONE);
+            binding.removeRecording.setVisibility(View.GONE);
         }
 
         String title = postTitle;
@@ -158,6 +165,12 @@ public class EditPostDialogue extends AppCompatActivity {
         progressDialog.setMessage("Please Wait...");
         progressDialog.setCancelable(false);
         progressDialog.setCanceledOnTouchOutside(false);
+
+        populateDataProgressDialogue.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        populateDataProgressDialogue.setTitle("Loading Data");
+        populateDataProgressDialogue.setMessage("Please Wait...");
+        populateDataProgressDialogue.setCancelable(false);
+        populateDataProgressDialogue.setCanceledOnTouchOutside(false);
 
         firebaseDatabase.getReference().child("Users/" + auth.getCurrentUser().getUid())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -190,7 +203,7 @@ public class EditPostDialogue extends AppCompatActivity {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String title = binding.postTitle.getText().toString();
                 String description = binding.postDescription.getText().toString();
-                if (!title.isEmpty() || !description.isEmpty() || uri != null) {
+                if (!title.isEmpty() || !description.isEmpty() || uri != null || hasImage) {
                     setButtonEnabled();
                 } else {
                     setButtonDisabled();
@@ -213,7 +226,7 @@ public class EditPostDialogue extends AppCompatActivity {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String title = binding.postTitle.getText().toString();
                 String description = binding.postDescription.getText().toString();
-                if (!description.isEmpty() || !title.isEmpty() || uri != null) {
+                if (!description.isEmpty() || !title.isEmpty() || uri != null || hasImage) {
                     setButtonEnabled();
                 } else {
                     setButtonDisabled();
@@ -281,6 +294,19 @@ public class EditPostDialogue extends AppCompatActivity {
                 Log.d("Checkpoint", "mediaPlayer and Path NOT NULL");
                 Uri recordingUri = Uri.fromFile(new File(AudioSavePathInDevice));
                 storageReference.putFile(recordingUri).addOnSuccessListener(taskSnapshot -> {
+                    storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+                        uploadPostImgAudioAndData(uri);
+                    }).addOnFailureListener(e -> {
+                        Toast.makeText(this, "Failed to download audio Url", Toast.LENGTH_SHORT).show();
+                    });
+
+                }).addOnFailureListener(e -> {
+                    Toast.makeText(this, "Failed to Upload Audio", Toast.LENGTH_SHORT).show();
+                });
+            } else if (mediaPlayer != null && downloadedRecordingLocation != null) {
+                Log.d("Checkpoint", "mediaPlayer and Download recording Path NOT NULL");
+                Uri downloadedRecordingUri = Uri.fromFile(new File(downloadedRecordingLocation));
+                storageReference.putFile(downloadedRecordingUri).addOnSuccessListener(taskSnapshot -> {
                     storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
                         uploadPostImgAudioAndData(uri);
                     }).addOnFailureListener(e -> {
@@ -446,6 +472,7 @@ public class EditPostDialogue extends AppCompatActivity {
         binding.removeRecording.setVisibility(View.GONE);
         mediaPlayer = null;
         AudioSavePathInDevice = null;
+        downloadedRecordingLocation = null;
     }
 
     private void resumeRecording() {
@@ -500,6 +527,21 @@ public class EditPostDialogue extends AppCompatActivity {
                 binding.pause.setVisibility(View.GONE);
                 binding.play.setVisibility(View.VISIBLE);
             });
+        } else if (downloadedRecordingLocation != null) {
+            mediaPlayer = new MediaPlayer();
+            try {
+                mediaPlayer.setDataSource(downloadedRecordingLocation);
+                mediaPlayer.prepare();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            mediaPlayer.start();
+            //Toast.makeText(getContext(),"Recording Playing",Toast.LENGTH_LONG).show();
+            mediaPlayer.setOnCompletionListener(mediaPlayer -> {
+                binding.pause.setVisibility(View.GONE);
+                binding.play.setVisibility(View.VISIBLE);
+            });
         } else {
             Log.d("AddPostFragment", "Audio is not recorded");
         }
@@ -521,6 +563,12 @@ public class EditPostDialogue extends AppCompatActivity {
     }
 
     private void startRecording() {
+
+        if (postRecording != null) {
+            downloadedRecordingLocation = null;
+            binding.audioContainer.setVisibility(View.GONE);
+            binding.removeRecording.setVisibility(View.GONE);
+        }
 
         if (checkPermission()) {
 
@@ -645,7 +693,7 @@ public class EditPostDialogue extends AppCompatActivity {
         binding.postBtn.setEnabled(false);
     }
 
-    private void networkThread() {
+    private void downloadPostImage() {
         Bitmap imgBitmap = null;
         URL newUrl = null;
         try {
@@ -663,6 +711,7 @@ public class EditPostDialogue extends AppCompatActivity {
             bitmapImg = finalImgBitmap;
             binding.postImage.setImageBitmap(finalImgBitmap);
             hasImage = true;
+            setButtonEnabled();
         });
     }
 
@@ -671,9 +720,71 @@ public class EditPostDialogue extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            networkThread();
+            downloadPostImage();
             return null;
         }
+    }
+
+    class DownloadRecording extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            downloadPostRecording();
+            return null;
+        }
+    }
+
+    @SuppressLint("WrongConstant")
+    private void downloadPostRecording() {
+
+        try {
+
+            File cacheDir = new File(android.os.Environment.getExternalStorageDirectory(), "Folder Name");
+            if (!cacheDir.exists())
+                cacheDir.mkdirs();
+
+            String fileLocation = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" +
+                    CreateRandomAudioFileName(5) + "AudioRecording.3gp";
+
+            File f = new File(fileLocation);
+            URL url = new URL(postRecording);
+
+            InputStream input = new BufferedInputStream(url.openStream());
+            OutputStream output = new FileOutputStream(f);
+
+            byte data[] = new byte[1024];
+            long total = 0;
+            int count = 0;
+            while ((count = input.read(data)) != -1) {
+                total++;
+                Log.e("while", "A" + total);
+
+                output.write(data, 0, count);
+            }
+
+            output.flush();
+            output.close();
+            input.close();
+
+            runOnUiThread(() -> {
+                Log.d("Checkpoint", fileLocation);
+                binding.audioContainer.setVisibility(View.VISIBLE);
+                binding.removeRecording.setVisibility(View.VISIBLE);
+                binding.play.setVisibility(View.VISIBLE);
+
+                downloadedRecordingLocation = fileLocation;
+                hasRecording = true;
+                populateDataProgressDialogue.dismiss();
+
+            });
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
 }

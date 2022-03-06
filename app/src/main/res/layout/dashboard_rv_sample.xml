@@ -160,9 +160,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/_4mdp"
-        android:visibility="gone"
         android:background="@drawable/follow_active_btn"
         android:padding="@dimen/_4mdp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/share"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/share">
@@ -194,9 +194,9 @@
         <ImageView
             android:id="@+id/resumeAudio"
             android:layout_width="wrap_content"
-            android:visibility="gone"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_resume"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"

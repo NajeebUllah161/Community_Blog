@@ -47,9 +47,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     Context context;
     PowerMenu powerMenu;
     Intent intent;
-    MediaPlayer player;
-    int length;
-
     private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
         @Override
         public void onItemClick(int position, PowerMenuItem item) {
@@ -61,6 +58,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             powerMenu.dismiss();
         }
     };
+    MediaPlayer player;
+    int length;
 
     public PostAdapter(ArrayList<Post> list, Context context) {
         this.postModelArrayList = list;
@@ -118,14 +117,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
             // Pause recording
             holder.binding.pauseAudio.setOnClickListener(view -> {
-                if(player!=null) {
+                if (player != null) {
                     player.pause();
                     length = player.getCurrentPosition();
                     holder.binding.pauseAudio.setVisibility(View.GONE);
                     holder.binding.resumeAudio.setVisibility(View.VISIBLE);
-                }
-                else{
-                    Log.d("PostAdapter","Player is null");
+                } else {
+                    Log.d("PostAdapter", "Player is null");
                 }
             });
 
@@ -141,7 +139,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         holder.binding.playAudio.setVisibility(View.VISIBLE);
                     });
                 } else {
-                    Log.d("PostAdapter","Player is null");
+                    Log.d("PostAdapter", "Player is null");
                 }
             });
         } else {
@@ -283,7 +281,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             intent.putExtra("postImg", model.getPostImage());
             intent.putExtra("postTitle", model.getPostTitle());
             intent.putExtra("postDesc", model.getPostDescription());
-            intent.putExtra("postRecording",model.getPostRecording());
+            intent.putExtra("postRecording", model.getPostRecording());
 
             //Log.d("PostIdTimeStamp", String.valueOf(model.getPostedAt()));
             powerMenu.showAsDropDown(view);
