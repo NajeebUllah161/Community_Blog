@@ -205,7 +205,7 @@ public class AddPostFragment extends Fragment {
         });
 
         binding.removeImg.setOnClickListener(view -> {
-            binding.postImage.setImageResource(0);
+            removeImgFromPost();
             binding.removeImg.setVisibility(View.GONE);
         });
 
@@ -218,6 +218,7 @@ public class AddPostFragment extends Fragment {
                     .child(new Date().getTime() + "");
 
             if (mediaPlayer != null && AudioSavePathInDevice != null) {
+                Log.d("Checkpoint", "mediaPlayer and Path NOT NULL");
                 Uri recordingUri = Uri.fromFile(new File(AudioSavePathInDevice));
                 storageReference.putFile(recordingUri).addOnSuccessListener(taskSnapshot -> {
                     storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
@@ -230,11 +231,18 @@ public class AddPostFragment extends Fragment {
                     Toast.makeText(getContext(), "Failed to Upload Audio", Toast.LENGTH_SHORT).show();
                 });
             } else {
+                Log.d("Checkpoint", "mediaPlayer and Path ARE NULL");
                 uploadPostImgAndData();
             }
         });
 
         return binding.getRoot();
+    }
+
+    private void removeImgFromPost() {
+        uri = null;
+        binding.postImage.setImageURI(null);
+        binding.postImage.setImageResource(0);
     }
 
     private void uploadPostImgAudioAndData(Uri audioUri) {
@@ -268,6 +276,7 @@ public class AddPostFragment extends Fragment {
             });
         } else {
             Post post = new Post();
+            post.setPostRecording(audioUri.toString());
             post.setPostedBy(auth.getCurrentUser().getUid());
             post.setCreatedAt(new Date().toString());
             post.setPostTitle(binding.postTitle.getText().toString());
@@ -386,6 +395,7 @@ public class AddPostFragment extends Fragment {
         if (mediaRecorder != null) {
             binding.recordingStatus.setVisibility(View.INVISIBLE);
             binding.play.setVisibility(View.VISIBLE);
+            Log.d("Length", String.valueOf(length));
             mediaRecorder.stop();
             Toast.makeText(getContext(), "Recording Completed", Toast.LENGTH_SHORT).show();
         } else {
