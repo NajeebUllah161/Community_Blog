@@ -121,9 +121,9 @@ public class EditPostDialogue extends AppCompatActivity {
     private void populateData() {
         populateDataProgressDialogue.show();
         if (postImg != null) {
-            new DownloadImage().execute();
+            //new DownloadImage().execute();
             //Log.d("postImg", postImg);
-            //Picasso.get().load(postImg).placeholder(R.drawable.placeholder).into(binding.postImage);
+            Picasso.get().load(postImg).placeholder(R.drawable.placeholder).into(binding.postImage);
         } else {
             binding.postImage.setVisibility(View.GONE);
             binding.removeImg.setVisibility(View.GONE);
@@ -171,6 +171,13 @@ public class EditPostDialogue extends AppCompatActivity {
         populateDataProgressDialogue.setMessage("Please Wait...");
         populateDataProgressDialogue.setCancelable(false);
         populateDataProgressDialogue.setCanceledOnTouchOutside(false);
+
+
+        if ((postTitle == null || postTitle.isEmpty()) && (postDescription == null || postDescription.isEmpty()) && (postImg == null || postImg.isEmpty()) && (postRecording == null || postRecording.isEmpty())) {
+            setButtonDisabled();
+        } else {
+            setButtonEnabled();
+        }
 
         firebaseDatabase.getReference().child("Users/" + auth.getCurrentUser().getUid())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -281,7 +288,6 @@ public class EditPostDialogue extends AppCompatActivity {
 
             progressDialog.show();
 
-
             final StorageReference storageReference = firebaseStorage.getReference().child("postRecordings")
                     .child(auth.getCurrentUser().getUid())
                     .child(new Date().getTime() + "");
@@ -326,7 +332,7 @@ public class EditPostDialogue extends AppCompatActivity {
         hasImage = false;
         binding.removeImg.setVisibility(View.GONE);
 
-        if(binding.postTitle.getText().toString().isEmpty() && binding.postDescription.getText().toString().isEmpty() && mediaPlayer==null){
+        if (binding.postTitle.getText().toString().isEmpty() && binding.postDescription.getText().toString().isEmpty() && mediaPlayer == null) {
             setButtonDisabled();
         }
     }
@@ -410,7 +416,7 @@ public class EditPostDialogue extends AppCompatActivity {
                 .child(new Date().getTime() + "");
 
         if (uri != null) {
-            //Log.d("Checkpoint", "if");
+            Log.d("Checkpoint", "if");
             storageReference.putFile(uri).addOnSuccessListener(taskSnapshot -> {
                 storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
                     Post post = new Post();
@@ -432,34 +438,37 @@ public class EditPostDialogue extends AppCompatActivity {
                 progressDialog.dismiss();
                 Toast.makeText(this, "Failed to Edit Post", Toast.LENGTH_SHORT).show();
             });
-        } else if (hasImage) {
-            //Log.d("Checkpoint", "else if");
-            Uri uriDownloaded = getImageUri(this, bitmapImg);
-            storageReference.putFile(uriDownloaded).addOnSuccessListener(taskSnapshot -> {
-                storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
-                    Post post = new Post();
-                    post.setPostImage(uri.toString());
-                    post.setPostedBy(auth.getCurrentUser().getUid());
-                    post.setCreatedAt(new Date().toString());
-                    post.setPostTitle(binding.postTitle.getText().toString());
-                    post.setPostDescription(binding.postDescription.getText().toString());
-                    post.setPostedAt(timeStamp);
+        }
+//        else if (hasImage) {
+//            //Log.d("Checkpoint", "else if");
+//            Uri uriDownloaded = getImageUri(this, bitmapImg);
+//            storageReference.putFile(uriDownloaded).addOnSuccessListener(taskSnapshot -> {
+//                storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+//                    Post post = new Post();
+//                    post.setPostImage(uri.toString());
+//                    post.setPostedBy(auth.getCurrentUser().getUid());
+//                    post.setCreatedAt(new Date().toString());
+//                    post.setPostTitle(binding.postTitle.getText().toString());
+//                    post.setPostDescription(binding.postDescription.getText().toString());
+//                    post.setPostedAt(timeStamp);
+//
+//                    firebaseDatabase.getReference().child("posts").child(String.valueOf(timeStamp))
+//                            .setValue(post).addOnSuccessListener(unused -> {
+//                        progressDialog.dismiss();
+//                        Toast.makeText(this, "Post Edited Successfully", Toast.LENGTH_SHORT).show();
+//                        finish();
+//                    }).addOnFailureListener(e -> progressDialog.dismiss());
+//                });
+//            }).addOnFailureListener(e -> {
+//                progressDialog.dismiss();
+//                Toast.makeText(this, "Failed to Edit Post", Toast.LENGTH_SHORT).show();
+//            });
+//        }
+        else {
 
-                    firebaseDatabase.getReference().child("posts").child(String.valueOf(timeStamp))
-                            .setValue(post).addOnSuccessListener(unused -> {
-                        progressDialog.dismiss();
-                        Toast.makeText(this, "Post Edited Successfully", Toast.LENGTH_SHORT).show();
-                        finish();
-                    }).addOnFailureListener(e -> progressDialog.dismiss());
-                });
-            }).addOnFailureListener(e -> {
-                progressDialog.dismiss();
-                Toast.makeText(this, "Failed to Edit Post", Toast.LENGTH_SHORT).show();
-            });
-        } else {
-
-            //Log.d("Checkpoint", "else");
+            Log.d("Checkpoint", "else");
             Post post = new Post();
+            post.setPostImage(postImg);
             post.setPostedBy(auth.getCurrentUser().getUid());
             post.setCreatedAt(new Date().toString());
             post.setPostTitle(binding.postTitle.getText().toString());
@@ -482,7 +491,7 @@ public class EditPostDialogue extends AppCompatActivity {
         AudioSavePathInDevice = null;
         downloadedRecordingLocation = null;
 
-        if(binding.postTitle.getText().toString().isEmpty() && binding.postDescription.getText().toString().isEmpty() && uri==null && !hasImage){
+        if (binding.postTitle.getText().toString().isEmpty() && binding.postDescription.getText().toString().isEmpty() && uri == null && !hasImage) {
             setButtonDisabled();
         }
     }
