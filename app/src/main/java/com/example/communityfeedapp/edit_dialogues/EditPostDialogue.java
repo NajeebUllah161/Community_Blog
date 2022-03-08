@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -94,7 +95,7 @@ public class EditPostDialogue extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
-        populateDataProgressDialogue = new ProgressDialog(this);
+        //populateDataProgressDialogue = new ProgressDialog(this);
         progressDialog = new ProgressDialog(this);
 
         //audio recording
@@ -119,7 +120,7 @@ public class EditPostDialogue extends AppCompatActivity {
     }
 
     private void populateData() {
-        populateDataProgressDialogue.show();
+        //populateDataProgressDialogue.show();
         if (postImg != null) {
             //new DownloadImage().execute();
             //Log.d("postImg", postImg);
@@ -130,9 +131,14 @@ public class EditPostDialogue extends AppCompatActivity {
         }
 
         if (postRecording != null) {
-            new DownloadRecording().execute();
+            //new DownloadRecording().execute();
+
+            binding.audioContainer.setVisibility(View.VISIBLE);
+            binding.removeRecording.setVisibility(View.VISIBLE);
+            binding.play.setVisibility(View.VISIBLE);
+
         } else {
-            populateDataProgressDialogue.dismiss();
+            //populateDataProgressDialogue.dismiss();
             binding.audioContainer.setVisibility(View.GONE);
             binding.removeRecording.setVisibility(View.GONE);
         }
@@ -166,11 +172,11 @@ public class EditPostDialogue extends AppCompatActivity {
         progressDialog.setCancelable(false);
         progressDialog.setCanceledOnTouchOutside(false);
 
-        populateDataProgressDialogue.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        populateDataProgressDialogue.setTitle("Loading Data");
-        populateDataProgressDialogue.setMessage("Please Wait...");
-        populateDataProgressDialogue.setCancelable(false);
-        populateDataProgressDialogue.setCanceledOnTouchOutside(false);
+//        populateDataProgressDialogue.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//        populateDataProgressDialogue.setTitle("Loading Data");
+//        populateDataProgressDialogue.setMessage("Please Wait...");
+//        populateDataProgressDialogue.setCancelable(false);
+//        populateDataProgressDialogue.setCanceledOnTouchOutside(false);
 
 
         if ((postTitle == null || postTitle.isEmpty()) && (postDescription == null || postDescription.isEmpty()) && (postImg == null || postImg.isEmpty()) && (postRecording == null || postRecording.isEmpty())) {
@@ -305,20 +311,22 @@ public class EditPostDialogue extends AppCompatActivity {
                 }).addOnFailureListener(e -> {
                     Toast.makeText(this, "Failed to Upload Audio", Toast.LENGTH_SHORT).show();
                 });
-            } else if (mediaPlayer != null && downloadedRecordingLocation != null) {
-                Log.d("Checkpoint", "mediaPlayer and Download recording Path NOT NULL");
-                Uri downloadedRecordingUri = Uri.fromFile(new File(downloadedRecordingLocation));
-                storageReference.putFile(downloadedRecordingUri).addOnSuccessListener(taskSnapshot -> {
-                    storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
-                        uploadPostImgAudioAndData(uri);
-                    }).addOnFailureListener(e -> {
-                        Toast.makeText(this, "Failed to download audio Url", Toast.LENGTH_SHORT).show();
-                    });
-
-                }).addOnFailureListener(e -> {
-                    Toast.makeText(this, "Failed to Upload Audio", Toast.LENGTH_SHORT).show();
-                });
-            } else {
+            }
+//            else if (mediaPlayer != null && downloadedRecordingLocation != null) {
+//                Log.d("Checkpoint", "mediaPlayer and Download recording Path NOT NULL");
+//                Uri downloadedRecordingUri = Uri.fromFile(new File(downloadedRecordingLocation));
+//                storageReference.putFile(downloadedRecordingUri).addOnSuccessListener(taskSnapshot -> {
+//                    storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+//                        uploadPostImgAudioAndData(uri);
+//                    }).addOnFailureListener(e -> {
+//                        Toast.makeText(this, "Failed to download audio Url", Toast.LENGTH_SHORT).show();
+//                    });
+//
+//                }).addOnFailureListener(e -> {
+//                    Toast.makeText(this, "Failed to Upload Audio", Toast.LENGTH_SHORT).show();
+//                });
+//            }
+            else {
                 Log.d("Checkpoint", "mediaPlayer and Path ARE NULL");
                 uploadPostImgAndData();
             }
@@ -366,33 +374,36 @@ public class EditPostDialogue extends AppCompatActivity {
                 progressDialog.dismiss();
                 Toast.makeText(this, "Failed to Post", Toast.LENGTH_SHORT).show();
             });
-        } else if (hasImage) {
-            //Log.d("Checkpoint", "else if");
-            Uri uriDownloaded = getImageUri(this, bitmapImg);
-            storageReference.putFile(uriDownloaded).addOnSuccessListener(taskSnapshot -> {
-                storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
-                    Post post = new Post();
-                    post.setPostImage(uri.toString());
-                    post.setPostRecording(audioUri.toString());
-                    post.setPostedBy(auth.getCurrentUser().getUid());
-                    post.setCreatedAt(new Date().toString());
-                    post.setPostTitle(binding.postTitle.getText().toString());
-                    post.setPostDescription(binding.postDescription.getText().toString());
-                    post.setPostedAt(timeStamp);
-
-                    firebaseDatabase.getReference().child("posts").child(String.valueOf(timeStamp))
-                            .setValue(post).addOnSuccessListener(unused -> {
-                        progressDialog.dismiss();
-                        Toast.makeText(this, "Post Edited Successfully", Toast.LENGTH_SHORT).show();
-                        finish();
-                    }).addOnFailureListener(e -> progressDialog.dismiss());
-                });
-            }).addOnFailureListener(e -> {
-                progressDialog.dismiss();
-                Toast.makeText(this, "Failed to Edit Post", Toast.LENGTH_SHORT).show();
-            });
-        } else {
+        }
+//        else if (hasImage) {
+//            //Log.d("Checkpoint", "else if");
+//            Uri uriDownloaded = getImageUri(this, bitmapImg);
+//            storageReference.putFile(uriDownloaded).addOnSuccessListener(taskSnapshot -> {
+//                storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+//                    Post post = new Post();
+//                    post.setPostImage(uri.toString());
+//                    post.setPostRecording(audioUri.toString());
+//                    post.setPostedBy(auth.getCurrentUser().getUid());
+//                    post.setCreatedAt(new Date().toString());
+//                    post.setPostTitle(binding.postTitle.getText().toString());
+//                    post.setPostDescription(binding.postDescription.getText().toString());
+//                    post.setPostedAt(timeStamp);
+//
+//                    firebaseDatabase.getReference().child("posts").child(String.valueOf(timeStamp))
+//                            .setValue(post).addOnSuccessListener(unused -> {
+//                        progressDialog.dismiss();
+//                        Toast.makeText(this, "Post Edited Successfully", Toast.LENGTH_SHORT).show();
+//                        finish();
+//                    }).addOnFailureListener(e -> progressDialog.dismiss());
+//                });
+//            }).addOnFailureListener(e -> {
+//                progressDialog.dismiss();
+//                Toast.makeText(this, "Failed to Edit Post", Toast.LENGTH_SHORT).show();
+//            });
+//        }
+        else {
             Post post = new Post();
+            post.setPostImage(postImg);
             post.setPostRecording(audioUri.toString());
             post.setPostedBy(auth.getCurrentUser().getUid());
             post.setCreatedAt(new Date().toString());
@@ -421,6 +432,7 @@ public class EditPostDialogue extends AppCompatActivity {
                 storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
                     Post post = new Post();
                     post.setPostImage(uri.toString());
+                    post.setPostRecording(postRecording);
                     post.setPostedBy(auth.getCurrentUser().getUid());
                     post.setCreatedAt(new Date().toString());
                     post.setPostTitle(binding.postTitle.getText().toString());
@@ -469,6 +481,7 @@ public class EditPostDialogue extends AppCompatActivity {
             Log.d("Checkpoint", "else");
             Post post = new Post();
             post.setPostImage(postImg);
+            post.setPostRecording(postRecording);
             post.setPostedBy(auth.getCurrentUser().getUid());
             post.setCreatedAt(new Date().toString());
             post.setPostTitle(binding.postTitle.getText().toString());
@@ -548,22 +561,35 @@ public class EditPostDialogue extends AppCompatActivity {
                 binding.pause.setVisibility(View.GONE);
                 binding.play.setVisibility(View.VISIBLE);
             });
-        } else if (downloadedRecordingLocation != null) {
+        }
+//        else if (downloadedRecordingLocation != null) {
+//            mediaPlayer = new MediaPlayer();
+//            try {
+//                mediaPlayer.setDataSource(downloadedRecordingLocation);
+//                mediaPlayer.prepare();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//
+//            mediaPlayer.start();
+//            //Toast.makeText(getContext(),"Recording Playing",Toast.LENGTH_LONG).show();
+//            mediaPlayer.setOnCompletionListener(mediaPlayer -> {
+//                binding.pause.setVisibility(View.GONE);
+//                binding.play.setVisibility(View.VISIBLE);
+//            });
+//        }
+        else {
+
             mediaPlayer = new MediaPlayer();
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             try {
-                mediaPlayer.setDataSource(downloadedRecordingLocation);
+                mediaPlayer.setDataSource(postRecording);
                 mediaPlayer.prepare();
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             mediaPlayer.start();
-            //Toast.makeText(getContext(),"Recording Playing",Toast.LENGTH_LONG).show();
-            mediaPlayer.setOnCompletionListener(mediaPlayer -> {
-                binding.pause.setVisibility(View.GONE);
-                binding.play.setVisibility(View.VISIBLE);
-            });
-        } else {
             Log.d("AddPostFragment", "Audio is not recorded");
         }
     }
