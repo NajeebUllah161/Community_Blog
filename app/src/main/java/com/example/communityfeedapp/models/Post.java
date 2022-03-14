@@ -5,6 +5,7 @@ public class Post {
     private String postId;
     private String postImage;
     private String postRecording;
+    private String recTime;
     private String postedBy;
     private String postTitle;
     private String postDescription;
@@ -94,6 +95,14 @@ public class Post {
 
     public void setPostDescription(String postDescription) {
         this.postDescription = postDescription;
+    }
+
+    public String getRecTime() {
+        return recTime;
+    }
+
+    public void setRecTime(String recTime) {
+        this.recTime = recTime;
     }
 
     public String getPostTitle() {

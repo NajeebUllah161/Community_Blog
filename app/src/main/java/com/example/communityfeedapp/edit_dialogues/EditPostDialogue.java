@@ -70,7 +70,7 @@ public class EditPostDialogue extends AppCompatActivity {
     FirebaseDatabase firebaseDatabase;
     FirebaseStorage firebaseStorage;
     ProgressDialog progressDialog, populateDataProgressDialogue;
-    String postImg, postTitle, postDescription, postRecording, downloadedRecordingLocation;
+    String postImg, postTitle, postDescription, postRecording, downloadedRecordingLocation, recTime;
     long timeStamp;
     boolean hasImage, hasRecording = false;
 
@@ -107,7 +107,7 @@ public class EditPostDialogue extends AppCompatActivity {
         postTitle = intent.getStringExtra("postTitle");
         postDescription = intent.getStringExtra("postDesc");
         postRecording = intent.getStringExtra("postRecording");
-
+        recTime = intent.getStringExtra("recTime");
         /*
         Log.d("timeStamp", String.valueOf(timeStamp));
         Log.d("postImg", String.valueOf(postImg));
@@ -296,9 +296,9 @@ public class EditPostDialogue extends AppCompatActivity {
 
             final StorageReference storageReference = firebaseStorage.getReference().child("postRecordings")
                     .child(auth.getCurrentUser().getUid())
-                    .child(new Date().getTime() + "");
+                    .child(recTime + "");
 
-            if (mediaPlayer != null && AudioSavePathInDevice != null) {
+            if (mediaRecorder != null && AudioSavePathInDevice != null) {
                 Log.d("Checkpoint", "mediaPlayer and Path NOT NULL");
                 Uri recordingUri = Uri.fromFile(new File(AudioSavePathInDevice));
                 storageReference.putFile(recordingUri).addOnSuccessListener(taskSnapshot -> {
@@ -349,7 +349,7 @@ public class EditPostDialogue extends AppCompatActivity {
 
         final StorageReference storageReference = firebaseStorage.getReference().child("posts")
                 .child(auth.getCurrentUser().getUid())
-                .child(new Date().getTime() + "");
+                .child(recTime + "");
 
         if (this.uri != null) {
             storageReference.putFile(this.uri).addOnSuccessListener(taskSnapshot -> {
@@ -357,6 +357,7 @@ public class EditPostDialogue extends AppCompatActivity {
                     Post post = new Post();
                     post.setPostImage(uri.toString());
                     post.setPostRecording(audioUri.toString());
+                    post.setRecTime(recTime);
                     post.setPostedBy(auth.getCurrentUser().getUid());
                     post.setCreatedAt(new Date().toString());
                     post.setPostTitle(binding.postTitle.getText().toString());
@@ -405,6 +406,7 @@ public class EditPostDialogue extends AppCompatActivity {
             Post post = new Post();
             post.setPostImage(postImg);
             post.setPostRecording(audioUri.toString());
+            post.setRecTime(recTime);
             post.setPostedBy(auth.getCurrentUser().getUid());
             post.setCreatedAt(new Date().toString());
             post.setPostTitle(binding.postTitle.getText().toString());
@@ -424,7 +426,7 @@ public class EditPostDialogue extends AppCompatActivity {
 
         final StorageReference storageReference = firebaseStorage.getReference().child("posts")
                 .child(auth.getCurrentUser().getUid())
-                .child(new Date().getTime() + "");
+                .child(recTime + "");
 
         if (uri != null) {
             Log.d("Checkpoint", "if");
@@ -433,6 +435,7 @@ public class EditPostDialogue extends AppCompatActivity {
                     Post post = new Post();
                     post.setPostImage(uri.toString());
                     post.setPostRecording(postRecording);
+                    post.setRecTime(recTime);
                     post.setPostedBy(auth.getCurrentUser().getUid());
                     post.setCreatedAt(new Date().toString());
                     post.setPostTitle(binding.postTitle.getText().toString());
@@ -482,6 +485,7 @@ public class EditPostDialogue extends AppCompatActivity {
             Post post = new Post();
             post.setPostImage(postImg);
             post.setPostRecording(postRecording);
+            post.setRecTime(recTime);
             post.setPostedBy(auth.getCurrentUser().getUid());
             post.setCreatedAt(new Date().toString());
             post.setPostTitle(binding.postTitle.getText().toString());
@@ -596,13 +600,27 @@ public class EditPostDialogue extends AppCompatActivity {
 
     private void stopRecording() {
 
+        boolean isAudio = true;
         if (mediaRecorder != null) {
             binding.recordingStatus.setVisibility(View.INVISIBLE);
             binding.play.setVisibility(View.VISIBLE);
             Log.d("Length", String.valueOf(length));
-            mediaRecorder.stop();
-            Toast.makeText(this, "Recording Completed", Toast.LENGTH_SHORT).show();
-            setButtonEnabled();
+            try {
+                mediaRecorder.stop();
+            } catch (RuntimeException e) {
+                Log.d("CheckAudio", "check" + AudioSavePathInDevice + " " + mediaPlayer + " " + mediaRecorder);
+                isAudio = false;
+            }
+            if (isAudio) {
+                Toast.makeText(this, "Recording Completed", Toast.LENGTH_SHORT).show();
+                setButtonEnabled();
+            } else {
+                Toast.makeText(this, "Error! Record Again..", Toast.LENGTH_SHORT).show();
+                AudioSavePathInDevice = null;
+                mediaRecorder = null;
+                binding.audioContainer.setVisibility(View.GONE);
+                binding.removeRecording.setVisibility(View.GONE);
+            }
         } else {
             Log.d("AddPostFragment", "Audio is not recorded");
             binding.audioContainer.setVisibility(View.GONE);

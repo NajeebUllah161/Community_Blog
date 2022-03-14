@@ -282,6 +282,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             intent.putExtra("postTitle", model.getPostTitle());
             intent.putExtra("postDesc", model.getPostDescription());
             intent.putExtra("postRecording", model.getPostRecording());
+            intent.putExtra("recTime",model.getRecTime());
 
             //Log.d("PostIdTimeStamp", String.valueOf(model.getPostedAt()));
             powerMenu.showAsDropDown(view);

@@ -65,6 +65,8 @@ public class AddPostFragment extends Fragment {
     String RandomAudioFileName = "ABCDEFGHIJKLMNOP";
     MediaPlayer mediaPlayer;
     int length;
+    long timeStamp;
+
 
     public AddPostFragment() {
         // Required empty public constructor
@@ -207,11 +209,13 @@ public class AddPostFragment extends Fragment {
 
             progressDialog.show();
 
+            timeStamp = new Date().getTime();
             final StorageReference storageReference = firebaseStorage.getReference().child("postRecordings")
                     .child(auth.getCurrentUser().getUid())
                     .child(new Date().getTime() + "");
 
-            if (mediaPlayer != null && AudioSavePathInDevice != null) {
+            Log.d("CheckNull", AudioSavePathInDevice + " " + mediaRecorder);
+            if (mediaRecorder != null && AudioSavePathInDevice != null) {
                 Log.d("Checkpoint", "mediaPlayer and Path NOT NULL");
                 Uri recordingUri = Uri.fromFile(new File(AudioSavePathInDevice));
                 storageReference.putFile(recordingUri).addOnSuccessListener(taskSnapshot -> {
@@ -240,7 +244,7 @@ public class AddPostFragment extends Fragment {
         mediaPlayer = null;
         AudioSavePathInDevice = null;
 
-        if(binding.postTitle.getText().toString().isEmpty() && binding.postDescription.getText().toString().isEmpty() && uri==null){
+        if (binding.postTitle.getText().toString().isEmpty() && binding.postDescription.getText().toString().isEmpty() && uri == null) {
             setButtonDisabled();
         }
     }
@@ -250,7 +254,7 @@ public class AddPostFragment extends Fragment {
         binding.postImage.setImageURI(null);
         binding.postImage.setImageResource(0);
         binding.removeImg.setVisibility(View.GONE);
-        if(binding.postTitle.getText().toString().isEmpty() && binding.postDescription.getText().toString().isEmpty() && mediaPlayer==null){
+        if (binding.postTitle.getText().toString().isEmpty() && binding.postDescription.getText().toString().isEmpty() && mediaPlayer == null) {
             setButtonDisabled();
         }
 
@@ -260,7 +264,7 @@ public class AddPostFragment extends Fragment {
 
         final StorageReference storageReference = firebaseStorage.getReference().child("posts")
                 .child(auth.getCurrentUser().getUid())
-                .child(new Date().getTime() + "");
+                .child(timeStamp + "");
 
         if (this.uri != null) {
             storageReference.putFile(this.uri).addOnSuccessListener(taskSnapshot -> {
@@ -268,6 +272,7 @@ public class AddPostFragment extends Fragment {
                     Post post = new Post();
                     post.setPostImage(uri.toString());
                     post.setPostRecording(audioUri.toString());
+                    post.setRecTime(String.valueOf(timeStamp));
                     post.setPostedBy(auth.getCurrentUser().getUid());
                     post.setCreatedAt(new Date().toString());
                     post.setPostTitle(binding.postTitle.getText().toString());
@@ -288,6 +293,7 @@ public class AddPostFragment extends Fragment {
         } else {
             Post post = new Post();
             post.setPostRecording(audioUri.toString());
+            post.setRecTime(String.valueOf(timeStamp));
             post.setPostedBy(auth.getCurrentUser().getUid());
             post.setCreatedAt(new Date().toString());
             post.setPostTitle(binding.postTitle.getText().toString());
@@ -307,13 +313,14 @@ public class AddPostFragment extends Fragment {
 
         final StorageReference storageReference = firebaseStorage.getReference().child("posts")
                 .child(auth.getCurrentUser().getUid())
-                .child(new Date().getTime() + "");
+                .child(timeStamp + "");
 
         if (uri != null) {
             storageReference.putFile(uri).addOnSuccessListener(taskSnapshot -> {
                 storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
                     Post post = new Post();
                     post.setPostImage(uri.toString());
+                    post.setRecTime(String.valueOf(timeStamp));
                     post.setPostedBy(auth.getCurrentUser().getUid());
                     post.setCreatedAt(new Date().toString());
                     post.setPostTitle(binding.postTitle.getText().toString());
@@ -403,13 +410,27 @@ public class AddPostFragment extends Fragment {
 
     private void stopRecording() {
 
+        boolean isAudio = true;
         if (mediaRecorder != null) {
             binding.recordingStatus.setVisibility(View.INVISIBLE);
             binding.play.setVisibility(View.VISIBLE);
             Log.d("Length", String.valueOf(length));
-            mediaRecorder.stop();
-            Toast.makeText(getContext(), "Recording Completed", Toast.LENGTH_SHORT).show();
-            setButtonEnabled();
+            try {
+                mediaRecorder.stop();
+            } catch (RuntimeException e) {
+                Log.d("CheckAudio", "check" + AudioSavePathInDevice + " " + mediaPlayer + " " + mediaRecorder);
+                isAudio = false;
+            }
+            if (isAudio) {
+                Toast.makeText(getContext(), "Recording Completed", Toast.LENGTH_SHORT).show();
+                setButtonEnabled();
+            } else {
+                Toast.makeText(getContext(), "Error! Record Again..", Toast.LENGTH_SHORT).show();
+                AudioSavePathInDevice = null;
+                mediaRecorder = null;
+                binding.audioContainer.setVisibility(View.GONE);
+                binding.removeRecording.setVisibility(View.GONE);
+            }
         } else {
             Log.d("AddPostFragment", "Audio is not recorded");
             binding.audioContainer.setVisibility(View.GONE);
