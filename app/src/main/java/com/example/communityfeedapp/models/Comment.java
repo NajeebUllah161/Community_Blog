@@ -4,6 +4,15 @@ public class Comment {
     private String commentBody;
     private long commentedAt;
     private String commentedBy;
+    private boolean isVerified;
+
+    public boolean isVerified() {
+        return isVerified;
+    }
+
+    public void setVerified(boolean verified) {
+        isVerified = verified;
+    }
 
     public Comment() {
     }

@@ -78,6 +78,10 @@ dependencies {
 
     //Power Menu
     implementation "com.github.skydoves:powermenu:2.2.0"
+    implementation 'com.google.firebase:firebase-core:17.2.1'
+
+    implementation 'com.google.firebase:firebase-messaging:20.0.0'
+    implementation 'com.google.firebase:firebase-iid:17.0.0'
 
 }
 apply plugin: 'com.google.gms.google-services'

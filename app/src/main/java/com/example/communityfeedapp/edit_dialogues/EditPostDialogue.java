@@ -172,7 +172,7 @@ public class EditPostDialogue extends AppCompatActivity {
         progressDialog.setCancelable(false);
         progressDialog.setCanceledOnTouchOutside(false);
 
-//        populateDataProgressDialogue.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+    //        populateDataProgressDialogue.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 //        populateDataProgressDialogue.setTitle("Loading Data");
 //        populateDataProgressDialogue.setMessage("Please Wait...");
 //        populateDataProgressDialogue.setCancelable(false);
@@ -312,7 +312,7 @@ public class EditPostDialogue extends AppCompatActivity {
                     Toast.makeText(this, "Failed to Upload Audio", Toast.LENGTH_SHORT).show();
                 });
             }
-//            else if (mediaPlayer != null && downloadedRecordingLocation != null) {
+    //            else if (mediaPlayer != null && downloadedRecordingLocation != null) {
 //                Log.d("Checkpoint", "mediaPlayer and Download recording Path NOT NULL");
 //                Uri downloadedRecordingUri = Uri.fromFile(new File(downloadedRecordingLocation));
 //                storageReference.putFile(downloadedRecordingUri).addOnSuccessListener(taskSnapshot -> {
@@ -723,12 +723,12 @@ public class EditPostDialogue extends AppCompatActivity {
         }
     }
 
-    public Uri getImageUri(Context inContext, Bitmap inImage) {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
-        return Uri.parse(path);
-    }
+    //    public Uri getImageUri(Context inContext, Bitmap inImage) {
+//        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+//        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+//        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+//        return Uri.parse(path);
+//    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -759,98 +759,98 @@ public class EditPostDialogue extends AppCompatActivity {
         binding.postBtn.setEnabled(false);
     }
 
-    private void downloadPostImage() {
-        Bitmap imgBitmap = null;
-        URL newUrl = null;
-        try {
-            newUrl = new URL(postImg);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        try {
-            imgBitmap = BitmapFactory.decodeStream(newUrl.openConnection().getInputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Bitmap finalImgBitmap = imgBitmap;
-        runOnUiThread(() -> {
-            bitmapImg = finalImgBitmap;
-            binding.postImage.setImageBitmap(finalImgBitmap);
-            hasImage = true;
-            setButtonEnabled();
-        });
-    }
+    //    private void downloadPostImage() {
+//        Bitmap imgBitmap = null;
+//        URL newUrl = null;
+//        try {
+//            newUrl = new URL(postImg);
+//        } catch (MalformedURLException e) {
+//            e.printStackTrace();
+//        }
+//        try {
+//            imgBitmap = BitmapFactory.decodeStream(newUrl.openConnection().getInputStream());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        Bitmap finalImgBitmap = imgBitmap;
+//        runOnUiThread(() -> {
+//            bitmapImg = finalImgBitmap;
+//            binding.postImage.setImageBitmap(finalImgBitmap);
+//            hasImage = true;
+//            setButtonEnabled();
+//        });
+//    }
 
-    @SuppressLint("WrongConstant")
-    private void downloadPostRecording() {
+//    @SuppressLint("WrongConstant")
+//    private void downloadPostRecording() {
+//
+//        try {
+//
+//            File cacheDir = new File(android.os.Environment.getExternalStorageDirectory(), "Folder Name");
+//            if (!cacheDir.exists())
+//                cacheDir.mkdirs();
+//
+//            String fileLocation = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" +
+//                    CreateRandomAudioFileName(5) + "AudioRecording.3gp";
+//
+//            File f = new File(fileLocation);
+//            URL url = new URL(postRecording);
+//
+//            InputStream input = new BufferedInputStream(url.openStream());
+//            OutputStream output = new FileOutputStream(f);
+//
+//            byte data[] = new byte[1024];
+//            long total = 0;
+//            int count = 0;
+//            while ((count = input.read(data)) != -1) {
+//                total++;
+//                Log.e("while", "A" + total);
+//
+//                output.write(data, 0, count);
+//            }
+//
+//            output.flush();
+//            output.close();
+//            input.close();
+//
+//            runOnUiThread(() -> {
+//                Log.d("Checkpoint", fileLocation);
+//                binding.audioContainer.setVisibility(View.VISIBLE);
+//                binding.removeRecording.setVisibility(View.VISIBLE);
+//                binding.play.setVisibility(View.VISIBLE);
+//
+//                downloadedRecordingLocation = fileLocation;
+//                hasRecording = true;
+//                populateDataProgressDialogue.dismiss();
+//
+//            });
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (MalformedURLException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
 
-        try {
-
-            File cacheDir = new File(android.os.Environment.getExternalStorageDirectory(), "Folder Name");
-            if (!cacheDir.exists())
-                cacheDir.mkdirs();
-
-            String fileLocation = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" +
-                    CreateRandomAudioFileName(5) + "AudioRecording.3gp";
-
-            File f = new File(fileLocation);
-            URL url = new URL(postRecording);
-
-            InputStream input = new BufferedInputStream(url.openStream());
-            OutputStream output = new FileOutputStream(f);
-
-            byte data[] = new byte[1024];
-            long total = 0;
-            int count = 0;
-            while ((count = input.read(data)) != -1) {
-                total++;
-                Log.e("while", "A" + total);
-
-                output.write(data, 0, count);
-            }
-
-            output.flush();
-            output.close();
-            input.close();
-
-            runOnUiThread(() -> {
-                Log.d("Checkpoint", fileLocation);
-                binding.audioContainer.setVisibility(View.VISIBLE);
-                binding.removeRecording.setVisibility(View.VISIBLE);
-                binding.play.setVisibility(View.VISIBLE);
-
-                downloadedRecordingLocation = fileLocation;
-                hasRecording = true;
-                populateDataProgressDialogue.dismiss();
-
-            });
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    class DownloadImage extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            downloadPostImage();
-            return null;
-        }
-    }
-
-    class DownloadRecording extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            downloadPostRecording();
-            return null;
-        }
-    }
+//    @SuppressLint("StaticFieldLeak")
+//    class DownloadImage extends AsyncTask<Void, Void, Void> {
+//
+//        @Override
+//        protected Void doInBackground(Void... voids) {
+//            downloadPostImage();
+//            return null;
+//        }
+//    }
+//
+//    class DownloadRecording extends AsyncTask<Void, Void, Void> {
+//
+//        @Override
+//        protected Void doInBackground(Void... voids) {
+//            downloadPostRecording();
+//            return null;
+//        }
+//    }
 
 }

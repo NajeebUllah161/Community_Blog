@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -40,7 +41,6 @@ public class CommentActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
         binding = ActivityCommentBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -111,7 +111,7 @@ public class CommentActivity extends AppCompatActivity {
 
             firebaseDatabase.getReference()
                     .child("posts/" + postId + "/comments")
-                    .push()
+                    .child(comment.getCommentedAt() + "")
                     .setValue(comment)
                     .addOnSuccessListener(unused -> firebaseDatabase.getReference()
                             .child("posts/" + postId + "/commentCount")
@@ -153,7 +153,7 @@ public class CommentActivity extends AppCompatActivity {
                             }));
         });
 
-        CommentAdapter commentAdapter = new CommentAdapter(this, list);
+        CommentAdapter commentAdapter = new CommentAdapter(this, list, postId);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         binding.commentRv.setLayoutManager(linearLayoutManager);
         binding.commentRv.setAdapter(commentAdapter);
@@ -177,6 +177,7 @@ public class CommentActivity extends AppCompatActivity {
                         Toast.makeText(CommentActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+
     }
 
     @Override

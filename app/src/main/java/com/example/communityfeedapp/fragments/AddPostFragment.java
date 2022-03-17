@@ -8,6 +8,8 @@ import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.Editable;
@@ -21,6 +23,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -32,18 +35,31 @@ import com.example.communityfeedapp.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Random;
+
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -67,6 +83,12 @@ public class AddPostFragment extends Fragment {
     int length;
     long timeStamp;
 
+    //Broadcast Notification
+    OkHttpClient mClient;
+    public static final String FCM_SEND = "https://fcm.googleapis.com/fcm/send";
+    public static final MediaType JSON
+            = MediaType.parse("application/json; charset=utf-8");
+    private DatabaseReference mDatabase;
 
     public AddPostFragment() {
         // Required empty public constructor
@@ -84,6 +106,8 @@ public class AddPostFragment extends Fragment {
         //audio recording
         random = new Random();
 
+        //Broadcast Notification
+
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -98,6 +122,8 @@ public class AddPostFragment extends Fragment {
         progressDialog.setMessage("Please Wait...");
         progressDialog.setCancelable(false);
         progressDialog.setCanceledOnTouchOutside(false);
+
+        mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://communityfeedapp-default-rtdb.firebaseio.com/").getRef();
 
         firebaseDatabase.getReference().child("Users/" + auth.getCurrentUser().getUid())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -205,6 +231,8 @@ public class AddPostFragment extends Fragment {
             removeImgFromPost();
         });
 
+        setFireBaseNotificationId();
+
         binding.postBtn.setOnClickListener(view -> {
 
             progressDialog.show();
@@ -232,10 +260,42 @@ public class AddPostFragment extends Fragment {
                 Log.d("Checkpoint", "mediaPlayer and Path ARE NULL");
                 uploadPostImgAndData();
             }
-
         });
 
         return binding.getRoot();
+    }
+
+    private ArrayList<String> getFireBaseNotificationId() {
+        mClient = new OkHttpClient();
+        ArrayList<String> myArrayList = new ArrayList<>();
+        firebaseDatabase.getReference().child("system").child("notification").addValueEventListener(new ValueEventListener() {
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot != null) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        String key = dataSnapshot.getKey();
+                        String description = dataSnapshot.child("notification_id").getValue(String.class);
+                        Log.d("KeyDesc", key + " " + description);
+                        myArrayList.add(description);
+
+                    }
+                    JSONArray regArray = new JSONArray(myArrayList);
+
+                    Log.d("Checkpointt", myArrayList + "");
+                    sendMessage(regArray, "Complain Update", "Your complain is updated, See what action is taken", "icon", "message");
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        return myArrayList;
+
     }
 
     private void removeRecording() {
@@ -283,6 +343,7 @@ public class AddPostFragment extends Fragment {
                             .setValue(post).addOnSuccessListener(unused -> {
                         progressDialog.dismiss();
                         Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
+                        sendNotification();
                         //switchFragment();
                     }).addOnFailureListener(e -> progressDialog.dismiss());
                 });
@@ -309,6 +370,10 @@ public class AddPostFragment extends Fragment {
         }
     }
 
+    private void sendNotification() {
+        getFireBaseNotificationId();
+    }
+
     private void uploadPostImgAndData() {
 
         final StorageReference storageReference = firebaseStorage.getReference().child("posts")
@@ -331,6 +396,7 @@ public class AddPostFragment extends Fragment {
                             .setValue(post).addOnSuccessListener(unused -> {
                         progressDialog.dismiss();
                         Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
+                        sendNotification();
                         //switchFragment();
                     }).addOnFailureListener(e -> progressDialog.dismiss());
                 });
@@ -350,6 +416,7 @@ public class AddPostFragment extends Fragment {
                     .setValue(post).addOnSuccessListener(unused -> {
                 progressDialog.dismiss();
                 Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
+                sendNotification();
                 //switchFragment();
             }).addOnFailureListener(e -> progressDialog.dismiss());
         }
@@ -541,6 +608,73 @@ public class AddPostFragment extends Fragment {
                 }
             }
         }
+    }
+
+    public void sendMessage(final JSONArray recipients, final String title, final String body, final String icon, final String message) {
+
+        new AsyncTask<String, String, String>() {
+            @SuppressLint("StaticFieldLeak")
+            @RequiresApi(api = Build.VERSION_CODES.Q)
+            @Override
+            protected String doInBackground(String... params) {
+                try {
+                    JSONObject root = new JSONObject();
+                    JSONObject notification = new JSONObject();
+                    notification.put("body", body);
+                    notification.put("title", title);
+                    notification.put("icon", icon);
+
+                    JSONObject data = new JSONObject();
+                    data.put("message", message);
+                    root.put("notification", notification);
+                    root.put("data", data);
+                    root.put("registration_ids", recipients);
+
+                    String result = postToFCM(root.toString());
+                    Log.d("TAG", "Result: " + result);
+                    return result;
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                try {
+                    JSONObject resultJson = new JSONObject(result);
+                    int success, failure;
+                    success = resultJson.getInt("success");
+                    failure = resultJson.getInt("failure");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.execute();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    String postToFCM(String bodyString) throws IOException {
+        Log.d("Checkpointt", "here");
+        RequestBody body = RequestBody.create(JSON, bodyString);
+        Request request = new Request.Builder()
+                .url(FCM_SEND)
+                .post(body)
+                .addHeader("Authorization", "key=AAAAaGx1iT8:APA91bEa9jz6wQVGu1lble4o2DRrVhm5b0omMS1T5F5it6s9KOl2TDoXYPOQxz3I1g6P37-APfKbfGnFYvZ1u0RaYexbgGsZ_ipFoFDIx3kbpBBW1GPJCgcDQMNriXjvMAC-fuf363Ek")
+                .build();
+        Response response = mClient.newCall(request).execute();
+        return response.body().string();
+    }
+
+    private void setFireBaseNotificationId() {
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                String token = task.getResult().getToken();
+                HashMap<String, String> hashMap = new HashMap<>();
+                hashMap.put("notification_id", token);
+                mDatabase.child("system").child("notification").child(auth.getCurrentUser().getUid()).setValue(hashMap);
+            }
+        });
     }
 
     private void setButtonEnabled() {

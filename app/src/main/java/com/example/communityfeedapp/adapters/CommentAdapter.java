@@ -1,7 +1,9 @@
 package com.example.communityfeedapp.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,10 +29,13 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
 
     Context context;
     ArrayList<Comment> list;
+    String postId;
+    String commentId;
 
-    public CommentAdapter(Context context, ArrayList<Comment> list) {
+    public CommentAdapter(Context context, ArrayList<Comment> list, String postId) {
         this.context = context;
         this.list = list;
+        this.postId = postId;
     }
 
     @NonNull
@@ -47,6 +52,56 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
         Comment comment = list.get(position);
         String timeOfComment = TimeAgo.using(comment.getCommentedAt());
         holder.binding.time.setText(timeOfComment);
+
+        FirebaseDatabase.getInstance().getReference()
+                .child("posts/" + postId + "/comments/" + comment.getCommentedAt())
+                .addValueEventListener(new ValueEventListener() {
+                    @SuppressLint("NotifyDataSetChanged")
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        Comment comment = snapshot.getValue(Comment.class);
+                        if (comment.isVerified()) {
+                            Log.d("IsVerified", String.valueOf(comment.isVerified()));
+                            holder.binding.commentCheckbox.setVisibility(View.VISIBLE);
+                            holder.binding.commentCheckbox.setChecked(true);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        holder.binding.commentSample.setOnClickListener(view -> {
+            if (!holder.binding.commentCheckbox.isChecked()) {
+
+                holder.binding.commentCheckbox.setChecked(true);
+                holder.binding.commentCheckbox.setVisibility(View.VISIBLE);
+
+                FirebaseDatabase.getInstance().getReference()
+                        .child("posts/" + postId + "/comments/" + comment.getCommentedAt())
+                        .addValueEventListener(new ValueEventListener() {
+                            @SuppressLint("NotifyDataSetChanged")
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                Log.d("Key", snapshot.getKey());
+                                commentId = snapshot.getKey();
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                comment.setVerified(true);
+                FirebaseDatabase.getInstance().getReference()
+                        .child("posts/" + postId + "/comments")
+                        .child(comment.getCommentedAt() + "")
+                        .setValue(comment);
+            }
+        });
 
         FirebaseDatabase.getInstance()
                 .getReference()
