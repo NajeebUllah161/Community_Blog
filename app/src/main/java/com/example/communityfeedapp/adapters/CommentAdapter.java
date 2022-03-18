@@ -1,6 +1,7 @@
 package com.example.communityfeedapp.adapters;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.text.Html;
 import android.util.Log;
@@ -17,11 +18,14 @@ import com.example.communityfeedapp.databinding.CommentSampleBinding;
 import com.example.communityfeedapp.models.Comment;
 import com.example.communityfeedapp.models.User;
 import com.github.marlonlom.utilities.timeago.TimeAgo;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -31,6 +35,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
     ArrayList<Comment> list;
     String postId;
     String commentId;
+    boolean isOwner;
 
     public CommentAdapter(Context context, ArrayList<Comment> list, String postId) {
         this.context = context;
@@ -73,35 +78,80 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                     }
                 });
 
-        holder.binding.commentSample.setOnClickListener(view -> {
-            if (!holder.binding.commentCheckbox.isChecked()) {
+        FirebaseDatabase.getInstance().getReference()
+                .child("posts/" + postId + "/" + FirebaseAuth.getInstance()
+                        .getCurrentUser().getUid() + "/isSolved")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                        if (snapshot.getValue() == null) {
+                            Log.d("Snapshot", String.valueOf(snapshot.getValue()));
+                            FirebaseDatabase.getInstance().getReference()
+                                    .child("posts/" + postId + "/postedBy")
+                                    .addValueEventListener(new ValueEventListener() {
+                                        @SuppressLint("NotifyDataSetChanged")
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                holder.binding.commentCheckbox.setChecked(true);
-                holder.binding.commentCheckbox.setVisibility(View.VISIBLE);
+                                            Log.d("Snapshot", String.valueOf(snapshot.getValue()));
+                                            FirebaseAuth auth = FirebaseAuth.getInstance();
+                                            if (auth.getCurrentUser().getUid().equals(snapshot.getValue()) && !auth.getCurrentUser().getUid().equals(comment.getCommentedBy())) {
 
-                FirebaseDatabase.getInstance().getReference()
-                        .child("posts/" + postId + "/comments/" + comment.getCommentedAt())
-                        .addValueEventListener(new ValueEventListener() {
-                            @SuppressLint("NotifyDataSetChanged")
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                Log.d("Key", snapshot.getKey());
-                                commentId = snapshot.getKey();
-                            }
+                                                //Log.d("CommentedBy", comment.getCommentedBy());
+                                                holder.binding.commentSample.setOnClickListener(view -> {
+                                                    if (!holder.binding.commentCheckbox.isChecked()) {
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-                                Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                                                        holder.binding.commentCheckbox.setChecked(true);
+                                                        holder.binding.commentCheckbox.setVisibility(View.VISIBLE);
 
-                comment.setVerified(true);
-                FirebaseDatabase.getInstance().getReference()
-                        .child("posts/" + postId + "/comments")
-                        .child(comment.getCommentedAt() + "")
-                        .setValue(comment);
-            }
-        });
+                                                        FirebaseDatabase.getInstance().getReference()
+                                                                .child("posts/" + postId + "/comments/" + comment.getCommentedAt())
+                                                                .addValueEventListener(new ValueEventListener() {
+                                                                    @SuppressLint("NotifyDataSetChanged")
+                                                                    @Override
+                                                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                                        Log.d("Key", snapshot.getKey());
+                                                                        commentId = snapshot.getKey();
+                                                                    }
+
+                                                                    @Override
+                                                                    public void onCancelled(@NonNull DatabaseError error) {
+                                                                        Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                    }
+                                                                });
+
+                                                        comment.setVerified(true);
+                                                        FirebaseDatabase.getInstance().getReference()
+                                                                .child("posts/" + postId + "/comments")
+                                                                .child(comment.getCommentedAt() + "")
+                                                                .setValue(comment);
+
+                                                        FirebaseDatabase.getInstance().getReference()
+                                                                .child("posts/" + postId)
+                                                                .child("/postStatus")
+                                                                .child("/isSolved")
+                                                                .setValue(true).addOnSuccessListener(unused -> ((Activity) context).finish())
+                                                                .addOnFailureListener(e -> {
+                                                                    Toast.makeText(context, "Failed to verify comment due to " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                });
+                                                    }
+                                                });
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                            Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+                    }
+                });
 
         FirebaseDatabase.getInstance()
                 .getReference()

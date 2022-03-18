@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -37,6 +36,7 @@ public class CommentActivity extends AppCompatActivity {
     FirebaseDatabase firebaseDatabase;
     FirebaseAuth auth;
     ArrayList<Comment> list = new ArrayList<>();
+    final boolean[] isOwner = new boolean[1];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,6 +178,10 @@ public class CommentActivity extends AppCompatActivity {
                     }
                 });
 
+    }
+
+    private void setOwner(boolean b) {
+        isOwner[0] = b;
     }
 
     @Override

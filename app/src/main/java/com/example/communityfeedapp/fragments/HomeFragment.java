@@ -64,12 +64,12 @@ public class HomeFragment extends Fragment {
         firebaseDatabase = FirebaseDatabase.getInstance();
         auth = FirebaseAuth.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         binding = FragmentHomeBinding.inflate(inflater, container, false);
 
