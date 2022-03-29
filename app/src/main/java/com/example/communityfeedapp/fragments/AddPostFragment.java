@@ -335,6 +335,7 @@ public class AddPostFragment extends Fragment {
                     post.setRecTime(String.valueOf(timeStamp));
                     post.setPostedBy(auth.getCurrentUser().getUid());
                     post.setCreatedAt(new Date().toString());
+                    post.setSolved(false);
                     post.setPostTitle(binding.postTitle.getText().toString());
                     post.setPostDescription(binding.postDescription.getText().toString());
                     post.setPostedAt(new Date().getTime());
@@ -357,6 +358,7 @@ public class AddPostFragment extends Fragment {
             post.setRecTime(String.valueOf(timeStamp));
             post.setPostedBy(auth.getCurrentUser().getUid());
             post.setCreatedAt(new Date().toString());
+            post.setSolved(false);
             post.setPostTitle(binding.postTitle.getText().toString());
             post.setPostDescription(binding.postDescription.getText().toString());
             post.setPostedAt(new Date().getTime());
@@ -388,6 +390,7 @@ public class AddPostFragment extends Fragment {
                     post.setRecTime(String.valueOf(timeStamp));
                     post.setPostedBy(auth.getCurrentUser().getUid());
                     post.setCreatedAt(new Date().toString());
+                    post.setSolved(false);
                     post.setPostTitle(binding.postTitle.getText().toString());
                     post.setPostDescription(binding.postDescription.getText().toString());
                     post.setPostedAt(new Date().getTime());
@@ -408,6 +411,7 @@ public class AddPostFragment extends Fragment {
             Post post = new Post();
             post.setPostedBy(auth.getCurrentUser().getUid());
             post.setCreatedAt(new Date().toString());
+            post.setSolved(false);
             post.setPostTitle(binding.postTitle.getText().toString());
             post.setPostDescription(binding.postDescription.getText().toString());
             post.setPostedAt(new Date().getTime());

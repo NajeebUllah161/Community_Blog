@@ -4,9 +4,11 @@ import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultCallback;
@@ -50,6 +52,8 @@ public class HomeFragment extends Fragment {
     ActivityResultLauncher<String> galleryLauncher;
     ProgressDialog dialog;
     FragmentHomeBinding binding;
+    boolean isChecked = false;
+
 
     public HomeFragment() {
         // Required empty public constructor
@@ -124,7 +128,10 @@ public class HomeFragment extends Fragment {
 
         // Setting up Dashboard RecyclerView
 
-        PostAdapter postAdapter = new PostAdapter(postList, getContext());
+        binding.isSolved.setOnCheckedChangeListener((compoundButton, b) -> isChecked = true);
+        Log.d("Checked", String.valueOf(isChecked));
+
+        PostAdapter postAdapter = new PostAdapter(postList, getContext(),binding.isSolved);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true);
         binding.dashboardRv.setLayoutManager(layoutManager);
         binding.dashboardRv.setNestedScrollingEnabled(false);

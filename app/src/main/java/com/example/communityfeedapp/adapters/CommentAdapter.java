@@ -79,13 +79,13 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                 });
 
         FirebaseDatabase.getInstance().getReference()
-                .child("posts/" + postId + "/" + FirebaseAuth.getInstance()
-                        .getCurrentUser().getUid() + "/isSolved")
+                .child("posts/" + postId)
+                .child("/solved")
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-                        if (snapshot.getValue() == null) {
-                            Log.d("Snapshot", String.valueOf(snapshot.getValue()));
+                        if (snapshot.getValue().equals(false)) {
+                            Log.d("SnapshotSolved", String.valueOf(snapshot.getValue()));
                             FirebaseDatabase.getInstance().getReference()
                                     .child("posts/" + postId + "/postedBy")
                                     .addValueEventListener(new ValueEventListener() {
@@ -95,7 +95,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
 
                                             Log.d("Snapshot", String.valueOf(snapshot.getValue()));
                                             FirebaseAuth auth = FirebaseAuth.getInstance();
-                                            if (auth.getCurrentUser().getUid().equals(snapshot.getValue()) && !auth.getCurrentUser().getUid().equals(comment.getCommentedBy())) {
+                                            //&& !auth.getCurrentUser().getUid().equals(comment.getCommentedBy())
+                                            if (auth.getCurrentUser().getUid().equals(snapshot.getValue())) {
 
                                                 //Log.d("CommentedBy", comment.getCommentedBy());
                                                 holder.binding.commentSample.setOnClickListener(view -> {
@@ -128,8 +129,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
 
                                                         FirebaseDatabase.getInstance().getReference()
                                                                 .child("posts/" + postId)
-                                                                .child("/postStatus")
-                                                                .child("/isSolved")
+                                                                .child("/solved")
                                                                 .setValue(true).addOnSuccessListener(unused -> ((Activity) context).finish())
                                                                 .addOnFailureListener(e -> {
                                                                     Toast.makeText(context, "Failed to verify comment due to " + e.getMessage(), Toast.LENGTH_SHORT).show();

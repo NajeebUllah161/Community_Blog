@@ -11,6 +11,16 @@ public class Post {
     private String postDescription;
     private String createdAt;
     private long postedAt;
+
+    public boolean isSolved() {
+        return solved;
+    }
+
+    public void setSolved(boolean solved) {
+        this.solved = solved;
+    }
+
+    private boolean solved;
     private int postLikes;
     private int commentCount;
 

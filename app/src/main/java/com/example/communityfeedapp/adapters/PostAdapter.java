@@ -13,6 +13,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,6 +27,7 @@ import com.example.communityfeedapp.edit_dialogues.EditPostDialogue;
 import com.example.communityfeedapp.models.Notification;
 import com.example.communityfeedapp.models.Post;
 import com.example.communityfeedapp.models.User;
+import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -45,6 +47,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     ArrayList<Post> postModelArrayList;
     Context context;
+    MaterialCheckBox isChecked;
     PowerMenu powerMenu;
     Intent intent;
     private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
@@ -61,9 +64,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     MediaPlayer player;
     int length;
 
-    public PostAdapter(ArrayList<Post> list, Context context) {
+    public PostAdapter(ArrayList<Post> list, Context context, MaterialCheckBox checked) {
         this.postModelArrayList = list;
         this.context = context;
+        this.isChecked = checked;
     }
 
     @NonNull
@@ -79,6 +83,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
 
         Post model = postModelArrayList.get(position);
+
+        isChecked.setOnCheckedChangeListener((compoundButton, b) -> {
+            Log.d("Checked", String.valueOf(b));
+        });
 
         // Check to restrict user to only edit his/her post
         if (model.getPostedBy().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
