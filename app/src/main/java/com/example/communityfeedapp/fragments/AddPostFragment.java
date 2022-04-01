@@ -68,6 +68,9 @@ import static android.app.Activity.RESULT_OK;
 public class AddPostFragment extends Fragment {
 
     public static final int RequestPermissionCode = 1;
+    public static final String FCM_SEND = "https://fcm.googleapis.com/fcm/send";
+    public static final MediaType JSON
+            = MediaType.parse("application/json; charset=utf-8");
     FragmentAddPostBinding binding;
     Uri uri;
     FirebaseAuth auth;
@@ -82,12 +85,8 @@ public class AddPostFragment extends Fragment {
     MediaPlayer mediaPlayer;
     int length;
     long timeStamp;
-
     //Broadcast Notification
     OkHttpClient mClient;
-    public static final String FCM_SEND = "https://fcm.googleapis.com/fcm/send";
-    public static final MediaType JSON
-            = MediaType.parse("application/json; charset=utf-8");
     private DatabaseReference mDatabase;
 
     public AddPostFragment() {

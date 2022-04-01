@@ -11,6 +11,18 @@ public class Post {
     private String postDescription;
     private String createdAt;
     private long postedAt;
+    private boolean solved;
+    private int postLikes;
+    private int commentCount;
+    public Post() {
+    }
+    public Post(String postId, String postImage, String postedBy, String postDescription, long postedAt) {
+        this.postId = postId;
+        this.postImage = postImage;
+        this.postedBy = postedBy;
+        this.postDescription = postDescription;
+        this.postedAt = postedAt;
+    }
 
     public boolean isSolved() {
         return solved;
@@ -18,21 +30,6 @@ public class Post {
 
     public void setSolved(boolean solved) {
         this.solved = solved;
-    }
-
-    private boolean solved;
-    private int postLikes;
-    private int commentCount;
-
-    public Post() {
-    }
-
-    public Post(String postId, String postImage, String postedBy, String postDescription, long postedAt) {
-        this.postId = postId;
-        this.postImage = postImage;
-        this.postedBy = postedBy;
-        this.postDescription = postDescription;
-        this.postedAt = postedAt;
     }
 
     public String getPostRecording() {

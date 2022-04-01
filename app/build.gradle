@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.application'
+    id 'com.google.firebase.crashlytics'
 }
 
 android {
@@ -58,11 +59,12 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
 
     // Firebase
-    implementation platform('com.google.firebase:firebase-bom:29.0.4')
+    implementation platform('com.google.firebase:firebase-bom:29.3.0')
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-database'
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-storage'
+    implementation 'com.google.firebase:firebase-crashlytics'
 
     //Time ago library
     implementation 'com.github.marlonlom:timeago:4.0.3'

@@ -6,15 +6,15 @@ public class Comment {
     private String commentedBy;
     private boolean isVerified;
 
+    public Comment() {
+    }
+
     public boolean isVerified() {
         return isVerified;
     }
 
     public void setVerified(boolean verified) {
         isVerified = verified;
-    }
-
-    public Comment() {
     }
 
     public String getCommentBody() {

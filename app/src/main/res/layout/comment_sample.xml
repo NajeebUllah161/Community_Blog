@@ -48,10 +48,10 @@
 
     <CheckBox
         android:id="@+id/commentCheckbox"
-        android:visibility="invisible"
-        android:checked="false"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:checked="false"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/commentData"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/commentData" />

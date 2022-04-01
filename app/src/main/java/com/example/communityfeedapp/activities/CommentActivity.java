@@ -30,13 +30,13 @@ import java.util.Date;
 
 public class CommentActivity extends AppCompatActivity {
 
+    final boolean[] isOwner = new boolean[1];
     ActivityCommentBinding binding;
     Intent intent;
     String postId, postedBy;
     FirebaseDatabase firebaseDatabase;
     FirebaseAuth auth;
     ArrayList<Comment> list = new ArrayList<>();
-    final boolean[] isOwner = new boolean[1];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

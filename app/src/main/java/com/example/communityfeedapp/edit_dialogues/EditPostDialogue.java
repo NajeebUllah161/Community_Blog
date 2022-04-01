@@ -2,19 +2,15 @@ package com.example.communityfeedapp.edit_dialogues;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
@@ -44,16 +40,8 @@ import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Date;
 import java.util.Random;
 
@@ -172,7 +160,7 @@ public class EditPostDialogue extends AppCompatActivity {
         progressDialog.setCancelable(false);
         progressDialog.setCanceledOnTouchOutside(false);
 
-    //        populateDataProgressDialogue.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        //        populateDataProgressDialogue.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 //        populateDataProgressDialogue.setTitle("Loading Data");
 //        populateDataProgressDialogue.setMessage("Please Wait...");
 //        populateDataProgressDialogue.setCancelable(false);
@@ -312,7 +300,7 @@ public class EditPostDialogue extends AppCompatActivity {
                     Toast.makeText(this, "Failed to Upload Audio", Toast.LENGTH_SHORT).show();
                 });
             }
-    //            else if (mediaPlayer != null && downloadedRecordingLocation != null) {
+            //            else if (mediaPlayer != null && downloadedRecordingLocation != null) {
 //                Log.d("Checkpoint", "mediaPlayer and Download recording Path NOT NULL");
 //                Uri downloadedRecordingUri = Uri.fromFile(new File(downloadedRecordingLocation));
 //                storageReference.putFile(downloadedRecordingUri).addOnSuccessListener(taskSnapshot -> {
@@ -358,6 +346,7 @@ public class EditPostDialogue extends AppCompatActivity {
                     post.setPostImage(uri.toString());
                     post.setPostRecording(audioUri.toString());
                     post.setRecTime(recTime);
+                    post.setPostLikes(post.getPostLikes());
                     post.setPostedBy(auth.getCurrentUser().getUid());
                     post.setCreatedAt(new Date().toString());
                     post.setPostTitle(binding.postTitle.getText().toString());
@@ -407,6 +396,7 @@ public class EditPostDialogue extends AppCompatActivity {
             post.setPostImage(postImg);
             post.setPostRecording(audioUri.toString());
             post.setRecTime(recTime);
+            post.setPostLikes(post.getPostLikes());
             post.setPostedBy(auth.getCurrentUser().getUid());
             post.setCreatedAt(new Date().toString());
             post.setPostTitle(binding.postTitle.getText().toString());
@@ -436,6 +426,7 @@ public class EditPostDialogue extends AppCompatActivity {
                     post.setPostImage(uri.toString());
                     post.setPostRecording(postRecording);
                     post.setRecTime(recTime);
+                    post.setPostLikes(post.getPostLikes());
                     post.setPostedBy(auth.getCurrentUser().getUid());
                     post.setCreatedAt(new Date().toString());
                     post.setPostTitle(binding.postTitle.getText().toString());
@@ -486,6 +477,7 @@ public class EditPostDialogue extends AppCompatActivity {
             post.setPostImage(postImg);
             post.setPostRecording(postRecording);
             post.setRecTime(recTime);
+            post.setPostLikes(post.getPostLikes());
             post.setPostedBy(auth.getCurrentUser().getUid());
             post.setCreatedAt(new Date().toString());
             post.setPostTitle(binding.postTitle.getText().toString());
