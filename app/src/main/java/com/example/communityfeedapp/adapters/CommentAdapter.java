@@ -22,6 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
@@ -58,6 +59,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
         String timeOfComment = TimeAgo.using(comment.getCommentedAt());
         holder.binding.time.setText(timeOfComment);
 
+        Log.d("CommentedBy", comment.getCommentedBy());
         FirebaseDatabase.getInstance().getReference()
                 .child("posts/" + postId + "/comments/" + comment.getCommentedAt())
                 .addValueEventListener(new ValueEventListener() {
@@ -128,12 +130,23 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                                                                 .setValue(comment);
 
                                                         FirebaseDatabase.getInstance().getReference()
+                                                                .child("Users")
+                                                                .child(comment.getCommentedBy())
+                                                                .child("userPerks")
+                                                                .setValue(ServerValue.increment(1)).addOnSuccessListener(unused -> {
+                                                            Toast.makeText(context, "Rating updated", Toast.LENGTH_SHORT).show();
+                                                        }).addOnFailureListener(e -> {
+                                                            Toast.makeText(context, "Failed to update rating", Toast.LENGTH_SHORT).show();
+                                                        });
+
+                                                        FirebaseDatabase.getInstance().getReference()
                                                                 .child("posts/" + postId)
                                                                 .child("/solved")
                                                                 .setValue(true).addOnSuccessListener(unused -> ((Activity) context).finish())
                                                                 .addOnFailureListener(e -> {
                                                                     Toast.makeText(context, "Failed to verify comment due to " + e.getMessage(), Toast.LENGTH_SHORT).show();
                                                                 });
+
                                                     }
                                                 });
                                             }

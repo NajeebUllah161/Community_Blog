@@ -6,6 +6,7 @@ public class User {
     private String userId;
     private int followersCount;
     private String profileImage;
+    private int userPerks;
 
     public User() {
     }
@@ -80,4 +81,13 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public int getUserPerks() {
+        return userPerks;
+    }
+
+    public void setUserPerks(int userPerks) {
+        this.userPerks = userPerks;
+    }
+
 }

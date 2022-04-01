@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -113,6 +114,8 @@ public class ProfileFragment extends Fragment {
                                 binding.userName.setText(getUser.getName());
                                 binding.profession.setText(getUser.getProfession());
                                 binding.followersTv.setText(getUser.getFollowersCount() + "");
+                                Log.d("User", String.valueOf(getUser.getUserPerks()));
+                                binding.userPerks.setText(getUser.getUserPerks() + "");
                             } else {
                                 Toast.makeText(getContext(), "No user exists", Toast.LENGTH_SHORT).show();
                             }

@@ -229,7 +229,7 @@
                 android:id="@+id/textView6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Friends"
+                android:text="Perks"
                 android:textAllCaps="true"
                 android:textSize="@dimen/_12ssp"
                 diagonal:layout_constraintEnd_toStartOf="@+id/view9"
@@ -238,7 +238,7 @@
                 diagonal:layout_constraintTop_toTopOf="@+id/view8" />
 
             <TextView
-                android:id="@+id/photosTv"
+                android:id="@+id/userPerks"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="456"
@@ -265,7 +265,7 @@
                 android:id="@+id/textView7"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Photos"
+                android:text="Posts"
                 android:textAllCaps="true"
                 android:textSize="@dimen/_12ssp"
                 diagonal:layout_constraintEnd_toEndOf="parent"

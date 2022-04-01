@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultCallback;
@@ -52,8 +51,6 @@ public class HomeFragment extends Fragment {
     ActivityResultLauncher<String> galleryLauncher;
     ProgressDialog dialog;
     FragmentHomeBinding binding;
-    boolean isChecked = false;
-
 
     public HomeFragment() {
         // Required empty public constructor
@@ -64,7 +61,6 @@ public class HomeFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         dialog = new ProgressDialog(getContext());
-
         firebaseDatabase = FirebaseDatabase.getInstance();
         auth = FirebaseAuth.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
@@ -128,10 +124,7 @@ public class HomeFragment extends Fragment {
 
         // Setting up Dashboard RecyclerView
 
-        binding.isSolved.setOnCheckedChangeListener((compoundButton, b) -> isChecked = true);
-        Log.d("Checked", String.valueOf(isChecked));
-
-        PostAdapter postAdapter = new PostAdapter(postList, getContext(),binding.isSolved);
+        PostAdapter postAdapter = new PostAdapter(postList, getContext(), binding.isSolved);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true);
         binding.dashboardRv.setLayoutManager(layoutManager);
         binding.dashboardRv.setNestedScrollingEnabled(false);
@@ -158,6 +151,59 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        binding.isSolved.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (b) {
+                firebaseDatabase.getReference().child("posts").addValueEventListener(new ValueEventListener() {
+                    @SuppressLint("NotifyDataSetChanged")
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        postList.clear();
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            Post post = dataSnapshot.getValue(Post.class);
+                            post.setPostId(dataSnapshot.getKey());
+                            if (post.isSolved()) {
+                                Log.d("Solved", "solved");
+                                postList.add(post);
+                            } else {
+                                Log.d("Solved", "not");
+                            }
+                        }
+                        binding.dashboardRv.setAdapter(postAdapter);
+                        binding.dashboardRv.hideShimmerAdapter();
+                        loadProfileImg();
+                        postAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } else {
+                firebaseDatabase.getReference().child("posts").addValueEventListener(new ValueEventListener() {
+                    @SuppressLint("NotifyDataSetChanged")
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        postList.clear();
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            Post post = dataSnapshot.getValue(Post.class);
+                            post.setPostId(dataSnapshot.getKey());
+                            postList.add(post);
+                        }
+                        binding.dashboardRv.setAdapter(postAdapter);
+                        binding.dashboardRv.hideShimmerAdapter();
+                        loadProfileImg();
+                        postAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+        });
         binding.addStoryImg.setOnClickListener(view1 -> galleryLauncher.launch("image/*"));
 
         galleryLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), new ActivityResultCallback<Uri>() {

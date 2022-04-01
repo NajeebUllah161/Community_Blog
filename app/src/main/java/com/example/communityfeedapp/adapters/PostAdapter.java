@@ -13,7 +13,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -50,6 +49,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     MaterialCheckBox isChecked;
     PowerMenu powerMenu;
     Intent intent;
+
     private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
         @Override
         public void onItemClick(int position, PowerMenuItem item) {
@@ -83,10 +83,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
 
         Post model = postModelArrayList.get(position);
-
-        isChecked.setOnCheckedChangeListener((compoundButton, b) -> {
-            Log.d("Checked", String.valueOf(b));
-        });
 
         // Check to restrict user to only edit his/her post
         if (model.getPostedBy().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
