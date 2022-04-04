@@ -102,6 +102,7 @@ public class CommentActivity extends AppCompatActivity {
                     }
                 });
 
+
         binding.postCommentBtn.setOnClickListener(view -> {
 
             Comment comment = new Comment();
@@ -113,44 +114,47 @@ public class CommentActivity extends AppCompatActivity {
                     .child("posts/" + postId + "/comments")
                     .child(comment.getCommentedAt() + "")
                     .setValue(comment)
-                    .addOnSuccessListener(unused -> firebaseDatabase.getReference()
-                            .child("posts/" + postId + "/commentCount")
-                            .addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    int commentCount = 0;
-                                    if (snapshot.exists()) {
-                                        commentCount = snapshot.getValue(Integer.class);
+                    .addOnSuccessListener(unused -> {}
+                    ).addOnFailureListener(e -> Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show());
 
-                                    }
-                                    firebaseDatabase.getReference()
-                                            .child("posts/" + postId + "/commentCount")
-                                            .setValue(commentCount + 1)
-                                            .addOnSuccessListener(unused1 -> {
-                                                binding.commentEt.setText("");
-                                                Toast.makeText(CommentActivity.this, "Commented", Toast.LENGTH_SHORT).show();
+            firebaseDatabase.getReference()
+                    .child("posts/" + postId + "/commentCount")
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            int commentCount = 0;
+                            if (snapshot.exists()) {
+                                commentCount = snapshot.getValue(Integer.class);
 
-                                                Notification notification = new Notification();
-                                                notification.setNotificationBy(FirebaseAuth.getInstance().getCurrentUser().getUid());
-                                                notification.setNotificaitonAt(new Date().getTime());
-                                                notification.setPostId(postId);
-                                                notification.setPostedBy(postedBy);
-                                                notification.setNotificationType("comment");
+                            }
+                            firebaseDatabase.getReference()
+                                    .child("posts/" + postId + "/commentCount")
+                                    .setValue(commentCount + 1)
+                                    .addOnSuccessListener(unused1 -> {
+                                        binding.commentEt.setText("");
+                                        Toast.makeText(CommentActivity.this, "Commented", Toast.LENGTH_SHORT).show();
 
-                                                FirebaseDatabase.getInstance().getReference()
-                                                        .child("notification")
-                                                        .child(postedBy)
-                                                        .push()
-                                                        .setValue(notification);
+                                        Notification notification = new Notification();
+                                        notification.setNotificationBy(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                                        notification.setNotificaitonAt(new Date().getTime());
+                                        notification.setPostId(postId);
+                                        notification.setPostedBy(postedBy);
+                                        notification.setNotificationType("comment");
 
-                                            }).addOnFailureListener(e -> Toast.makeText(CommentActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show());
-                                }
+                                        FirebaseDatabase.getInstance().getReference()
+                                                .child("notification")
+                                                .child(postedBy)
+                                                .push()
+                                                .setValue(notification);
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-                                    Toast.makeText(CommentActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-                                }
-                            }));
+                                    }).addOnFailureListener(e -> Toast.makeText(CommentActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show());
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(CommentActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
         });
 
         CommentAdapter commentAdapter = new CommentAdapter(this, list, postId);

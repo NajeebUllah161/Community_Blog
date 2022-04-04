@@ -203,39 +203,70 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         .getInstance()
                         .getCurrentUser()
                         .getUid())
-                .addListenerForSingleValueEvent(new ValueEventListener() {
+                .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.exists()) {
                             holder.binding.like.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart_filled, 0, 0, 0);
+                            holder.binding.like.setOnClickListener(view -> {
+                                FirebaseDatabase.getInstance().getReference()
+                                        .child("posts/" + model.getPostId() + "/likes/" + FirebaseAuth.getInstance()
+                                                .getCurrentUser()
+                                                .getUid()).removeValue().addOnSuccessListener(unused -> Toast.makeText(context, "Disliked", Toast.LENGTH_SHORT).show())
+                                        .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show());
+
+
+                                FirebaseDatabase.getInstance().getReference()
+                                        .child("posts/" + model.getPostId() + "/postLikes")
+                                        .setValue(model.getPostLikes() - 1)
+                                        .addOnSuccessListener(unused1 -> {
+                                            holder.binding.like.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_like, 0, 0, 0);
+
+                                        })
+                                        .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show());
+
+                            });
                         } else {
-                            holder.binding.like.setOnClickListener(view -> FirebaseDatabase.getInstance().getReference()
-                                    .child("posts/" + model.getPostId() + "/likes/" + FirebaseAuth.getInstance()
-                                            .getCurrentUser()
-                                            .getUid()).setValue(true).addOnSuccessListener(unused -> FirebaseDatabase.getInstance().getReference()
-                                            .child("posts/" + model.getPostId() + "/postLikes")
-                                            .setValue(model.getPostLikes() + 1)
-                                            .addOnSuccessListener(unused1 -> {
-                                                holder.binding.like.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart_filled, 0, 0, 0);
-                                                Notification notification = new Notification();
 
-                                                notification.setNotificationBy(FirebaseAuth
-                                                        .getInstance()
-                                                        .getCurrentUser()
-                                                        .getUid());
-                                                notification.setNotificaitonAt(new Date().getTime());
-                                                notification.setPostId(model.getPostId());
-                                                notification.setPostedBy(model.getPostedBy());
-                                                notification.setNotificationType("like");
+                            holder.binding.like.setOnClickListener(view -> {
 
-                                                FirebaseDatabase.getInstance().getReference()
-                                                        .child("notification")
-                                                        .child(model.getPostedBy())
-                                                        .push()
-                                                        .setValue(notification);
-                                            })
-                                            .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show()))
-                                    .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show()));
+                                FirebaseDatabase.getInstance().getReference()
+                                        .child("posts/" + model.getPostId() + "/likes/" + FirebaseAuth.getInstance()
+                                                .getCurrentUser()
+                                                .getUid()).setValue(true).addOnSuccessListener(unused -> {
+
+                                }).addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show());
+
+                                FirebaseDatabase.getInstance().getReference()
+                                        .child("posts/" + model.getPostId() + "/postLikes")
+                                        .setValue(model.getPostLikes() + 1)
+                                        .addOnSuccessListener(unused1 -> {
+                                            holder.binding.like.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart_filled, 0, 0, 0);
+                                            Notification notification = new Notification();
+
+                                            Log.d("CheckpointLike", "Here");
+                                            notification.setNotificationBy(FirebaseAuth
+                                                    .getInstance()
+                                                    .getCurrentUser()
+                                                    .getUid());
+                                            notification.setNotificaitonAt(new Date().getTime());
+                                            notification.setPostId(model.getPostId());
+                                            notification.setPostedBy(model.getPostedBy());
+                                            notification.setNotificationType("like");
+
+                                            FirebaseDatabase.getInstance().getReference()
+                                                    .child("notification")
+                                                    .child(model.getPostedBy())
+                                                    .push()
+                                                    .setValue(notification).addOnSuccessListener(unused -> {
+
+                                            }).addOnFailureListener(e -> {
+                                                Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                            });
+
+                                        })
+                                        .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show());
+                            });
                         }
                     }
 

@@ -20,14 +20,17 @@ public class LoginActivity extends AppCompatActivity {
     FirebaseAuth auth;
     FirebaseUser currentUser;
     ProgressDialog progressDialog;
+    static {
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        Log.d("LoginActivity","CHeck");
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        Log.d("CheckingErr","onCreateLoginActivity");
+        //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
         progressDialog = new ProgressDialog(LoginActivity.this);
@@ -71,5 +74,12 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
+        Log.d("CheckingErr","onStartLoginActivity");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("CheckingErr","onResumeLoginActivity");
     }
 }

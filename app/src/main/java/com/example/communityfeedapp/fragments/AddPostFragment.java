@@ -521,7 +521,7 @@ public class AddPostFragment extends Fragment {
             binding.play.setVisibility(View.GONE);
 
             AudioSavePathInDevice =
-                    Environment.getExternalStorageDirectory().getAbsolutePath() + "/" +
+                    getActivity().getExternalCacheDir().getAbsolutePath() + "/" +
                             CreateRandomAudioFileName(5) + "AudioRecording.3gp";
 
             MediaRecorderReady();

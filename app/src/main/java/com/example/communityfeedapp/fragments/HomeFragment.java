@@ -64,6 +64,7 @@ public class HomeFragment extends Fragment {
         firebaseDatabase = FirebaseDatabase.getInstance();
         auth = FirebaseAuth.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
+
     }
 
     @Override

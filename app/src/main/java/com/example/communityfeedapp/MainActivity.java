@@ -3,6 +3,7 @@ package com.example.communityfeedapp;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +20,8 @@ import com.example.communityfeedapp.fragments.NotificationFragment;
 import com.example.communityfeedapp.fragments.ProfileFragment;
 import com.example.communityfeedapp.fragments.SearchFragment;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
+
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
@@ -41,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
         defaultFragmentTransaction.replace(R.id.container_framelayout, new HomeFragment());
         defaultFragmentTransaction.commit();
 
+        Log.d("CheckingErr","onCreateMainActivity");
         binding.bottomNavigationBar.setOnItemSelectedListener(item -> {
 
             int itemId = item.getItemId();
@@ -90,5 +94,31 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("CheckingErr","onResumeMainActivity");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d("CheckingErr","onPauseMainActivity");
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finishAffinity();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d("CheckingErr","onDestroyMainActivity");
+        //FirebaseDatabase.getInstance().goOffline();
+        finishAffinity();
     }
 }
