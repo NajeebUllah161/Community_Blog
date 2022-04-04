@@ -19,7 +19,6 @@ import com.example.communityfeedapp.fragments.NotificationFragment;
 import com.example.communityfeedapp.fragments.ProfileFragment;
 import com.example.communityfeedapp.fragments.SearchFragment;
 import com.google.firebase.auth.FirebaseAuth;
-
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;

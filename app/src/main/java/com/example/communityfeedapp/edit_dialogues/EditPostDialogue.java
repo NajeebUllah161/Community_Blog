@@ -43,6 +43,8 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import static android.Manifest.permission.RECORD_AUDIO;
@@ -160,11 +162,11 @@ public class EditPostDialogue extends AppCompatActivity {
         progressDialog.setCancelable(false);
         progressDialog.setCanceledOnTouchOutside(false);
 
-        //        populateDataProgressDialogue.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-//        populateDataProgressDialogue.setTitle("Loading Data");
-//        populateDataProgressDialogue.setMessage("Please Wait...");
-//        populateDataProgressDialogue.setCancelable(false);
-//        populateDataProgressDialogue.setCanceledOnTouchOutside(false);
+        //  populateDataProgressDialogue.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        //  populateDataProgressDialogue.setTitle("Loading Data");
+        //  populateDataProgressDialogue.setMessage("Please Wait...");
+        //  populateDataProgressDialogue.setCancelable(false);
+        //  populateDataProgressDialogue.setCanceledOnTouchOutside(false);
 
 
         if ((postTitle == null || postTitle.isEmpty()) && (postDescription == null || postDescription.isEmpty()) && (postImg == null || postImg.isEmpty()) && (postRecording == null || postRecording.isEmpty())) {
@@ -346,7 +348,6 @@ public class EditPostDialogue extends AppCompatActivity {
                     post.setPostImage(uri.toString());
                     post.setPostRecording(audioUri.toString());
                     post.setRecTime(recTime);
-                    post.setPostLikes(post.getPostLikes());
                     post.setPostedBy(auth.getCurrentUser().getUid());
                     post.setCreatedAt(new Date().toString());
                     post.setPostTitle(binding.postTitle.getText().toString());
@@ -396,7 +397,6 @@ public class EditPostDialogue extends AppCompatActivity {
             post.setPostImage(postImg);
             post.setPostRecording(audioUri.toString());
             post.setRecTime(recTime);
-            post.setPostLikes(post.getPostLikes());
             post.setPostedBy(auth.getCurrentUser().getUid());
             post.setCreatedAt(new Date().toString());
             post.setPostTitle(binding.postTitle.getText().toString());
@@ -426,7 +426,6 @@ public class EditPostDialogue extends AppCompatActivity {
                     post.setPostImage(uri.toString());
                     post.setPostRecording(postRecording);
                     post.setRecTime(recTime);
-                    post.setPostLikes(post.getPostLikes());
                     post.setPostedBy(auth.getCurrentUser().getUid());
                     post.setCreatedAt(new Date().toString());
                     post.setPostTitle(binding.postTitle.getText().toString());
@@ -473,19 +472,29 @@ public class EditPostDialogue extends AppCompatActivity {
         else {
 
             Log.d("Checkpoint", "else");
-            Post post = new Post();
-            post.setPostImage(postImg);
-            post.setPostRecording(postRecording);
-            post.setRecTime(recTime);
-            post.setPostLikes(post.getPostLikes());
-            post.setPostedBy(auth.getCurrentUser().getUid());
-            post.setCreatedAt(new Date().toString());
-            post.setPostTitle(binding.postTitle.getText().toString());
-            post.setPostDescription(binding.postDescription.getText().toString());
-            post.setPostedAt(timeStamp);
+
+        //            Post post = new Post();
+//            post.setPostImage(postImg);
+//            post.setPostRecording(postRecording);
+//            post.setRecTime(recTime);
+//            post.setPostedBy(auth.getCurrentUser().getUid());
+//            post.setCreatedAt(new Date().toString());
+//            post.setPostTitle(binding.postTitle.getText().toString());
+//            post.setPostDescription(binding.postDescription.getText().toString());
+//            post.setPostedAt(timeStamp);
+
+            Map<String, Object> post = new HashMap<>();
+            post.put("postImage", postImg);
+            post.put("postRecording", postRecording);
+            post.put("recTime", recTime);
+            post.put("postedBy", auth.getCurrentUser().getUid());
+            post.put("createdAt", new Date().toString());
+            post.put("postTitle", binding.postTitle.getText().toString());
+            post.put("postDescription", binding.postDescription.getText().toString());
+            post.put("postedAt", timeStamp);
 
             firebaseDatabase.getReference().child("posts").child(String.valueOf(timeStamp))
-                    .setValue(post).addOnSuccessListener(unused -> {
+                    .updateChildren(post).addOnSuccessListener(unused -> {
                 progressDialog.dismiss();
                 Toast.makeText(this, "Post Edited Successfully", Toast.LENGTH_SHORT).show();
                 finish();

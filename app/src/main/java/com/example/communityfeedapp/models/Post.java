@@ -14,8 +14,10 @@ public class Post {
     private boolean solved;
     private int postLikes;
     private int commentCount;
+
     public Post() {
     }
+
     public Post(String postId, String postImage, String postedBy, String postDescription, long postedAt) {
         this.postId = postId;
         this.postImage = postImage;

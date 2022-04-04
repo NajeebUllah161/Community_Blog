@@ -281,8 +281,9 @@ public class AddPostFragment extends Fragment {
                     }
                     JSONArray regArray = new JSONArray(myArrayList);
 
-                    Log.d("Checkpointt", myArrayList + "");
-                    sendMessage(regArray, "Complain Update", "Your complain is updated, See what action is taken", "icon", "message");
+                    //Log.d("UserName", binding.userNameAddPost.getText().toString());
+                    //Log.d("Checkpoint", myArrayList + "");
+                    sendMessage(regArray, "New Post", binding.userNameAddPost.getText().toString() + " has added a new Post, click to see details", "icon", "message");
                 }
 
             }
@@ -366,6 +367,7 @@ public class AddPostFragment extends Fragment {
                     .setValue(post).addOnSuccessListener(unused -> {
                 progressDialog.dismiss();
                 Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
+                sendNotification();
                 //switchFragment();
             }).addOnFailureListener(e -> progressDialog.dismiss());
         }
