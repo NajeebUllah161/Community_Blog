@@ -12,7 +12,7 @@
         android:layout_marginStart="@dimen/_6mdp"
         android:layout_marginTop="@dimen/_6mdp"
         android:padding="@dimen/_3mdp"
-        android:src="@drawable/profile"
+        android:src="@drawable/placeholder"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -31,7 +31,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_6mdp"
-        android:text="Angelina Jones"
+        android:text="User name"
         android:textColor="@color/black"
         android:textSize="@dimen/_14mdp"
         app:layout_constraintEnd_toStartOf="@+id/commentCheckbox"
@@ -42,7 +42,7 @@
         android:id="@+id/time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Clinical Surgeon"
+        android:text="just now"
         app:layout_constraintStart_toStartOf="@+id/commentData"
         app:layout_constraintTop_toBottomOf="@+id/commentData" />
 
@@ -51,9 +51,61 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:checked="false"
+        android:textColor="@color/primary"
         android:visibility="invisible"
+        android:enabled="false"
         app:layout_constraintBottom_toBottomOf="@+id/commentData"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/commentData" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/audioContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/_4mdp"
+        android:background="@drawable/follow_active_btn"
+        android:padding="@dimen/_4mdp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@+id/commentCheckbox"
+        app:layout_constraintEnd_toEndOf="@+id/commentCheckbox"
+        app:layout_constraintTop_toBottomOf="@id/commentCheckbox">
+
+
+        <ImageView
+            android:id="@+id/playAudio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_play"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/pauseAudio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_pause"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/resumeAudio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_resume"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

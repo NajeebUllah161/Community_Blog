@@ -3,6 +3,8 @@ package com.example.communityfeedapp.adapters;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,7 +38,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
     ArrayList<Comment> list;
     String postId;
     String commentId;
-    boolean isOwner;
+    MediaPlayer player;
+    int length;
 
     public CommentAdapter(Context context, ArrayList<Comment> list, String postId) {
         this.context = context;
@@ -58,6 +61,58 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
         Comment comment = list.get(position);
         String timeOfComment = TimeAgo.using(comment.getCommentedAt());
         holder.binding.time.setText(timeOfComment);
+
+        // Setup Audio Recording
+        if (comment.getCommentRecording() != null) {
+            holder.binding.audioContainer.setVisibility(View.VISIBLE);
+            holder.binding.playAudio.setOnClickListener(view -> {
+                try {
+                    player = new MediaPlayer();
+                    player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    player.setDataSource(comment.getCommentRecording());
+                    player.prepare();
+                    player.start();
+                    holder.binding.playAudio.setVisibility(View.GONE);
+                    holder.binding.pauseAudio.setVisibility(View.VISIBLE);
+                } catch (Exception e) {
+                    Log.d("Exception", e.getMessage());
+                }
+                player.setOnCompletionListener(mediaPlayer -> {
+                    holder.binding.playAudio.setVisibility(View.VISIBLE);
+                    holder.binding.pauseAudio.setVisibility(View.GONE);
+                });
+            });
+
+            // Pause recording
+            holder.binding.pauseAudio.setOnClickListener(view -> {
+                if (player != null) {
+                    player.pause();
+                    length = player.getCurrentPosition();
+                    holder.binding.pauseAudio.setVisibility(View.GONE);
+                    holder.binding.resumeAudio.setVisibility(View.VISIBLE);
+                } else {
+                    Log.d("PostAdapter", "Player is null");
+                }
+            });
+
+            // Resume recording
+            holder.binding.resumeAudio.setOnClickListener(view -> {
+                if (player != null) {
+                    holder.binding.resumeAudio.setVisibility(View.GONE);
+                    holder.binding.pauseAudio.setVisibility(View.VISIBLE);
+                    player.seekTo(length);
+                    player.start();
+                    player.setOnCompletionListener(mediaPlayer -> {
+                        holder.binding.pauseAudio.setVisibility(View.GONE);
+                        holder.binding.playAudio.setVisibility(View.VISIBLE);
+                    });
+                } else {
+                    Log.d("PostAdapter", "Player is null");
+                }
+            });
+        } else {
+            holder.binding.audioContainer.setVisibility(View.GONE);
+        }
 
         //Log.d("CommentedBy", comment.getCommentedBy());
         FirebaseDatabase.getInstance().getReference()

@@ -316,6 +316,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             context.startActivity(intent);
         });
 
+        holder.binding.share.setOnClickListener(view -> Toast.makeText(context, "Sharing Functionality is unavailable for now", Toast.LENGTH_SHORT).show());
+
         holder.binding.postImg.setOnClickListener(view -> {
             Intent intent = new Intent(context, PostImageZoomActivity.class);
             intent.putExtra("postImage", model.getPostImage());

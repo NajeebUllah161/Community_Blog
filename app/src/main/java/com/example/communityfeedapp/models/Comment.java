@@ -2,6 +2,17 @@ package com.example.communityfeedapp.models;
 
 public class Comment {
     private String commentBody;
+
+    public String getCommentRecording() {
+        return commentRecording;
+    }
+
+    public void setCommentRecording(String commentRecording) {
+        this.commentRecording = commentRecording;
+    }
+
+    private String commentRecording;
+
     private long commentedAt;
     private String commentedBy;
     private boolean isVerified;

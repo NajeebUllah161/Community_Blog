@@ -250,16 +250,18 @@ public class AddPostFragment extends Fragment {
 
             Log.d("CheckNull", AudioSavePathInDevice + " " + mediaRecorder);
             if (mediaRecorder != null && AudioSavePathInDevice != null) {
-                Log.d("Checkpoint", "mediaPlayer and Path NOT NULL");
+                //Log.d("Checkpoint", "mediaPlayer and Path NOT NULL");
                 Uri recordingUri = Uri.fromFile(new File(AudioSavePathInDevice));
                 storageReference.putFile(recordingUri).addOnSuccessListener(taskSnapshot -> {
                     storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
                         uploadPostImgAudioAndData(uri);
                     }).addOnFailureListener(e -> {
+                        progressDialog.dismiss();
                         Toast.makeText(getContext(), "Failed to download audio Url", Toast.LENGTH_SHORT).show();
                     });
 
                 }).addOnFailureListener(e -> {
+                    progressDialog.dismiss();
                     Toast.makeText(getContext(), "Failed to Upload Audio", Toast.LENGTH_SHORT).show();
                 });
             } else {

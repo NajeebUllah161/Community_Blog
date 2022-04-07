@@ -2,17 +2,27 @@ package com.example.communityfeedapp.activities;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.Html;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
@@ -29,21 +39,40 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Random;
+
+import static android.Manifest.permission.RECORD_AUDIO;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static com.example.communityfeedapp.fragments.AddPostFragment.RequestPermissionCode;
 
 public class CommentActivity extends AppCompatActivity {
 
-    //final boolean[] isOwner = new boolean[1];
     ActivityCommentBinding binding;
     Intent intent;
     String postId, postedBy;
     FirebaseDatabase firebaseDatabase;
     FirebaseAuth auth;
     ArrayList<Comment> list = new ArrayList<>();
+    ProgressDialog progressDialog;
 
+    //Recording
+    String AudioSavePathInDevice = null;
+    MediaRecorder mediaRecorder;
+    Random random;
+    String RandomAudioFileName = "ABCDEFGHIJKLMNOP";
+    MediaPlayer mediaPlayer;
+    int length;
+    String downloadedRecordingLocation;
+
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,24 +81,29 @@ public class CommentActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         intent = getIntent();
 
+        //audio recording
+        random = new Random();
+        progressDialog = new ProgressDialog(this);
+
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setTitle("Comment Posting");
+        progressDialog.setMessage("Please Wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.setCanceledOnTouchOutside(false);
+
         // Setting up toolbar
         setSupportActionBar(binding.toolbarCommentActivity);
         CommentActivity.this.setTitle("Comments");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        setButtonDisabled();
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         auth = FirebaseAuth.getInstance();
 
         postId = intent.getStringExtra("postId");
         postedBy = intent.getStringExtra("postedBy");
-//        postImage = intent.getStringExtra("postImage");
-//        postTitle = intent.getStringExtra("postTitle");
-//        postDescription = intent.getStringExtra("postDescription");
-//        postLikes = intent.getStringExtra("postLikes");
-//        commentCount = intent.getStringExtra("commentCount");
-//        userProfileImg = intent.getStringExtra("userProfileImg");
 
-        //setData();
         firebaseDatabase.getReference()
                 .child("posts/" + postId)
                 .addValueEventListener(new ValueEventListener() {
@@ -78,10 +112,6 @@ public class CommentActivity extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         Post post = snapshot.getValue(Post.class);
                         if (post != null) {
-//                            Picasso.get()
-//                                    .load(post.getPostImage())
-//                                    .placeholder(R.drawable.placeholder)
-//                                    .into(binding.imgCommentScreen);
 
                             RequestOptions requestOptions = new RequestOptions();
                             requestOptions.placeholder(R.drawable.placeholder);
@@ -129,7 +159,7 @@ public class CommentActivity extends AppCompatActivity {
                     @SuppressLint("NotifyDataSetChanged")
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if(snapshot.getValue()!=null){
+                        if (snapshot.getValue() != null) {
                             Log.d("Snapshot", String.valueOf(snapshot.getValue()));
                             binding.like.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart_filled, 0, 0, 0);
 
@@ -142,65 +172,81 @@ public class CommentActivity extends AppCompatActivity {
                     }
                 });
 
+
+        binding.postCommentRecording.setOnTouchListener((view, motionEvent) -> {
+            switch (motionEvent.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    startRecording();
+                    break;
+                case MotionEvent.ACTION_UP:
+                    stopRecording();
+                    break;
+            }
+            return true;
+        });
+
+        binding.play.setOnClickListener(view -> playRecording());
+
+        binding.pause.setOnClickListener(view -> pauseRecording());
+
+        binding.resume.setOnClickListener(view -> resumeRecording());
+
+        binding.removeRecording.setOnClickListener(view -> removeRecording());
+
+        binding.commentEt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                String commentData = binding.commentEt.getText().toString();
+                if (!commentData.isEmpty() || AudioSavePathInDevice != null) {
+                    setButtonEnabled();
+                } else {
+                    setButtonDisabled();
+                }
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+
         binding.postCommentBtn.setOnClickListener(view -> {
+
+            progressDialog.show();
 
             Comment comment = new Comment();
             comment.setCommentBody(binding.commentEt.getText().toString());
             comment.setCommentedAt(new Date().getTime());
             comment.setCommentedBy(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
-            firebaseDatabase.getReference()
-                    .child("posts/" + postId + "/comments")
+            final StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("commentRecordings")
                     .child(comment.getCommentedAt() + "")
-                    .setValue(comment)
-                    .addOnSuccessListener(unused -> {
-                            }
-                    ).addOnFailureListener(e -> Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show());
+                    .child(auth.getCurrentUser().getUid());
 
-            firebaseDatabase.getReference()
-                    .child("posts/" + postId + "/commentCount")
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            int commentCount = 0;
-                            if (snapshot.exists()) {
-                                commentCount = snapshot.getValue(Integer.class);
-
-                            }
-                            firebaseDatabase.getReference()
-                                    .child("posts/" + postId + "/commentCount")
-                                    .setValue(commentCount + 1)
-                                    .addOnSuccessListener(unused1 -> {
-                                        binding.commentEt.setText("");
-                                        Toast.makeText(CommentActivity.this, "Commented", Toast.LENGTH_SHORT).show();
-
-                                        Notification notification = new Notification();
-                                        notification.setNotificationBy(FirebaseAuth.getInstance().getCurrentUser().getUid());
-                                        notification.setNotificaitonAt(new Date().getTime());
-                                        notification.setPostId(postId);
-                                        notification.setPostedBy(postedBy);
-                                        notification.setNotificationType("comment");
-
-                                        FirebaseDatabase.getInstance().getReference()
-                                                .child("notification")
-                                                .child(postedBy)
-                                                .push()
-                                                .setValue(notification);
-                                        hideKeyboard(CommentActivity.this);
-
-
-                                    }).addOnFailureListener(e -> {
-                                Toast.makeText(CommentActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                                finish();
-
-                            });
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            Toast.makeText(CommentActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
+            if (AudioSavePathInDevice != null) {
+                Uri recordingUri = Uri.fromFile(new File(AudioSavePathInDevice));
+                storageReference.putFile(recordingUri).addOnSuccessListener(taskSnapshot -> {
+                    storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+                        uploadCommentWithRecording(uri, comment);
+                    }).addOnFailureListener(e -> {
+                        progressDialog.dismiss();
+                        Toast.makeText(this, "Failed to download audio Url", Toast.LENGTH_SHORT).show();
                     });
+                }).addOnFailureListener(e -> {
+                    progressDialog.dismiss();
+                    Toast.makeText(this, "Failed to upload comment audio due to" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+            } else {
+                uploadCommentWithoutRecording(comment);
+            }
+
         });
 
         CommentAdapter commentAdapter = new CommentAdapter(this, list, postId);
@@ -230,29 +276,315 @@ public class CommentActivity extends AppCompatActivity {
 
     }
 
-//    private void setData() {
-//        Picasso.get()
-//                .load(userProfileImg)
-//                .placeholder(R.drawable.placeholder)
-//                .into(binding.profileImgComment);
-//        binding.nameCommentScreen.setText(postedBy);
-//
-//        RequestOptions requestOptions = new RequestOptions();
-//        requestOptions.placeholder(R.drawable.placeholder);
-//        Glide.with(CommentActivity.this)
-//                .setDefaultRequestOptions(requestOptions)
-//                .load(postImage).into(binding.imgCommentScreen);
-//
-//        binding.headerCommentScreen.setText(Html.fromHtml("<b>" + postTitle + "</b>"));
-//        binding.descCommentScreen.setText(postDescription);
-//        binding.like.setText(postLikes + "");
-//        binding.comment.setText(commentCount + "");
-//
-//    }
+    private void uploadCommentWithoutRecording(Comment comment) {
 
-//    private void setOwner(boolean b) {
-//        isOwner[0] = b;
-//    }
+        firebaseDatabase.getReference()
+                .child("posts/" + postId + "/comments")
+                .child(comment.getCommentedAt() + "")
+                .setValue(comment)
+                .addOnSuccessListener(unused -> {
+                            progressDialog.dismiss();
+                            binding.commentEt.setText("");
+                            Toast.makeText(this, "Commented Successfully!", Toast.LENGTH_SHORT).show();
+
+                            Notification notification = new Notification();
+                            notification.setNotificationBy(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                            notification.setNotificaitonAt(new Date().getTime());
+                            notification.setPostId(postId);
+                            notification.setPostedBy(postedBy);
+                            notification.setNotificationType("comment");
+
+                            FirebaseDatabase.getInstance().getReference()
+                                    .child("notification")
+                                    .child(postedBy)
+                                    .push()
+                                    .setValue(notification);
+                            hideKeyboard(CommentActivity.this);
+
+                        }
+                ).addOnFailureListener(e -> {
+            progressDialog.dismiss();
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            finish();
+
+        });
+
+        firebaseDatabase.getReference()
+                .child("posts/" + postId + "/commentCount")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        int commentCount = 0;
+                        if (snapshot.exists()) {
+                            commentCount = snapshot.getValue(Integer.class);
+
+                        }
+                        firebaseDatabase.getReference()
+                                .child("posts/" + postId + "/commentCount")
+                                .setValue(commentCount + 1)
+                                .addOnSuccessListener(unused1 -> {
+                                    Toast.makeText(CommentActivity.this, "Comment count incremented", Toast.LENGTH_SHORT).show();
+
+                                }).addOnFailureListener(e -> {
+                            Toast.makeText(CommentActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+
+                        });
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(CommentActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void uploadCommentWithRecording(Uri uri, Comment comment) {
+
+        comment.setCommentRecording(uri.toString());
+
+        firebaseDatabase.getReference()
+                .child("posts/" + postId + "/comments")
+                .child(comment.getCommentedAt() + "")
+                .setValue(comment)
+                .addOnSuccessListener(unused -> {
+                            progressDialog.dismiss();
+                            binding.commentEt.setText("");
+                            Toast.makeText(CommentActivity.this, "Commented Successfully!", Toast.LENGTH_SHORT).show();
+
+                            Notification notification = new Notification();
+                            notification.setNotificationBy(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                            notification.setNotificaitonAt(new Date().getTime());
+                            notification.setPostId(postId);
+                            notification.setPostedBy(postedBy);
+                            notification.setNotificationType("comment");
+
+                            FirebaseDatabase.getInstance().getReference()
+                                    .child("notification")
+                                    .child(postedBy)
+                                    .push()
+                                    .setValue(notification);
+                            hideKeyboard(CommentActivity.this);
+
+                        }
+                ).addOnFailureListener(e -> {
+            progressDialog.dismiss();
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            finish();
+        });
+
+        firebaseDatabase.getReference()
+                .child("posts/" + postId + "/commentCount")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        int commentCount = 0;
+                        if (snapshot.exists()) {
+                            commentCount = snapshot.getValue(Integer.class);
+
+                        }
+                        firebaseDatabase.getReference()
+                                .child("posts/" + postId + "/commentCount")
+                                .setValue(commentCount + 1)
+                                .addOnSuccessListener(unused1 -> {
+                                    Toast.makeText(CommentActivity.this, "Comment count incremented", Toast.LENGTH_SHORT).show();
+
+                                }).addOnFailureListener(e -> {
+                            Toast.makeText(CommentActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(CommentActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void removeRecording() {
+        binding.audioContainer.setVisibility(View.GONE);
+        binding.removeRecording.setVisibility(View.GONE);
+        mediaPlayer = null;
+        AudioSavePathInDevice = null;
+        downloadedRecordingLocation = null;
+
+        String commentData = binding.commentEt.getText().toString();
+
+        if (commentData.isEmpty()) {
+            setButtonDisabled();
+        }
+
+    }
+
+    private void resumeRecording() {
+        if (mediaPlayer != null) {
+
+            mediaPlayer.seekTo(length);
+            mediaPlayer.start();
+            binding.resume.setVisibility(View.GONE);
+            binding.pause.setVisibility(View.VISIBLE);
+
+            mediaPlayer.setOnCompletionListener(mediaPlayer -> {
+                binding.play.setVisibility(View.VISIBLE);
+                binding.pause.setVisibility(View.GONE);
+            });
+        } else {
+            Log.d("AddPostFragment", "Audio is not recorded");
+        }
+    }
+
+    private void pauseRecording() {
+        if (mediaPlayer != null) {
+            binding.pause.setVisibility(View.GONE);
+            binding.resume.setVisibility(View.VISIBLE);
+            mediaPlayer.pause();
+            length = mediaPlayer.getCurrentPosition();
+            mediaPlayer.setOnCompletionListener(mediaPlayer -> {
+                binding.play.setVisibility(View.VISIBLE);
+                binding.resume.setVisibility(View.GONE);
+            });
+        } else {
+            Log.d("AddPostFragment", "Audio is not recorded");
+        }
+    }
+
+    private void playRecording() {
+
+        binding.play.setVisibility(View.GONE);
+        binding.pause.setVisibility(View.VISIBLE);
+
+        if (AudioSavePathInDevice != null) {
+            mediaPlayer = new MediaPlayer();
+            try {
+                mediaPlayer.setDataSource(AudioSavePathInDevice);
+                mediaPlayer.prepare();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            mediaPlayer.start();
+            //Toast.makeText(getContext(),"Recording Playing",Toast.LENGTH_LONG).show();
+            mediaPlayer.setOnCompletionListener(mediaPlayer -> {
+                binding.pause.setVisibility(View.GONE);
+                binding.play.setVisibility(View.VISIBLE);
+            });
+        } else {
+
+//            mediaPlayer = new MediaPlayer();
+//            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+//            try {
+//                mediaPlayer.setDataSource(postRecording);
+//                mediaPlayer.prepare();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//
+//            mediaPlayer.start();
+//            Log.d("AddPostFragment", "Audio is not recorded");
+        }
+    }
+
+    private void stopRecording() {
+
+        boolean isAudio = true;
+        if (mediaRecorder != null) {
+            binding.recordingStatus.setVisibility(View.INVISIBLE);
+            binding.play.setVisibility(View.VISIBLE);
+            Log.d("Length", String.valueOf(length));
+            try {
+                mediaRecorder.stop();
+            } catch (RuntimeException e) {
+                Log.d("CheckAudio", "check" + AudioSavePathInDevice + " " + mediaPlayer + " " + mediaRecorder);
+                isAudio = false;
+            }
+            if (isAudio) {
+                Toast.makeText(this, "Recording Completed", Toast.LENGTH_SHORT).show();
+                setButtonEnabled();
+            } else {
+                Toast.makeText(this, "Error! Record Again..", Toast.LENGTH_SHORT).show();
+                AudioSavePathInDevice = null;
+                mediaRecorder = null;
+                binding.audioContainer.setVisibility(View.GONE);
+                binding.removeRecording.setVisibility(View.GONE);
+            }
+        } else {
+            Log.d("AddPostFragment", "Audio is not recorded");
+            binding.audioContainer.setVisibility(View.GONE);
+            binding.removeRecording.setVisibility(View.GONE);
+        }
+    }
+
+    private void startRecording() {
+
+//        if (postRecording != null) {
+//            downloadedRecordingLocation = null;
+//            binding.audioContainer.setVisibility(View.GONE);
+//            binding.removeRecording.setVisibility(View.GONE);
+//        }
+
+        if (checkPermission()) {
+
+            binding.audioContainer.setVisibility(View.VISIBLE);
+            binding.removeRecording.setVisibility(View.VISIBLE);
+            binding.recordingStatus.setVisibility(View.VISIBLE);
+            binding.resume.setVisibility(View.GONE);
+            binding.play.setVisibility(View.GONE);
+
+            AudioSavePathInDevice =
+                    getExternalCacheDir().getAbsolutePath() + "/" +
+                            CreateRandomAudioFileName(5) + "AudioRecording.3gp";
+
+            MediaRecorderReady();
+
+            try {
+                mediaRecorder.prepare();
+                mediaRecorder.start();
+            } catch (IllegalStateException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            //Toast.makeText(getContext(),"Recording started",Toast.LENGTH_LONG).show();
+        } else {
+            requestPermission();
+        }
+    }
+
+    public boolean checkPermission() {
+        int result = ContextCompat.checkSelfPermission(getApplicationContext(),
+                WRITE_EXTERNAL_STORAGE);
+        int result1 = ContextCompat.checkSelfPermission(getApplicationContext(),
+                RECORD_AUDIO);
+        return result == PackageManager.PERMISSION_GRANTED &&
+                result1 == PackageManager.PERMISSION_GRANTED;
+    }
+
+    public String CreateRandomAudioFileName(int string) {
+        StringBuilder stringBuilder = new StringBuilder(string);
+        int i = 0;
+        while (i < string) {
+            stringBuilder.append(RandomAudioFileName.
+                    charAt(random.nextInt(RandomAudioFileName.length())));
+
+            i++;
+        }
+        return stringBuilder.toString();
+    }
+
+    @SuppressLint("WrongConstant")
+    public void MediaRecorderReady() {
+        mediaRecorder = new MediaRecorder();
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mediaRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
+        mediaRecorder.setOutputFile(AudioSavePathInDevice);
+    }
+
+    private void requestPermission() {
+        ActivityCompat.requestPermissions(this, new
+                String[]{WRITE_EXTERNAL_STORAGE, RECORD_AUDIO}, RequestPermissionCode);
+    }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -269,5 +601,15 @@ public class CommentActivity extends AppCompatActivity {
             view = new View(activity);
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    private void setButtonEnabled() {
+        binding.postCommentBtn.setImageResource(R.drawable.ic_send_comment);
+        binding.postCommentBtn.setEnabled(true);
+    }
+
+    private void setButtonDisabled() {
+        binding.postCommentBtn.setImageResource(R.drawable.ic_comment_send_disabled);
+        binding.postCommentBtn.setEnabled(false);
     }
 }

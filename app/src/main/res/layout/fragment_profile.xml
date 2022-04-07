@@ -287,6 +287,7 @@
     <TextView
         android:id="@+id/textView11"
         android:layout_width="0dp"
+        android:visibility="gone"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/_6mdp"
         android:layout_marginTop="@dimen/_6mdp"
@@ -302,13 +303,13 @@
         android:id="@+id/textView12"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_12mdp"
         android:fontFamily="@font/acme"
+        android:layout_marginTop="@dimen/_6mdp"
         android:text="My Followers"
         android:textColor="@color/black"
         android:textSize="@dimen/_14font_mdp"
-        diagonal:layout_constraintStart_toStartOf="@+id/textView11"
-        diagonal:layout_constraintTop_toBottomOf="@+id/textView11" />
+        diagonal:layout_constraintStart_toStartOf="@+id/cardView"
+        diagonal:layout_constraintTop_toBottomOf="@+id/cardView" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/myFriend_Rv"

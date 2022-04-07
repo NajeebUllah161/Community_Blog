@@ -312,10 +312,12 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
                     storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
                         uploadPostImgAudioAndData(uri);
                     }).addOnFailureListener(e -> {
+                        progressDialog.dismiss();
                         Toast.makeText(this, "Failed to download audio Url", Toast.LENGTH_SHORT).show();
                     });
 
                 }).addOnFailureListener(e -> {
+                    progressDialog.dismiss();
                     Toast.makeText(this, "Failed to Upload Audio", Toast.LENGTH_SHORT).show();
                 });
             }
@@ -679,7 +681,7 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
             binding.play.setVisibility(View.GONE);
 
             AudioSavePathInDevice =
-                    Environment.getExternalStorageDirectory().getAbsolutePath() + "/" +
+                    getExternalCacheDir().getAbsolutePath() + "/" +
                             CreateRandomAudioFileName(5) + "AudioRecording.3gp";
 
             MediaRecorderReady();
