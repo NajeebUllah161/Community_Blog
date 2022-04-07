@@ -19,18 +19,22 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.communityfeedapp.R;
 import com.example.communityfeedapp.activities.CommentActivity;
+import com.example.communityfeedapp.activities.PostImageZoomActivity;
 import com.example.communityfeedapp.databinding.DashboardRvSampleBinding;
 import com.example.communityfeedapp.edit_dialogues.EditPostDialogue;
 import com.example.communityfeedapp.models.Notification;
 import com.example.communityfeedapp.models.Post;
 import com.example.communityfeedapp.models.User;
-import com.google.android.material.checkbox.MaterialCheckBox;
+import com.github.marlonlom.utilities.timeago.TimeAgo;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.skydoves.powermenu.MenuAnimation;
 import com.skydoves.powermenu.OnMenuItemClickListener;
@@ -46,17 +50,30 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     ArrayList<Post> postModelArrayList;
     Context context;
-    MaterialCheckBox isChecked;
     PowerMenu powerMenu;
     Intent intent;
+    String postId;
 
     private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
         @Override
         public void onItemClick(int position, PowerMenuItem item) {
-            Toast.makeText(context, item.getTitle(), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(context, item.getTitle(), Toast.LENGTH_SHORT).show();
             powerMenu.setSelectedPosition(position); // change selected item
             if (item.getTitle().equals("Edit profile")) {
                 context.startActivity(intent);
+            } else {
+                FirebaseDatabase.getInstance().getReference().child("posts/" + postId).removeValue().addOnSuccessListener(unused -> {
+                    Toast.makeText(context, "Post deleted Successfully!", Toast.LENGTH_SHORT).show();
+                    FirebaseDatabase.getInstance().getReference()
+                            .child("Users")
+                            .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                            .child("totalPosts")
+                            .setValue(ServerValue.increment(-1)).addOnSuccessListener(unused1 -> {
+                        Log.d("PostAdapter", "remove -1 from totalPostCount");
+                    }).addOnFailureListener(e -> {
+                        Toast.makeText(context, "Unable to deduct postCount due to" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+                }).addOnFailureListener(e -> Toast.makeText(context, "Unable to delete post due to!" + e.getMessage(), Toast.LENGTH_SHORT).show());
             }
             powerMenu.dismiss();
         }
@@ -64,10 +81,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     MediaPlayer player;
     int length;
 
-    public PostAdapter(ArrayList<Post> list, Context context, MaterialCheckBox checked) {
+    public PostAdapter(ArrayList<Post> list, Context context) {
         this.postModelArrayList = list;
         this.context = context;
-        this.isChecked = checked;
     }
 
     @NonNull
@@ -78,7 +94,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         return new PostViewHolder(view);
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint({"SetTextI18n", "CheckResult"})
     @Override
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
 
@@ -90,10 +106,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         // Setup Image from Firebase
         if (model.getPostImage() != null) {
-            Picasso.get()
-                    .load(model.getPostImage())
-                    .placeholder(R.drawable.placeholder)
-                    .into(holder.binding.postImg);
+            RequestOptions requestOptions = new RequestOptions();
+            requestOptions.placeholder(R.drawable.placeholder);
+
+            Glide.with(context)
+                    .setDefaultRequestOptions(requestOptions)
+                    .load(model.getPostImage()).into(holder.binding.postImg);
+
         } else {
             holder.binding.postImg.setVisibility(View.GONE);
         }
@@ -170,6 +189,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         } else {
             holder.binding.postDescriptionDesign.setText(model.getPostDescription());
             holder.binding.postDescriptionDesign.setVisibility(View.VISIBLE);
+        }
+
+
+        long postedAt = model.getPostedAt();
+        if (postedAt == 0) {
+            holder.binding.timeOfPost.setVisibility(View.GONE);
+        } else {
+            Date date = new Date(postedAt);
+            long time = date.getTime();
+            String timeAgo = TimeAgo.using(time);
+            holder.binding.timeOfPost.setText(timeAgo);
+            holder.binding.timeOfPost.setVisibility(View.VISIBLE);
+
         }
 
         FirebaseDatabase.getInstance()
@@ -284,6 +316,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             context.startActivity(intent);
         });
 
+        holder.binding.postImg.setOnClickListener(view -> {
+            Intent intent = new Intent(context, PostImageZoomActivity.class);
+            intent.putExtra("postImage", model.getPostImage());
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        });
+
         handlePowerMenu(holder, model);
 
     }
@@ -291,9 +330,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     private void handlePowerMenu(PostViewHolder holder, Post model) {
 
         List<PowerMenuItem> list = new ArrayList<>();
-        list.add(new PowerMenuItem("Edit profile"));
-        list.add(new PowerMenuItem("Share"));
-        list.add(new PowerMenuItem("Settings"));
+        list.add(new PowerMenuItem("Edit post"));
+        list.add(new PowerMenuItem("Delete post"));
 
         powerMenu = new PowerMenu.Builder(context)
                 .addItemList(list) // list has "Novel", "Poetry", "Art"
@@ -320,6 +358,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             intent.putExtra("recTime", model.getRecTime());
 
             //Log.d("PostIdTimeStamp", String.valueOf(model.getPostedAt()));
+            postId = model.getPostId();
             powerMenu.showAsDropDown(view);
             //Log.d("Equal",model.getPostedBy()+" " + FirebaseAuth.getInstance().getCurrentUser().getUid());
 

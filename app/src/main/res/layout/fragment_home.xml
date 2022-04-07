@@ -25,10 +25,10 @@
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="@dimen/_12mdp"
                 android:text="Discover"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_24ssp"
+                android:textSize="@dimen/_24font_mdp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/profile_image"
                 app:layout_constraintStart_toStartOf="parent"
@@ -41,15 +41,29 @@
                 android:layout_marginEnd="@dimen/_8mdp"
                 android:text="Filter"
                 android:textColor="@color/black"
-                app:layout_constraintBottom_toBottomOf="@+id/isSolved"
-                app:layout_constraintEnd_toStartOf="@+id/isSolved"
-                app:layout_constraintTop_toTopOf="@+id/isSolved" />
+                app:layout_constraintBottom_toBottomOf="@+id/filter"
+                app:layout_constraintEnd_toStartOf="@+id/filter"
+                app:layout_constraintTop_toTopOf="@+id/filter" />
 
-            <com.google.android.material.checkbox.MaterialCheckBox
-                android:id="@+id/isSolved"
+<!--            <com.google.android.material.checkbox.MaterialCheckBox-->
+<!--                android:id="@+id/isSolved"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginEnd="@dimen/_16mdp"-->
+<!--                android:visibility="invisible"-->
+<!--                app:layout_constraintBottom_toBottomOf="@+id/profile_image"-->
+<!--                app:layout_constraintEnd_toStartOf="@+id/profile_image"-->
+<!--                app:layout_constraintTop_toTopOf="@+id/profile_image" />-->
+
+            <ImageView
+                android:id="@+id/filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/_16mdp"
+                android:layout_marginEnd="8dp"
+                android:foregroundGravity="center"
+                android:padding="@dimen/_8mdp"
+                android:src="@drawable/ic_filter"
+                android:textAlignment="center"
                 app:layout_constraintBottom_toBottomOf="@+id/profile_image"
                 app:layout_constraintEnd_toStartOf="@+id/profile_image"
                 app:layout_constraintTop_toTopOf="@+id/profile_image" />
@@ -58,10 +72,10 @@
                 android:id="@+id/profile_image"
                 android:layout_width="@dimen/_40mdp"
                 android:layout_height="@dimen/_40mdp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:padding="4dp"
-                android:src="@drawable/profile"
+                android:layout_marginTop="@dimen/_6mdp"
+                android:layout_marginEnd="@dimen/_12mdp"
+                android:padding="@dimen/_3mdp"
+                android:src="@drawable/placeholder"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -78,10 +92,10 @@
             <View
                 android:id="@+id/view2"
                 android:layout_width="wrap_content"
-                android:layout_height="1dp"
-                android:layout_marginTop="4dp"
-                android:visibility="invisible"
+                android:layout_height="@dimen/_1mdp"
+                android:layout_marginTop="@dimen/_3mdp"
                 android:background="@android:color/darker_gray"
+                android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
@@ -92,11 +106,11 @@
                 android:id="@+id/horizontalScrollView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="gone"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="@dimen/_12mdp"
                 android:fillViewport="true"
                 android:orientation="horizontal"
                 android:scrollbars="none"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/view2">
@@ -113,7 +127,7 @@
                             android:id="@+id/addStoryImg"
                             android:layout_width="@dimen/_130mdp"
                             android:layout_height="@dimen/_85mdp"
-                            android:layout_marginStart="16dp"
+                            android:layout_marginStart="@dimen/_12mdp"
                             android:scaleType="centerCrop"
                             android:src="@drawable/profile"
                             app:layout_constraintStart_toStartOf="parent"
@@ -176,7 +190,7 @@
                             android:id="@+id/storyRv"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
+                            android:layout_marginStart="@dimen/_12mdp"
                             android:orientation="horizontal" />
 
                     </RelativeLayout>
@@ -186,8 +200,8 @@
             <View
                 android:id="@+id/view5"
                 android:layout_width="wrap_content"
-                android:layout_height="1dp"
-                android:layout_marginTop="16dp"
+                android:layout_height="@dimen/_1mdp"
+                android:layout_marginTop="@dimen/_12mdp"
                 android:background="@android:color/darker_gray"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -198,9 +212,9 @@
                 android:id="@+id/dashboard_Rv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginStart="@dimen/_12mdp"
+                android:layout_marginTop="@dimen/_12mdp"
+                android:layout_marginEnd="@dimen/_12mdp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"

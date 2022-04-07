@@ -59,7 +59,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
         String timeOfComment = TimeAgo.using(comment.getCommentedAt());
         holder.binding.time.setText(timeOfComment);
 
-        Log.d("CommentedBy", comment.getCommentedBy());
+        //Log.d("CommentedBy", comment.getCommentedBy());
         FirebaseDatabase.getInstance().getReference()
                 .child("posts/" + postId + "/comments/" + comment.getCommentedAt())
                 .addValueEventListener(new ValueEventListener() {
@@ -68,7 +68,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         Comment comment = snapshot.getValue(Comment.class);
                         if (comment.isVerified()) {
-                            Log.d("IsVerified", String.valueOf(comment.isVerified()));
+                            //Log.d("IsVerified", String.valueOf(comment.isVerified()));
                             holder.binding.commentCheckbox.setVisibility(View.VISIBLE);
                             holder.binding.commentCheckbox.setChecked(true);
                         }

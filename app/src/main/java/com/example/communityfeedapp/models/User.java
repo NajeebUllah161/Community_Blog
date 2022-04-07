@@ -8,6 +8,26 @@ public class User {
     private String profileImage;
     private int userPerks;
 
+    public int getUserRating() {
+        return userRating;
+    }
+
+    public void setUserRating(int userRating) {
+        this.userRating = userRating;
+    }
+
+    private int userRating;
+
+    public int getTotalPosts() {
+        return totalPosts;
+    }
+
+    public void setTotalPosts(int totalPosts) {
+        this.totalPosts = totalPosts;
+    }
+
+    private int totalPosts;
+
     public User() {
     }
 

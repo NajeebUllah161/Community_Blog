@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.andreseko.SweetAlert.SweetAlertDialog;
 import com.example.communityfeedapp.activities.LoginActivity;
 import com.example.communityfeedapp.databinding.ActivityMainBinding;
 import com.example.communityfeedapp.fragments.AddPostFragment;
@@ -21,6 +22,8 @@ import com.example.communityfeedapp.fragments.ProfileFragment;
 import com.example.communityfeedapp.fragments.SearchFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
+import com.vansuita.pickimage.bean.PickResult;
+import com.vansuita.pickimage.listeners.IPickResult;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -95,30 +98,38 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d("CheckingErr","onResumeMainActivity");
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.d("CheckingErr","onPauseMainActivity");
-    }
+//
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        Log.d("CheckingErr","onResumeMainActivity");
+//    }
+//
+//    @Override
+//    protected void onPause() {
+//        super.onPause();
+//        Log.d("CheckingErr","onPauseMainActivity");
+//    }
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        finishAffinity();
+        new SweetAlertDialog(MainActivity.this, SweetAlertDialog.WARNING_TYPE)
+                .setTitleText("Exit Application?")
+                .setContentText("Do you want to close this application?")
+                .setConfirmText("Yes")
+                .setConfirmClickListener(sDialog -> {
+                    sDialog.dismissWithAnimation();
+                    finishAffinity();
+                })
+                .setCancelButton("No", SweetAlertDialog::dismissWithAnimation)
+                .show();
     }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.d("CheckingErr","onDestroyMainActivity");
-        //FirebaseDatabase.getInstance().goOffline();
-        finishAffinity();
-    }
+//
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        Log.d("CheckingErr","onDestroyMainActivity");
+//        //FirebaseDatabase.getInstance().goOffline();
+//        finishAffinity();
+//    }
 }

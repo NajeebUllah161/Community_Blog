@@ -3,45 +3,51 @@ package com.example.communityfeedapp.fragments;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import com.example.communityfeedapp.R;
 import com.example.communityfeedapp.databinding.FragmentAddPostBinding;
 import com.example.communityfeedapp.models.Post;
 import com.example.communityfeedapp.models.User;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
+import com.vansuita.pickimage.bundle.PickSetup;
+import com.vansuita.pickimage.dialog.PickImageDialog;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -63,7 +69,6 @@ import okhttp3.Response;
 
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-import static android.app.Activity.RESULT_OK;
 
 public class AddPostFragment extends Fragment {
 
@@ -192,9 +197,11 @@ public class AddPostFragment extends Fragment {
         });
 
         binding.addImg.setOnClickListener(view -> {
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.setType("image/*");
-            startActivityForResult(intent, 10);
+            //            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+//            intent.setType("image/*");
+//            startActivityForResult(intent, 10);
+            setPickImage();
+
         });
 
         binding.addRecording.setOnTouchListener((view, motionEvent) -> {
@@ -263,6 +270,59 @@ public class AddPostFragment extends Fragment {
 
         return binding.getRoot();
     }
+
+    private void setPickImage() {
+        @SuppressLint("WrongConstant")
+        PickSetup setup = new PickSetup()
+                .setTitle("Choose Option")
+                .setTitleColor(Color.BLACK)
+                .setCameraButtonText("Capture")
+                .setGalleryButtonText("Gallery")
+                .setIconGravity(Gravity.RIGHT)
+                .setButtonOrientation(LinearLayoutCompat.HORIZONTAL)
+                .setBackgroundColor(Color.WHITE)
+                .setCancelText("Cancel");
+
+        PickImageDialog pickImageDialog = PickImageDialog.build(setup).show((FragmentActivity) getContext());
+
+        PickImageDialog.build(setup)
+                .setOnPickResult(r -> {
+                    if (r.getError() == null) {
+                        uri = r.getUri();
+                        Log.d("Uri", String.valueOf(uri));
+                        //Glide.with(getContext()).load(r.getBitmap()).into(binding.postImage);
+                        binding.postImage.setImageBitmap(r.getBitmap());
+                        binding.postImage.setVisibility(View.VISIBLE);
+                        binding.removeImg.setVisibility(View.VISIBLE);
+                        setButtonEnabled();
+                        pickImageDialog.dismiss();
+
+                    }
+                })
+                .setOnPickCancel(() -> {
+                    pickImageDialog.dismiss();
+                    Toast.makeText(getContext(), "Cancelled", Toast.LENGTH_SHORT).show();
+                }).show(((FragmentActivity) getContext()).getSupportFragmentManager());
+
+    }
+
+    //    @Override
+//    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//
+//        if (resultCode == RESULT_OK) {
+//            if (requestCode == 10) {
+//                if (data.getData() != null) {
+//                    uri = data.getData();
+//                    Log.d("Uri", String.valueOf(uri));
+//                    binding.postImage.setImageURI(uri);
+//                    binding.postImage.setVisibility(View.VISIBLE);
+//                    binding.removeImg.setVisibility(View.VISIBLE);
+//                    setButtonEnabled();
+//                }
+//            }
+//        }
+//    }
 
     private ArrayList<String> getFireBaseNotificationId() {
         mClient = new OkHttpClient();
@@ -345,7 +405,8 @@ public class AddPostFragment extends Fragment {
                         progressDialog.dismiss();
                         Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
                         sendNotification();
-                        //switchFragment();
+                        hideKeyboard(getActivity());
+                        incrementTotalPostsCount();
                     }).addOnFailureListener(e -> progressDialog.dismiss());
                 });
             }).addOnFailureListener(e -> {
@@ -368,9 +429,36 @@ public class AddPostFragment extends Fragment {
                 progressDialog.dismiss();
                 Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
                 sendNotification();
-                //switchFragment();
+                hideKeyboard(getActivity());
+                incrementTotalPostsCount();
             }).addOnFailureListener(e -> progressDialog.dismiss());
         }
+    }
+
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    private void incrementTotalPostsCount() {
+        FirebaseDatabase.getInstance().getReference()
+                .child("Users")
+                .child(auth.getCurrentUser().getUid())
+                .child("totalPosts")
+                .setValue(ServerValue.increment(1)).addOnSuccessListener(unused -> {
+            Toast.makeText(getContext(), "Post count updated", Toast.LENGTH_SHORT).show();
+            ((BottomNavigationView) getActivity().findViewById(R.id.bottom_navigation_bar)).setSelectedItemId(R.id.item_home);
+        }).addOnFailureListener(e -> {
+            Toast.makeText(getContext(), "Failed to update post count", Toast.LENGTH_SHORT).show();
+            ((BottomNavigationView) getActivity().findViewById(R.id.bottom_navigation_bar)).setSelectedItemId(R.id.item_home);
+        });
     }
 
     private void sendNotification() {
@@ -401,7 +489,8 @@ public class AddPostFragment extends Fragment {
                         progressDialog.dismiss();
                         Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
                         sendNotification();
-                        //switchFragment();
+                        hideKeyboard(getActivity());
+                        incrementTotalPostsCount();
                     }).addOnFailureListener(e -> progressDialog.dismiss());
                 });
             }).addOnFailureListener(e -> {
@@ -422,7 +511,8 @@ public class AddPostFragment extends Fragment {
                 progressDialog.dismiss();
                 Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
                 sendNotification();
-                //switchFragment();
+                hideKeyboard(getActivity());
+                incrementTotalPostsCount();
             }).addOnFailureListener(e -> progressDialog.dismiss());
         }
     }
@@ -598,23 +688,6 @@ public class AddPostFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == RESULT_OK) {
-            if (requestCode == 10) {
-                if (data.getData() != null) {
-                    uri = data.getData();
-                    binding.postImage.setImageURI(uri);
-                    binding.postImage.setVisibility(View.VISIBLE);
-                    binding.removeImg.setVisibility(View.VISIBLE);
-                    setButtonEnabled();
-                }
-            }
-        }
-    }
-
     public void sendMessage(final JSONArray recipients, final String title, final String body, final String icon, final String message) {
 
         new AsyncTask<String, String, String>() {
@@ -644,6 +717,7 @@ public class AddPostFragment extends Fragment {
                 return null;
             }
 
+            @SuppressLint("StaticFieldLeak")
             @Override
             protected void onPostExecute(String result) {
                 try {
@@ -651,7 +725,7 @@ public class AddPostFragment extends Fragment {
                     int success, failure;
                     success = resultJson.getInt("success");
                     failure = resultJson.getInt("failure");
-                } catch (JSONException e) {
+                } catch (@SuppressLint("StaticFieldLeak") JSONException e) {
                     e.printStackTrace();
                 }
             }
@@ -693,4 +767,16 @@ public class AddPostFragment extends Fragment {
         binding.postBtn.setTextColor(getContext().getResources().getColor(R.color.gray));
         binding.postBtn.setEnabled(false);
     }
+
+    //    @Override
+//    public void onPickResult(PickResult r) {
+//        if (r.getError() == null) {
+//            uri = r.getUri();
+//            Log.d("Uri", String.valueOf(uri));
+//            binding.postImage.setImageURI(uri);
+//            binding.postImage.setVisibility(View.VISIBLE);
+//            binding.removeImg.setVisibility(View.VISIBLE);
+//            setButtonEnabled();
+//        }
+//    }
 }

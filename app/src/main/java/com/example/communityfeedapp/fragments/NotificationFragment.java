@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.communityfeedapp.R;
 import com.example.communityfeedapp.adapters.NotificationAdapter;
+import com.example.communityfeedapp.databinding.FragmentHomeBinding;
+import com.example.communityfeedapp.databinding.FragmentNotificationBinding;
 import com.example.communityfeedapp.models.Notification;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -26,6 +28,7 @@ public class NotificationFragment extends Fragment {
     RecyclerView recyclerView;
     ArrayList<Notification> list;
     FirebaseDatabase firebaseDatabase;
+    FragmentNotificationBinding binding;
 
     public NotificationFragment() {
         // Required empty public constructor
@@ -42,15 +45,15 @@ public class NotificationFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_notification, container, false);
+        binding = FragmentNotificationBinding.inflate(inflater, container, false);
 
 
-        recyclerView = view.findViewById(R.id.notificationRv);
+        recyclerView = binding.notificationRv;
         list = new ArrayList<>();
 
 
         NotificationAdapter adapter = new NotificationAdapter(list, getContext());
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setAdapter(adapter);
@@ -76,6 +79,6 @@ public class NotificationFragment extends Fragment {
                     }
                 });
 
-        return view;
+        return binding.getRoot();
     }
 }

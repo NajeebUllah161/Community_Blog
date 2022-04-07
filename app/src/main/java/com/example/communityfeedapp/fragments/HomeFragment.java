@@ -2,9 +2,11 @@ package com.example.communityfeedapp.fragments;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +16,7 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -27,6 +30,7 @@ import com.example.communityfeedapp.models.User;
 import com.example.communityfeedapp.models.UserStories;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,22 +39,65 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.skydoves.powermenu.MenuAnimation;
+import com.skydoves.powermenu.OnMenuItemClickListener;
+import com.skydoves.powermenu.PowerMenu;
+import com.skydoves.powermenu.PowerMenuItem;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 public class HomeFragment extends Fragment {
 
     ArrayList<Story> storyArrayList = new ArrayList<>();
     ArrayList<Post> postList = new ArrayList<>();
+    ArrayList<Post> postListSolved = new ArrayList<>();
+    ArrayList<Post> postListUnSolved = new ArrayList<>();
     FirebaseDatabase firebaseDatabase;
     FirebaseStorage firebaseStorage;
     FirebaseAuth auth;
     ActivityResultLauncher<String> galleryLauncher;
     ProgressDialog dialog;
     FragmentHomeBinding binding;
+    PowerMenu powerMenu;
+    PostAdapter postAdapter;
+
+    private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
+        @Override
+        public void onItemClick(int position, PowerMenuItem item) {
+            //Toast.makeText(getContext(), item.getTitle(), Toast.LENGTH_SHORT).show();
+            powerMenu.setSelectedPosition(position); // change selected item
+            if (item.getTitle().equals("Solved")) {
+
+                postAdapter = new PostAdapter(postListSolved, getContext());
+                binding.dashboardRv.setAdapter(postAdapter);
+                binding.dashboardRv.hideShimmerAdapter();
+                loadProfileImg();
+                postAdapter.notifyDataSetChanged();
+
+            } else if (item.getTitle().equals("UnSolved")) {
+
+                postAdapter = new PostAdapter(postListUnSolved, getContext());
+                binding.dashboardRv.setAdapter(postAdapter);
+                binding.dashboardRv.hideShimmerAdapter();
+                loadProfileImg();
+                postAdapter.notifyDataSetChanged();
+
+            } else {
+
+                postAdapter = new PostAdapter(postList, getContext());
+                binding.dashboardRv.setAdapter(postAdapter);
+                binding.dashboardRv.hideShimmerAdapter();
+                loadProfileImg();
+                postAdapter.notifyDataSetChanged();
+
+            }
+            powerMenu.dismiss();
+        }
+    };
 
     public HomeFragment() {
         // Required empty public constructor
@@ -65,6 +112,30 @@ public class HomeFragment extends Fragment {
         auth = FirebaseAuth.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
 
+        setupPowerMenu();
+
+    }
+
+    private void setupPowerMenu() {
+
+        List<PowerMenuItem> list = new ArrayList<>();
+        list.add(new PowerMenuItem("All"));
+        list.add(new PowerMenuItem("Solved"));
+        list.add(new PowerMenuItem("UnSolved"));
+
+        powerMenu = new PowerMenu.Builder(getContext())
+                .addItemList(list) // list has "Novel", "Poetry", "Art"
+                .setAnimation(MenuAnimation.SHOWUP_BOTTOM_RIGHT) // Animation start point (TOP | LEFT).
+                .setMenuRadius(10f) // sets the corner radius.
+                .setMenuShadow(10f) // sets the shadow.
+                .setTextColor(ContextCompat.getColor(getContext(), R.color.teal_700))
+                .setTextGravity(Gravity.LEFT)
+                .setTextTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD))
+                .setSelectedTextColor(Color.WHITE)
+                .setMenuColor(Color.WHITE)
+                .setSelectedMenuColor(ContextCompat.getColor(getContext(), R.color.black))
+                .setOnMenuItemClickListener(onMenuItemClickListener)
+                .build();
     }
 
     @Override
@@ -125,7 +196,7 @@ public class HomeFragment extends Fragment {
 
         // Setting up Dashboard RecyclerView
 
-        PostAdapter postAdapter = new PostAdapter(postList, getContext(), binding.isSolved);
+        postAdapter = new PostAdapter(postList, getContext());
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true);
         binding.dashboardRv.setLayoutManager(layoutManager);
         binding.dashboardRv.setNestedScrollingEnabled(false);
@@ -135,10 +206,19 @@ public class HomeFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 postList.clear();
+                postListSolved.clear();
+                postListUnSolved.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Post post = dataSnapshot.getValue(Post.class);
                     post.setPostId(dataSnapshot.getKey());
                     postList.add(post);
+                    if (post.isSolved()) {
+                        //Log.d("Solved", "solved");
+                        postListSolved.add(post);
+                    } else {
+                        postListUnSolved.add(post);
+                        //Log.d("Solved", "not");
+                    }
                 }
                 binding.dashboardRv.setAdapter(postAdapter);
                 binding.dashboardRv.hideShimmerAdapter();
@@ -152,59 +232,60 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        binding.isSolved.setOnCheckedChangeListener((compoundButton, b) -> {
-            if (b) {
-                firebaseDatabase.getReference().child("posts").addValueEventListener(new ValueEventListener() {
-                    @SuppressLint("NotifyDataSetChanged")
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        postList.clear();
-                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                            Post post = dataSnapshot.getValue(Post.class);
-                            post.setPostId(dataSnapshot.getKey());
-                            if (post.isSolved()) {
-                                Log.d("Solved", "solved");
-                                postList.add(post);
-                            } else {
-                                Log.d("Solved", "not");
-                            }
-                        }
-                        binding.dashboardRv.setAdapter(postAdapter);
-                        binding.dashboardRv.hideShimmerAdapter();
-                        loadProfileImg();
-                        postAdapter.notifyDataSetChanged();
-                    }
+//        binding.isSolved.setOnCheckedChangeListener((compoundButton, b) -> {
+//            if (b) {
+//                firebaseDatabase.getReference().child("posts").addValueEventListener(new ValueEventListener() {
+//                    @SuppressLint("NotifyDataSetChanged")
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                        postList.clear();
+//                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+//                            Post post = dataSnapshot.getValue(Post.class);
+//                            post.setPostId(dataSnapshot.getKey());
+//                            if (post.isSolved()) {
+//                                Log.d("Solved", "solved");
+//                                postList.add(post);
+//                            } else {
+//                                Log.d("Solved", "not");
+//                            }
+//                        }
+//                        binding.dashboardRv.setAdapter(postAdapter);
+//                        binding.dashboardRv.hideShimmerAdapter();
+//                        loadProfileImg();
+//                        postAdapter.notifyDataSetChanged();
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError error) {
+//                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//            } else {
+//                firebaseDatabase.getReference().child("posts").addValueEventListener(new ValueEventListener() {
+//                    @SuppressLint("NotifyDataSetChanged")
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                        postList.clear();
+//                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+//                            Post post = dataSnapshot.getValue(Post.class);
+//                            post.setPostId(dataSnapshot.getKey());
+//                            postList.add(post);
+//                        }
+//                        binding.dashboardRv.setAdapter(postAdapter);
+//                        binding.dashboardRv.hideShimmerAdapter();
+//                        loadProfileImg();
+//                        postAdapter.notifyDataSetChanged();
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError error) {
+//                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//            }
+//
+//        });
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-            } else {
-                firebaseDatabase.getReference().child("posts").addValueEventListener(new ValueEventListener() {
-                    @SuppressLint("NotifyDataSetChanged")
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        postList.clear();
-                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                            Post post = dataSnapshot.getValue(Post.class);
-                            post.setPostId(dataSnapshot.getKey());
-                            postList.add(post);
-                        }
-                        binding.dashboardRv.setAdapter(postAdapter);
-                        binding.dashboardRv.hideShimmerAdapter();
-                        loadProfileImg();
-                        postAdapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-
-        });
         binding.addStoryImg.setOnClickListener(view1 -> galleryLauncher.launch("image/*"));
 
         galleryLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), new ActivityResultCallback<Uri>() {
@@ -268,6 +349,9 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        binding.filter.setOnClickListener(view -> powerMenu.showAsDropDown(view));
+
+        binding.profileImage.setOnClickListener(view -> ((BottomNavigationView) getActivity().findViewById(R.id.bottom_navigation_bar)).setSelectedItemId(R.id.item_userprofile));
         return binding.getRoot();
     }
 

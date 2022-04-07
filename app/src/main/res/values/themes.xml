@@ -15,4 +15,7 @@
 
     </style>
 
+    <style name="Theme.MyFancyTheme" parent="android:Theme.Holo">
+        <item name="android:homeAsUpIndicator">@drawable/ic_backarrow</item>
+    </style>
 </resources>

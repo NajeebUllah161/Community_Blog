@@ -1,16 +1,22 @@
 package com.example.communityfeedapp.activities;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.communityfeedapp.R;
 import com.example.communityfeedapp.adapters.CommentAdapter;
 import com.example.communityfeedapp.databinding.ActivityCommentBinding;
@@ -30,7 +36,7 @@ import java.util.Date;
 
 public class CommentActivity extends AppCompatActivity {
 
-    final boolean[] isOwner = new boolean[1];
+    //final boolean[] isOwner = new boolean[1];
     ActivityCommentBinding binding;
     Intent intent;
     String postId, postedBy;
@@ -56,19 +62,34 @@ public class CommentActivity extends AppCompatActivity {
 
         postId = intent.getStringExtra("postId");
         postedBy = intent.getStringExtra("postedBy");
+//        postImage = intent.getStringExtra("postImage");
+//        postTitle = intent.getStringExtra("postTitle");
+//        postDescription = intent.getStringExtra("postDescription");
+//        postLikes = intent.getStringExtra("postLikes");
+//        commentCount = intent.getStringExtra("commentCount");
+//        userProfileImg = intent.getStringExtra("userProfileImg");
 
+        //setData();
         firebaseDatabase.getReference()
                 .child("posts/" + postId)
                 .addValueEventListener(new ValueEventListener() {
-                    @SuppressLint("SetTextI18n")
+                    @SuppressLint({"SetTextI18n", "CheckResult"})
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         Post post = snapshot.getValue(Post.class);
                         if (post != null) {
-                            Picasso.get()
-                                    .load(post.getPostImage())
-                                    .placeholder(R.drawable.placeholder)
-                                    .into(binding.imgCommentScreen);
+//                            Picasso.get()
+//                                    .load(post.getPostImage())
+//                                    .placeholder(R.drawable.placeholder)
+//                                    .into(binding.imgCommentScreen);
+
+                            RequestOptions requestOptions = new RequestOptions();
+                            requestOptions.placeholder(R.drawable.placeholder);
+                            if (!CommentActivity.this.isFinishing()) {
+                                Glide.with(CommentActivity.this)
+                                        .setDefaultRequestOptions(requestOptions)
+                                        .load(post.getPostImage()).into(binding.imgCommentScreen);
+                            }
 
                             binding.headerCommentScreen.setText(Html.fromHtml("<b>" + post.getPostTitle() + "</b>"));
                             binding.descCommentScreen.setText(post.getPostDescription());
@@ -102,6 +123,24 @@ public class CommentActivity extends AppCompatActivity {
                     }
                 });
 
+        FirebaseDatabase.getInstance().getReference()
+                .child("posts/" + postId + "/likes/" + auth.getCurrentUser().getUid())
+                .addValueEventListener(new ValueEventListener() {
+                    @SuppressLint("NotifyDataSetChanged")
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if(snapshot.getValue()!=null){
+                            Log.d("Snapshot", String.valueOf(snapshot.getValue()));
+                            binding.like.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart_filled, 0, 0, 0);
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(CommentActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
 
         binding.postCommentBtn.setOnClickListener(view -> {
 
@@ -114,7 +153,8 @@ public class CommentActivity extends AppCompatActivity {
                     .child("posts/" + postId + "/comments")
                     .child(comment.getCommentedAt() + "")
                     .setValue(comment)
-                    .addOnSuccessListener(unused -> {}
+                    .addOnSuccessListener(unused -> {
+                            }
                     ).addOnFailureListener(e -> Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show());
 
             firebaseDatabase.getReference()
@@ -146,8 +186,14 @@ public class CommentActivity extends AppCompatActivity {
                                                 .child(postedBy)
                                                 .push()
                                                 .setValue(notification);
+                                        hideKeyboard(CommentActivity.this);
 
-                                    }).addOnFailureListener(e -> Toast.makeText(CommentActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show());
+
+                                    }).addOnFailureListener(e -> {
+                                Toast.makeText(CommentActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                finish();
+
+                            });
                         }
 
                         @Override
@@ -158,7 +204,7 @@ public class CommentActivity extends AppCompatActivity {
         });
 
         CommentAdapter commentAdapter = new CommentAdapter(this, list, postId);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
         binding.commentRv.setLayoutManager(linearLayoutManager);
         binding.commentRv.setAdapter(commentAdapter);
 
@@ -184,13 +230,44 @@ public class CommentActivity extends AppCompatActivity {
 
     }
 
-    private void setOwner(boolean b) {
-        isOwner[0] = b;
-    }
+//    private void setData() {
+//        Picasso.get()
+//                .load(userProfileImg)
+//                .placeholder(R.drawable.placeholder)
+//                .into(binding.profileImgComment);
+//        binding.nameCommentScreen.setText(postedBy);
+//
+//        RequestOptions requestOptions = new RequestOptions();
+//        requestOptions.placeholder(R.drawable.placeholder);
+//        Glide.with(CommentActivity.this)
+//                .setDefaultRequestOptions(requestOptions)
+//                .load(postImage).into(binding.imgCommentScreen);
+//
+//        binding.headerCommentScreen.setText(Html.fromHtml("<b>" + postTitle + "</b>"));
+//        binding.descCommentScreen.setText(postDescription);
+//        binding.like.setText(postLikes + "");
+//        binding.comment.setText(commentCount + "");
+//
+//    }
+
+//    private void setOwner(boolean b) {
+//        isOwner[0] = b;
+//    }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         finish();
         return super.onOptionsItemSelected(item);
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

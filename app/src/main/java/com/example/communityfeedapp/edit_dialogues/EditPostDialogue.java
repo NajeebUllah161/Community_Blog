@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -15,16 +16,19 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.communityfeedapp.R;
 import com.example.communityfeedapp.databinding.ActivityEditPostDialogueBinding;
 import com.example.communityfeedapp.models.Post;
@@ -37,6 +41,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
+import com.vansuita.pickimage.bean.PickResult;
+import com.vansuita.pickimage.bundle.PickSetup;
+import com.vansuita.pickimage.dialog.PickImageDialog;
+import com.vansuita.pickimage.listeners.IPickResult;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -51,7 +59,7 @@ import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static com.example.communityfeedapp.fragments.AddPostFragment.RequestPermissionCode;
 
-public class EditPostDialogue extends AppCompatActivity {
+public class EditPostDialogue extends AppCompatActivity implements IPickResult {
 
     ActivityEditPostDialogueBinding binding;
     Uri uri;
@@ -109,12 +117,19 @@ public class EditPostDialogue extends AppCompatActivity {
         populateData();
     }
 
+    @SuppressLint("CheckResult")
     private void populateData() {
         //populateDataProgressDialogue.show();
         if (postImg != null) {
             //new DownloadImage().execute();
             //Log.d("postImg", postImg);
-            Picasso.get().load(postImg).placeholder(R.drawable.placeholder).into(binding.postImage);
+            //Picasso.get().load(postImg).placeholder(R.drawable.placeholder).into(binding.postImage);
+            RequestOptions requestOptions = new RequestOptions();
+            requestOptions.placeholder(R.drawable.placeholder);
+            Glide.with(this)
+                    .setDefaultRequestOptions(requestOptions)
+                    .load(postImg).into(binding.postImage);
+
         } else {
             binding.postImage.setVisibility(View.GONE);
             binding.removeImg.setVisibility(View.GONE);
@@ -243,9 +258,11 @@ public class EditPostDialogue extends AppCompatActivity {
         });
 
         binding.addImg.setOnClickListener(view -> {
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.setType("image/*");
-            startActivityForResult(intent, 10);
+//            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+//            intent.setType("image/*");
+//            startActivityForResult(intent, 10);
+            setPickImage();
+
         });
 
         binding.removeImg.setOnClickListener(view -> {
@@ -321,6 +338,22 @@ public class EditPostDialogue extends AppCompatActivity {
                 uploadPostImgAndData();
             }
         });
+    }
+
+    private void setPickImage() {
+        @SuppressLint("WrongConstant")
+        PickSetup setup = new PickSetup()
+                .setTitle("Choose Option")
+                .setTitleColor(Color.BLACK)
+                .setCameraButtonText("Capture")
+                .setGalleryButtonText("Gallery")
+                .setIconGravity(Gravity.RIGHT)
+                .setButtonOrientation(LinearLayoutCompat.HORIZONTAL)
+                .setBackgroundColor(Color.WHITE)
+                .setCancelText("Cancel");
+
+        PickImageDialog pickImageDialog = PickImageDialog.build(setup).show(this);
+
     }
 
     private void removeImage() {
@@ -473,7 +506,7 @@ public class EditPostDialogue extends AppCompatActivity {
 
             Log.d("Checkpoint", "else");
 
-        //            Post post = new Post();
+            //            Post post = new Post();
 //            post.setPostImage(postImg);
 //            post.setPostRecording(postRecording);
 //            post.setRecTime(recTime);
@@ -731,22 +764,22 @@ public class EditPostDialogue extends AppCompatActivity {
 //        return Uri.parse(path);
 //    }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == RESULT_OK) {
-            if (requestCode == 10) {
-                if (data.getData() != null) {
-                    uri = data.getData();
-                    binding.postImage.setImageURI(uri);
-                    binding.postImage.setVisibility(View.VISIBLE);
-                    binding.removeImg.setVisibility(View.VISIBLE);
-                    setButtonEnabled();
-                }
-            }
-        }
-    }
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//
+//        if (resultCode == RESULT_OK) {
+//            if (requestCode == 10) {
+//                if (data.getData() != null) {
+//                    uri = data.getData();
+//                    binding.postImage.setImageURI(uri);
+//                    binding.postImage.setVisibility(View.VISIBLE);
+//                    binding.removeImg.setVisibility(View.VISIBLE);
+//                    setButtonEnabled();
+//                }
+//            }
+//        }
+//    }
 
     private void setButtonEnabled() {
         binding.postBtn.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.follow_btn_bg));
@@ -758,6 +791,15 @@ public class EditPostDialogue extends AppCompatActivity {
         binding.postBtn.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.follow_active_btn));
         binding.postBtn.setTextColor(this.getResources().getColor(R.color.gray));
         binding.postBtn.setEnabled(false);
+    }
+
+    @Override
+    public void onPickResult(PickResult r) {
+        uri = r.getUri();
+        binding.postImage.setImageBitmap(r.getBitmap());
+        binding.postImage.setVisibility(View.VISIBLE);
+        binding.removeImg.setVisibility(View.VISIBLE);
+        setButtonEnabled();
     }
 
     //    private void downloadPostImage() {

@@ -47,7 +47,6 @@ public class ProfileFragment extends Fragment {
         // Required empty public constructor
     }
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,6 +115,9 @@ public class ProfileFragment extends Fragment {
                                 binding.followersTv.setText(getUser.getFollowersCount() + "");
                                 Log.d("User", String.valueOf(getUser.getUserPerks()));
                                 binding.userPerks.setText(getUser.getUserPerks() + "");
+                                binding.userPosts.setText(getUser.getTotalPosts() + "");
+                                Log.d("userPosts",getUser.getTotalPosts() + "");
+
                             } else {
                                 Toast.makeText(getContext(), "No user exists", Toast.LENGTH_SHORT).show();
                             }
@@ -127,6 +129,7 @@ public class ProfileFragment extends Fragment {
 
                     }
                 });
+
 
         binding.changeCoverPhoto.setOnClickListener(v -> {
             Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);

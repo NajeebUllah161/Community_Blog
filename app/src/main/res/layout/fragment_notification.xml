@@ -10,11 +10,11 @@
         android:id="@+id/textView13"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/_12mdp"
         android:gravity="center"
         android:text="@string/notification"
         android:textColor="@color/black"
-        android:textSize="30sp"
+        android:textSize="@dimen/_23font_mdp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -24,10 +24,9 @@
     <View
         android:id="@+id/view7"
         android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="32dp"
+        android:layout_height="@dimen/_1mdp"
+        android:layout_marginHorizontal="@dimen/_25mdp"
+        android:layout_marginTop="@dimen/_6mdp"
         android:background="@android:color/darker_gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -37,13 +36,11 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/notificationRv"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_6mdp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view7" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
