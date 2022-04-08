@@ -31,6 +31,8 @@ import com.squareup.picasso.Picasso;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHolder> {
 
@@ -55,12 +57,15 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
         return new viewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
 
         Comment comment = list.get(position);
         String timeOfComment = TimeAgo.using(comment.getCommentedAt());
         holder.binding.time.setText(timeOfComment);
+        holder.binding.like.setText(comment.getLikesCount() + "");
+        holder.binding.dislike.setText(comment.getDislikesCount() + "");
 
         // Setup Audio Recording
         if (comment.getCommentRecording() != null) {
@@ -239,6 +244,158 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                 Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+
+        FirebaseDatabase.getInstance().getReference()
+                .child("posts/" + postId + "/comments")
+                .child(comment.getCommentedAt() + "")
+                .child("likes")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            if (snapshot.getValue().equals(true)) {
+                                Log.d("Najeeb", " Exists and Liked " + snapshot);
+                                fillLike(holder.binding);
+                                holder.binding.dislike.setOnClickListener(view -> {
+
+                                    Map<String, Object> dislikesCount = new HashMap<>();
+                                    dislikesCount.put("dislikesCount", ServerValue.increment(1));
+
+                                    Map<String, Object> likesCount = new HashMap<>();
+                                    dislikesCount.put("likesCount", ServerValue.increment(-1));
+
+                                    FirebaseDatabase.getInstance().getReference()
+                                            .child("posts/" + postId + "/comments")
+                                            .child(comment.getCommentedAt() + "")
+                                            .updateChildren(dislikesCount);
+
+                                    FirebaseDatabase.getInstance().getReference()
+                                            .child("posts/" + postId + "/comments")
+                                            .child(comment.getCommentedAt() + "")
+                                            .updateChildren(likesCount);
+
+                                    FirebaseDatabase.getInstance().getReference()
+                                            .child("posts/" + postId + "/comments")
+                                            .child(comment.getCommentedAt() + "")
+                                            .child("likes")
+                                            .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                            .setValue(false);
+
+                                    fillDislike(holder.binding);
+                                });
+                            } else {
+                                Log.d("Najeeb", " Exists and Disliked " + snapshot);
+                                fillDislike(holder.binding);
+                                holder.binding.like.setOnClickListener(view -> {
+
+                                    Map<String, Object> commentLikes = new HashMap<>();
+                                    commentLikes.put("likesCount", ServerValue.increment(1));
+
+                                    Map<String, Object> dislikesCount = new HashMap<>();
+                                    commentLikes.put("dislikesCount", ServerValue.increment(-1));
+
+                                    FirebaseDatabase.getInstance().getReference()
+                                            .child("posts/" + postId + "/comments")
+                                            .child(comment.getCommentedAt() + "")
+                                            .updateChildren(commentLikes);
+
+                                    FirebaseDatabase.getInstance().getReference()
+                                            .child("posts/" + postId + "/comments")
+                                            .child(comment.getCommentedAt() + "")
+                                            .updateChildren(dislikesCount);
+
+                                    FirebaseDatabase.getInstance().getReference()
+                                            .child("posts/" + postId + "/comments")
+                                            .child(comment.getCommentedAt() + "")
+                                            .child("likes")
+                                            .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                            .setValue(true);
+
+                                    fillLike(holder.binding);
+                                });
+                            }
+                        } else {
+
+                            holder.binding.like.setOnClickListener(view -> {
+
+                                Map<String, Object> commentLikes = new HashMap<>();
+                                commentLikes.put("likesCount", ServerValue.increment(1));
+
+//                                Map<String, Object> dislikesCount = new HashMap<>();
+//                                commentLikes.put("dislikesCount", ServerValue.increment(-1));
+
+                                FirebaseDatabase.getInstance().getReference()
+                                        .child("posts/" + postId + "/comments")
+                                        .child(comment.getCommentedAt() + "")
+                                        .updateChildren(commentLikes);
+
+//                                FirebaseDatabase.getInstance().getReference()
+//                                        .child("posts/" + postId + "/comments")
+//                                        .child(comment.getCommentedAt() + "")
+//                                        .updateChildren(dislikesCount);
+
+                                FirebaseDatabase.getInstance().getReference()
+                                        .child("posts/" + postId + "/comments")
+                                        .child(comment.getCommentedAt() + "")
+                                        .child("likes")
+                                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                        .setValue(true);
+
+                                fillLike(holder.binding);
+                            });
+                            holder.binding.dislike.setOnClickListener(view -> {
+
+                                Map<String, Object> dislikesCount = new HashMap<>();
+                                dislikesCount.put("dislikesCount", ServerValue.increment(1));
+
+//                                Map<String, Object> likesCount = new HashMap<>();
+//                                dislikesCount.put("likesCount", ServerValue.increment(-1));
+
+                                FirebaseDatabase.getInstance().getReference()
+                                        .child("posts/" + postId + "/comments")
+                                        .child(comment.getCommentedAt() + "")
+                                        .updateChildren(dislikesCount);
+
+//                                FirebaseDatabase.getInstance().getReference()
+//                                        .child("posts/" + postId + "/comments")
+//                                        .child(comment.getCommentedAt() + "")
+//                                        .updateChildren(likesCount);
+
+                                FirebaseDatabase.getInstance().getReference()
+                                        .child("posts/" + postId + "/comments")
+                                        .child(comment.getCommentedAt() + "")
+                                        .child("likes")
+                                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                        .setValue(false);
+
+                                fillDislike(holder.binding);
+                            });
+                            Log.d("Najeeb", "Doesn't exist" + snapshot);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+                    }
+                });
+
+
+    }
+
+    private void fillDislike(CommentSampleBinding commentSampleBinding) {
+        commentSampleBinding.dislike.setEnabled(false);
+        commentSampleBinding.like.setEnabled(true);
+        commentSampleBinding.dislike.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_comment_dislike_filled, 0, 0, 0);
+        commentSampleBinding.like.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_commentlike, 0, 0, 0);
+    }
+
+    private void fillLike(CommentSampleBinding commentSampleBinding) {
+        commentSampleBinding.like.setEnabled(false);
+        commentSampleBinding.dislike.setEnabled(true);
+        commentSampleBinding.like.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_comment_like_filled, 0, 0, 0);
+        commentSampleBinding.dislike.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_commentdislike, 0, 0, 0);
     }
 
     @Override

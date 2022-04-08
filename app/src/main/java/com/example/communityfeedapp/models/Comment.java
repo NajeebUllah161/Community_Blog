@@ -1,7 +1,33 @@
 package com.example.communityfeedapp.models;
 
 public class Comment {
+
     private String commentBody;
+    private String commentRecording;
+    private long commentedAt;
+    private String commentedBy;
+    private boolean isVerified;
+    private int likesCount;
+    private int dislikesCount;
+
+    public Comment() {
+    }
+
+    public int getLikesCount() {
+        return likesCount;
+    }
+
+    public void setLikesCount(int likesCount) {
+        this.likesCount = likesCount;
+    }
+
+    public int getDislikesCount() {
+        return dislikesCount;
+    }
+
+    public void setDislikesCount(int dislikesCount) {
+        this.dislikesCount = dislikesCount;
+    }
 
     public String getCommentRecording() {
         return commentRecording;
@@ -9,15 +35,6 @@ public class Comment {
 
     public void setCommentRecording(String commentRecording) {
         this.commentRecording = commentRecording;
-    }
-
-    private String commentRecording;
-
-    private long commentedAt;
-    private String commentedBy;
-    private boolean isVerified;
-
-    public Comment() {
     }
 
     public boolean isVerified() {

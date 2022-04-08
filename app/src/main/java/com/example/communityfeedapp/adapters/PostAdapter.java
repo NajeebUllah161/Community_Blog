@@ -247,7 +247,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                                                 .getUid()).removeValue().addOnSuccessListener(unused -> Toast.makeText(context, "Disliked", Toast.LENGTH_SHORT).show())
                                         .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show());
 
-
                                 FirebaseDatabase.getInstance().getReference()
                                         .child("posts/" + model.getPostId() + "/postLikes")
                                         .setValue(model.getPostLikes() - 1)

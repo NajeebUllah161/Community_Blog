@@ -249,6 +249,8 @@ public class CommentActivity extends AppCompatActivity {
 
         });
 
+        //CommentLikeDislikeClick listener = (CommentLikeDislikeClick) this;
+
         CommentAdapter commentAdapter = new CommentAdapter(this, list, postId);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
         binding.commentRv.setLayoutManager(linearLayoutManager);
@@ -612,4 +614,5 @@ public class CommentActivity extends AppCompatActivity {
         binding.postCommentBtn.setImageResource(R.drawable.ic_comment_send_disabled);
         binding.postCommentBtn.setEnabled(false);
     }
+
 }
