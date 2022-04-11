@@ -109,6 +109,9 @@
         android:layout_marginTop="@dimen/_3mdp"
         android:text="post description"
         android:visibility="visible"
+        android:linksClickable="true"
+        android:autoLink="all"
+        android:justificationMode="inter_word"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/postTitleDesign" />

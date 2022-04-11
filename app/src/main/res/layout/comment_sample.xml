@@ -35,6 +35,9 @@
         android:text="User name"
         android:textColor="@color/black"
         android:textSize="@dimen/_14mdp"
+        android:linksClickable="true"
+        android:autoLink="all"
+        android:justificationMode="inter_word"
         app:layout_constraintEnd_toStartOf="@+id/commentCheckbox"
         app:layout_constraintStart_toEndOf="@+id/profileImgOfCommenter"
         app:layout_constraintTop_toTopOf="@+id/profileImgOfCommenter" />
@@ -90,17 +93,30 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/commentData" />
 
+    <ImageView
+        android:id="@+id/verifiedImgView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="false"
+        android:enabled="false"
+        android:textColor="@color/primary"
+        android:visibility="invisible"
+        android:src="@drawable/ic_verified"
+        app:layout_constraintBottom_toBottomOf="@+id/commentData"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/commentData" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/audioContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/_4mdp"
         android:background="@drawable/follow_active_btn"
         android:padding="@dimen/_4mdp"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="@+id/commentCheckbox"
-        app:layout_constraintStart_toStartOf="@+id/commentCheckbox"
-        app:layout_constraintTop_toBottomOf="@id/commentCheckbox">
+        android:visibility="visible"
+        android:layout_marginEnd="@dimen/_4mdp"
+        android:layout_marginBottom="@dimen/_8mdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <ImageView
             android:id="@+id/playAudio"

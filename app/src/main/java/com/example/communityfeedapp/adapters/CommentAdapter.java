@@ -3,10 +3,12 @@ package com.example.communityfeedapp.adapters;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.text.Html;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +35,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip;
 
 public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHolder> {
 
@@ -129,7 +133,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                         Comment comment = snapshot.getValue(Comment.class);
                         if (comment.isVerified()) {
                             //Log.d("IsVerified", String.valueOf(comment.isVerified()));
-                            holder.binding.commentCheckbox.setVisibility(View.VISIBLE);
+                            holder.binding.commentCheckbox.setVisibility(View.GONE);
+                            holder.binding.verifiedImgView.setVisibility(View.VISIBLE);
                             holder.binding.commentCheckbox.setChecked(true);
                         }
                     }
@@ -381,6 +386,18 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                     }
                 });
 
+        holder.binding.verifiedImgView.setOnClickListener(view -> {
+            new SimpleTooltip.Builder(context)
+                    .anchorView(view)
+                    .text("Verified")
+                    .gravity(Gravity.TOP)
+                    .backgroundColor(Color.parseColor("#FF018786"))
+                    .arrowColor(Color.parseColor("#FF018786"))
+                    .animated(true)
+                    .transparentOverlay(false)
+                    .build()
+                    .show();
+        });
 
     }
 

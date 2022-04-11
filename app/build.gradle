@@ -89,6 +89,8 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.13.0'
     implementation 'com.jsibbold:zoomage:1.3.1'
     implementation 'com.github.andreseko:sweet-alert-dialog:1.0.6'
+    implementation 'com.github.douglasjunior:android-simple-tooltip:1.1.0'
+
 
 }
 apply plugin: 'com.google.gms.google-services'

@@ -36,8 +36,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -51,6 +53,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -68,6 +71,7 @@ public class HomeFragment extends Fragment {
     FragmentHomeBinding binding;
     PowerMenu powerMenu;
     PostAdapter postAdapter;
+    private DatabaseReference mDatabase;
 
     private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
         @Override
@@ -116,10 +120,24 @@ public class HomeFragment extends Fragment {
         auth = FirebaseAuth.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
 
-        abcFunction();
+        //abcFunction();
+        mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://communityfeedapp-default-rtdb.firebaseio.com/").getRef();
+        setFireBaseNotificationId();
         setupPowerMenu();
 
     }
+
+    private void setFireBaseNotificationId() {
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                String token = task.getResult().getToken();
+                HashMap<String, String> hashMap = new HashMap<>();
+                hashMap.put("notification_id", token);
+                mDatabase.child("system").child("notification").child(auth.getCurrentUser().getUid()).setValue(hashMap);
+            }
+        });
+    }
+
 
     private void abcFunction() {
 

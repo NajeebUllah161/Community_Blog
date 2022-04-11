@@ -234,7 +234,7 @@ public class AddPostFragment extends Fragment {
 
         binding.removeImg.setOnClickListener(view -> removeImgFromPost());
 
-        setFireBaseNotificationId();
+        //setFireBaseNotificationId();
 
         binding.postBtn.setOnClickListener(view -> {
 
