@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,7 @@ import com.example.communityfeedapp.R;
 import com.example.communityfeedapp.adapters.PostAdapter;
 import com.example.communityfeedapp.adapters.StoryAdapter;
 import com.example.communityfeedapp.databinding.FragmentHomeBinding;
+import com.example.communityfeedapp.models.FollowModel;
 import com.example.communityfeedapp.models.Post;
 import com.example.communityfeedapp.models.Story;
 import com.example.communityfeedapp.models.User;
@@ -44,6 +46,8 @@ import com.skydoves.powermenu.OnMenuItemClickListener;
 import com.skydoves.powermenu.PowerMenu;
 import com.skydoves.powermenu.PowerMenuItem;
 import com.squareup.picasso.Picasso;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -112,8 +116,31 @@ public class HomeFragment extends Fragment {
         auth = FirebaseAuth.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
 
+        abcFunction();
         setupPowerMenu();
 
+    }
+
+    private void abcFunction() {
+
+        List<String> followers = new ArrayList<>();
+        firebaseDatabase.getReference().child("Users").child(auth.getCurrentUser().getUid())
+                .child("followers").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                for(DataSnapshot dataSnapshot: snapshot.getChildren()){
+                    FollowModel followModel = dataSnapshot.getValue(FollowModel.class);
+                    followers.add(followModel.getFollowedBy());
+                }
+                Log.d("Followers",followers.toString());
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void setupPowerMenu() {

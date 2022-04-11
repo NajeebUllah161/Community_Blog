@@ -32,6 +32,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.example.communityfeedapp.R;
 import com.example.communityfeedapp.databinding.FragmentAddPostBinding;
+import com.example.communityfeedapp.models.FollowModel;
 import com.example.communityfeedapp.models.Post;
 import com.example.communityfeedapp.models.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -59,6 +60,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import okhttp3.MediaType;
@@ -223,19 +226,13 @@ public class AddPostFragment extends Fragment {
             binding.pause.setVisibility(View.VISIBLE);
         });
 
-        binding.pause.setOnClickListener(view -> {
-            pauseRecording();
-        });
+        binding.pause.setOnClickListener(view -> pauseRecording());
 
         binding.resume.setOnClickListener(view -> resumeRecording());
 
-        binding.removeRecording.setOnClickListener(view -> {
-            removeRecording();
-        });
+        binding.removeRecording.setOnClickListener(view -> removeRecording());
 
-        binding.removeImg.setOnClickListener(view -> {
-            removeImgFromPost();
-        });
+        binding.removeImg.setOnClickListener(view -> removeImgFromPost());
 
         setFireBaseNotificationId();
 
@@ -329,6 +326,8 @@ public class AddPostFragment extends Fragment {
     private ArrayList<String> getFireBaseNotificationId() {
         mClient = new OkHttpClient();
         ArrayList<String> myArrayList = new ArrayList<>();
+        ArrayList<String> mKeysArraylist = new ArrayList<>();
+        Map<String, Object> notificationsKV = new HashMap<>();
         firebaseDatabase.getReference().child("system").child("notification").addValueEventListener(new ValueEventListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
@@ -338,14 +337,46 @@ public class AddPostFragment extends Fragment {
                         String key = dataSnapshot.getKey();
                         String description = dataSnapshot.child("notification_id").getValue(String.class);
                         Log.d("KeyDesc", key + " " + description);
-                        myArrayList.add(description);
+//                        myArrayList.add(description);
+//                        mKeysArraylist.add(key);
+                        notificationsKV.put(key, description);
 
                     }
-                    JSONArray regArray = new JSONArray(myArrayList);
 
+                    List<String> followers = new ArrayList<>();
+                    firebaseDatabase.getReference().child("Users").child(auth.getCurrentUser().getUid())
+                            .child("followers").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                FollowModel followModel = dataSnapshot.getValue(FollowModel.class);
+                                followers.add(followModel.getFollowedBy());
+                            }
+
+                            for (String follower : followers) {
+                                if (notificationsKV.containsKey(follower)) {
+                                    Log.d("Match", follower);
+                                    myArrayList.add(String.valueOf(notificationsKV.get(follower)));
+                                }
+                            }
+
+                            Log.d("NotificationId", String.valueOf(myArrayList));
+
+                            JSONArray regArray = new JSONArray(myArrayList);
+                            sendMessage(regArray, "New Post", binding.userNameAddPost.getText().toString() + " has added a new Post, click to see details", "icon", "message");
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+                        }
+                    });
+
+                    //JSONArray regArray = new JSONArray(myArrayList);
                     //Log.d("UserName", binding.userNameAddPost.getText().toString());
                     //Log.d("Checkpoint", myArrayList + "");
-                    sendMessage(regArray, "New Post", binding.userNameAddPost.getText().toString() + " has added a new Post, click to see details", "icon", "message");
+                    //sendMessage(regArray, "New Post", binding.userNameAddPost.getText().toString() + " has added a new Post, click to see details", "icon", "message");
                 }
 
             }
