@@ -3,10 +3,13 @@ package com.example.communityfeedapp.adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
@@ -17,6 +20,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -42,6 +46,8 @@ import com.skydoves.powermenu.PowerMenu;
 import com.skydoves.powermenu.PowerMenuItem;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -53,6 +59,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     PowerMenu powerMenu;
     Intent intent;
     String postId;
+    Post post;
 
     private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
         @Override
@@ -62,8 +69,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             if (item.getTitle().equals("Edit profile")) {
                 context.startActivity(intent);
             } else {
+                saveDeletedPost(post);
                 FirebaseDatabase.getInstance().getReference().child("posts/" + postId).removeValue().addOnSuccessListener(unused -> {
                     Toast.makeText(context, "Post deleted Successfully!", Toast.LENGTH_SHORT).show();
+
                     FirebaseDatabase.getInstance().getReference()
                             .child("Users")
                             .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
@@ -78,6 +87,15 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             powerMenu.dismiss();
         }
     };
+
+    private void saveDeletedPost(Post post) {
+        FirebaseDatabase.getInstance().getReference()
+                .child("DeletedPosts")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child(new Date() + "")
+                .setValue(post);
+    }
+
     MediaPlayer player;
     int length;
 
@@ -115,6 +133,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         } else {
             holder.binding.postImg.setVisibility(View.GONE);
+            holder.binding.postImageContainer.setVisibility(View.GONE);
         }
 
         // Setup Audio Recording
@@ -315,7 +334,21 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             context.startActivity(intent);
         });
 
-        holder.binding.share.setOnClickListener(view -> Toast.makeText(context, "Sharing Functionality is unavailable for now", Toast.LENGTH_SHORT).show());
+        holder.binding.share.setOnClickListener(view -> {
+
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) holder.binding.postImg.getDrawable();
+            if (bitmapDrawable == null) {
+                //post without Image
+                shareTextOnly(header, description);
+                Log.d("Checkpoint", "withoutImg");
+            } else {
+                //post with Image
+
+                Log.d("Checkpoint", "withImage");
+                Bitmap bitmapPostImg = bitmapDrawable.getBitmap();
+                shareImageAndText(header, description, bitmapPostImg);
+            }
+        });
 
         holder.binding.postImg.setOnClickListener(view -> {
             Intent intent = new Intent(context, PostImageZoomActivity.class);
@@ -326,6 +359,54 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         handlePowerMenu(holder, model);
 
+    }
+
+    private void shareTextOnly(String header, String description) {
+
+        String shareBody = header + "\n" + description + "\n\n" + "Visit now : https://play.google.com/store/apps/details?id=growtechsol.com";
+
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Community Feed GrowPak");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
+        context.startActivity(Intent.createChooser(shareIntent, "Share Via"));
+
+    }
+
+    private void shareImageAndText(String header, String description, Bitmap bitmapPostImg) {
+
+        String shareBody = header + "\n" + description + "\n\n" + "Visit now : https://play.google.com/store/apps/details?id=growtechsol.com";
+
+        Uri uri = saveImageToShare(bitmapPostImg);
+
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Community Feed GrowPak");
+        shareIntent.setType("image/png");
+        context.startActivity(Intent.createChooser(shareIntent, "Share Via"));
+
+    }
+
+    private Uri saveImageToShare(Bitmap bitmapPostImg) {
+        File imageFolder = new File(context.getCacheDir(), "images");
+        Uri uri = null;
+
+        try {
+            imageFolder.mkdirs();
+            File file = new File(imageFolder, "shared_image.png");
+
+            FileOutputStream stream = new FileOutputStream(file);
+            bitmapPostImg.compress(Bitmap.CompressFormat.PNG, 90, stream);
+            stream.flush();
+            stream.close();
+            uri = FileProvider.getUriForFile(context, "com.example.communityfeedapp.fileprovider", file);
+
+        } catch (Exception e) {
+            Toast.makeText(context, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+
+        }
+        return uri;
     }
 
     private void handlePowerMenu(PostViewHolder holder, Post model) {
@@ -360,6 +441,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
             //Log.d("PostIdTimeStamp", String.valueOf(model.getPostedAt()));
             postId = model.getPostId();
+            post = model;
             powerMenu.showAsDropDown(view);
             //Log.d("Equal",model.getPostedBy()+" " + FirebaseAuth.getInstance().getCurrentUser().getUid());
 

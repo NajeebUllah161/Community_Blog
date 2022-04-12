@@ -18,4 +18,8 @@
     <style name="Theme.MyFancyTheme" parent="android:Theme.Holo">
         <item name="android:homeAsUpIndicator">@drawable/ic_backarrow</item>
     </style>
+
+    <style name="roundedCorners" parent="">
+        <item name="cornerRadius">@dimen/_8mdp</item>
+    </style>
 </resources>

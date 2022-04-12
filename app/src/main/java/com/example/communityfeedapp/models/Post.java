@@ -12,6 +12,16 @@ public class Post {
     private String createdAt;
     private long postedAt;
     private boolean solved;
+
+    public boolean isAllowed() {
+        return isAllowed;
+    }
+
+    public void setAllowed(boolean allowed) {
+        isAllowed = allowed;
+    }
+
+    private boolean isAllowed;
     private int postLikes;
     private int commentCount;
 

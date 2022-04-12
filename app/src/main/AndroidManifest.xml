@@ -13,12 +13,12 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher_community"
+        android:icon="@mipmap/ic_launcher_icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_community_round"
+        android:roundIcon="@mipmap/ic_launcher_icon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CommunityFeedApp">
-        <activity android:name=".activities.PostImageZoomActivity"></activity>
+        <activity android:name=".activities.PostImageZoomActivity" />
         <activity android:name=".edit_dialogues.EditPostDialogue" />
         <activity
             android:name=".activities.CommentActivity"
@@ -45,6 +45,19 @@
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/picker_provider_paths" />
+        </provider>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.communityfeedapp.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/paths"
+                />
+
         </provider>
 
         <activity

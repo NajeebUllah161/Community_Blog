@@ -1,6 +1,7 @@
 package com.example.communityfeedapp;
 
 import android.annotation.SuppressLint;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -39,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
         setSupportActionBar(binding.toolbar);
         MainActivity.this.setTitle("My Profile");
+
         // When we open the application first
         // time the fragment should be shown to the user
         // in this case it is home fragment
@@ -47,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
         defaultFragmentTransaction.replace(R.id.container_framelayout, new HomeFragment());
         defaultFragmentTransaction.commit();
 
-        Log.d("CheckingErr","onCreateMainActivity");
         binding.bottomNavigationBar.setOnItemSelectedListener(item -> {
 
             int itemId = item.getItemId();
@@ -98,18 +100,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-//
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        Log.d("CheckingErr","onResumeMainActivity");
-//    }
-//
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        Log.d("CheckingErr","onPauseMainActivity");
-//    }
 
     @Override
     public void onBackPressed() {
@@ -124,12 +114,5 @@ public class MainActivity extends AppCompatActivity {
                 .setCancelButton("No", SweetAlertDialog::dismissWithAnimation)
                 .show();
     }
-//
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        Log.d("CheckingErr","onDestroyMainActivity");
-//        //FirebaseDatabase.getInstance().goOffline();
-//        finishAffinity();
-//    }
+
 }

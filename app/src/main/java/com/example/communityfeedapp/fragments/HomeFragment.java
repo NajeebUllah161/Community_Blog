@@ -146,11 +146,11 @@ public class HomeFragment extends Fragment {
                 .child("followers").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-                for(DataSnapshot dataSnapshot: snapshot.getChildren()){
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     FollowModel followModel = dataSnapshot.getValue(FollowModel.class);
                     followers.add(followModel.getFollowedBy());
                 }
-                Log.d("Followers",followers.toString());
+                Log.d("Followers", followers.toString());
 
             }
 
@@ -256,13 +256,15 @@ public class HomeFragment extends Fragment {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Post post = dataSnapshot.getValue(Post.class);
                     post.setPostId(dataSnapshot.getKey());
-                    postList.add(post);
-                    if (post.isSolved()) {
-                        //Log.d("Solved", "solved");
-                        postListSolved.add(post);
-                    } else {
-                        postListUnSolved.add(post);
-                        //Log.d("Solved", "not");
+                    if (post.isAllowed()) {
+                        postList.add(post);
+                        if (post.isSolved()) {
+                            //Log.d("Solved", "solved");
+                            postListSolved.add(post);
+                        } else {
+                            postListUnSolved.add(post);
+                            //Log.d("Solved", "not");
+                        }
                     }
                 }
                 binding.dashboardRv.setAdapter(postAdapter);

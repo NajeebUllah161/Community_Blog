@@ -325,7 +325,7 @@ public class CommentActivity extends AppCompatActivity {
                                 .child("posts/" + postId + "/commentCount")
                                 .setValue(commentCount + 1)
                                 .addOnSuccessListener(unused1 -> {
-                                    Toast.makeText(CommentActivity.this, "Comment count incremented", Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(CommentActivity.this, "Comment count incremented", Toast.LENGTH_SHORT).show();
 
                                 }).addOnFailureListener(e -> {
                             Toast.makeText(CommentActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();

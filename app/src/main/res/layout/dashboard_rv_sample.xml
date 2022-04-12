@@ -62,19 +62,26 @@
         app:layout_constraintTop_toTopOf="@+id/profile_image_dashboard"
         app:srcCompat="@drawable/ic_more" />
 
-    <com.makeramen.roundedimageview.RoundedImageView
-        android:id="@+id/postImg"
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/postImageContainer"
         android:layout_width="0dp"
         android:layout_height="@dimen/_150mdp"
         android:layout_marginTop="@dimen/_12mdp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/placeholder"
+        app:cardCornerRadius="10dip"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_image_dashboard"
-        app:riv_corner_radius="10dip"
-        app:riv_mutate_background="true" />
+        app:layout_constraintTop_toBottomOf="@+id/profile_image_dashboard">
+
+        <ImageView
+            android:id="@+id/postImg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/rounded_img"
+            android:scaleType="centerCrop" />
+
+    </androidx.cardview.widget.CardView>
 
     <ImageView
         android:id="@+id/save"
@@ -83,8 +90,8 @@
         android:layout_marginTop="@dimen/_12font_mdp"
         android:layout_marginEnd="@dimen/_12mdp"
         android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="@+id/postImg"
-        app:layout_constraintTop_toTopOf="@+id/postImg"
+        app:layout_constraintEnd_toEndOf="@+id/postImageContainer"
+        app:layout_constraintTop_toTopOf="@+id/postImageContainer"
         app:srcCompat="@drawable/unsaved" />
 
     <TextView
@@ -99,7 +106,7 @@
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/postImg" />
+        app:layout_constraintTop_toBottomOf="@+id/postImageContainer" />
 
     <TextView
         android:id="@+id/postDescriptionDesign"
@@ -107,11 +114,11 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/_6mdp"
         android:layout_marginTop="@dimen/_3mdp"
-        android:text="post description"
-        android:visibility="visible"
-        android:linksClickable="true"
         android:autoLink="all"
         android:justificationMode="inter_word"
+        android:linksClickable="true"
+        android:text="post description"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/postTitleDesign" />
@@ -210,13 +217,13 @@
 
     <TextView
         android:id="@+id/timeOfPost"
-        app:layout_constraintTop_toBottomOf="@id/like"
-        android:layout_marginStart="@dimen/_6mdp"
-        android:text="Just Now"
-        android:layout_marginTop="@dimen/_8mdp"
-        app:layout_constraintStart_toStartOf="parent"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_6mdp"
+        android:layout_marginTop="@dimen/_8mdp"
+        android:text="Just Now"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/like" />
 
     <!--    <View-->
     <!--        android:id="@+id/view_Db_bottom"-->
