@@ -119,7 +119,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         Post model = postModelArrayList.get(position);
 
         // Check to restrict user to only edit his/her post
-        if (model.getPostedBy().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
+        if (model.getPostedBy().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()) && !model.isSolved())
             holder.binding.verticalDotsPost.setVisibility(View.VISIBLE);
 
         // Setup Image from Firebase

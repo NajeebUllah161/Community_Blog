@@ -260,25 +260,25 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                     public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
                         if (snapshot.exists()) {
                             if (snapshot.getValue().equals(true)) {
-                                Log.d("Najeeb", " Exists and Liked " + snapshot);
+                                //Log.d("Najeeb", " Exists and Liked " + snapshot);
                                 fillLike(holder.binding);
                                 holder.binding.dislike.setOnClickListener(view -> {
 
-                                    Map<String, Object> dislikesCount = new HashMap<>();
-                                    dislikesCount.put("dislikesCount", ServerValue.increment(1));
+                                    Map<String, Object> likeDislikeCount = new HashMap<>();
+                                    likeDislikeCount.put("dislikesCount", ServerValue.increment(1));
 
-                                    Map<String, Object> likesCount = new HashMap<>();
-                                    dislikesCount.put("likesCount", ServerValue.increment(-1));
-
-                                    FirebaseDatabase.getInstance().getReference()
-                                            .child("posts/" + postId + "/comments")
-                                            .child(comment.getCommentedAt() + "")
-                                            .updateChildren(dislikesCount);
+                                    //Map<String, Object> likesCount = new HashMap<>();
+                                    likeDislikeCount.put("likesCount", ServerValue.increment(-1));
 
                                     FirebaseDatabase.getInstance().getReference()
                                             .child("posts/" + postId + "/comments")
                                             .child(comment.getCommentedAt() + "")
-                                            .updateChildren(likesCount);
+                                            .updateChildren(likeDislikeCount);
+
+//                                    FirebaseDatabase.getInstance().getReference()
+//                                            .child("posts/" + postId + "/comments")
+//                                            .child(comment.getCommentedAt() + "")
+//                                            .updateChildren(likesCount);
 
                                     FirebaseDatabase.getInstance().getReference()
                                             .child("posts/" + postId + "/comments")
@@ -294,21 +294,21 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                                 fillDislike(holder.binding);
                                 holder.binding.like.setOnClickListener(view -> {
 
-                                    Map<String, Object> commentLikes = new HashMap<>();
-                                    commentLikes.put("likesCount", ServerValue.increment(1));
+                                    Map<String, Object> likeDislikeCount = new HashMap<>();
+                                    likeDislikeCount.put("likesCount", ServerValue.increment(1));
 
-                                    Map<String, Object> dislikesCount = new HashMap<>();
-                                    commentLikes.put("dislikesCount", ServerValue.increment(-1));
-
-                                    FirebaseDatabase.getInstance().getReference()
-                                            .child("posts/" + postId + "/comments")
-                                            .child(comment.getCommentedAt() + "")
-                                            .updateChildren(commentLikes);
+                                    //Map<String, Object> dislikesCount = new HashMap<>();
+                                    likeDislikeCount.put("dislikesCount", ServerValue.increment(-1));
 
                                     FirebaseDatabase.getInstance().getReference()
                                             .child("posts/" + postId + "/comments")
                                             .child(comment.getCommentedAt() + "")
-                                            .updateChildren(dislikesCount);
+                                            .updateChildren(likeDislikeCount);
+
+//                                    FirebaseDatabase.getInstance().getReference()
+//                                            .child("posts/" + postId + "/comments")
+//                                            .child(comment.getCommentedAt() + "")
+//                                            .updateChildren(dislikesCount);
 
                                     FirebaseDatabase.getInstance().getReference()
                                             .child("posts/" + postId + "/comments")
@@ -324,16 +324,16 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
 
                             holder.binding.like.setOnClickListener(view -> {
 
-                                Map<String, Object> commentLikes = new HashMap<>();
-                                commentLikes.put("likesCount", ServerValue.increment(1));
+                                Map<String, Object> commentLikesDislikes = new HashMap<>();
+                                commentLikesDislikes.put("likesCount", ServerValue.increment(1));
 
 //                                Map<String, Object> dislikesCount = new HashMap<>();
-//                                commentLikes.put("dislikesCount", ServerValue.increment(-1));
+                                commentLikesDislikes.put("dislikesCount", ServerValue.increment(-1));
 
                                 FirebaseDatabase.getInstance().getReference()
                                         .child("posts/" + postId + "/comments")
                                         .child(comment.getCommentedAt() + "")
-                                        .updateChildren(commentLikes);
+                                        .updateChildren(commentLikesDislikes);
 
 //                                FirebaseDatabase.getInstance().getReference()
 //                                        .child("posts/" + postId + "/comments")
@@ -386,18 +386,16 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                     }
                 });
 
-        holder.binding.verifiedImgView.setOnClickListener(view -> {
-            new SimpleTooltip.Builder(context)
-                    .anchorView(view)
-                    .text("Verified")
-                    .gravity(Gravity.TOP)
-                    .backgroundColor(Color.parseColor("#FF018786"))
-                    .arrowColor(Color.parseColor("#FF018786"))
-                    .animated(true)
-                    .transparentOverlay(false)
-                    .build()
-                    .show();
-        });
+        holder.binding.verifiedImgView.setOnClickListener(view -> new SimpleTooltip.Builder(context)
+                .anchorView(view)
+                .text("Verified")
+                .gravity(Gravity.TOP)
+                .backgroundColor(Color.parseColor("#FF018786"))
+                .arrowColor(Color.parseColor("#FF018786"))
+                .animated(true)
+                .transparentOverlay(false)
+                .build()
+                .show());
 
     }
 
