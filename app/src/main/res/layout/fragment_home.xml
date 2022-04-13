@@ -129,7 +129,7 @@
                             android:layout_height="@dimen/_85mdp"
                             android:layout_marginStart="@dimen/_12mdp"
                             android:scaleType="centerCrop"
-                            android:src="@drawable/profile"
+                            android:src="@drawable/placeholder"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             app:riv_border_color="#333333"

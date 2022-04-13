@@ -11,7 +11,7 @@
         android:layout_height="@dimen/_85mdp"
         android:layout_marginRight="@dimen/_12mdp"
         android:scaleType="centerCrop"
-        android:src="@drawable/status_img"
+        android:src="@drawable/placeholder"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -27,7 +27,7 @@
         android:layout_marginStart="@dimen/_3mdp"
         android:layout_marginTop="@dimen/_3mdp"
         android:padding="@dimen/_3mdp"
-        android:src="@drawable/status_img"
+        android:src="@drawable/placeholder"
         app:layout_constraintStart_toStartOf="@+id/story_img"
         app:layout_constraintTop_toTopOf="parent" />
 

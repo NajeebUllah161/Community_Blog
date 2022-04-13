@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             String currentVersion = MainActivity.this.getPackageManager().getPackageInfo(MainActivity.this.getPackageName(), 0).versionName;
                             if (!currentVersion.equals(versionModel.getVersion() + "")) {
-                                if (versionModel.getSeverity().contains("High")) {
+                                if (!versionModel.getSeverity().contains("High")) {
                                     new SweetAlertDialog(MainActivity.this, SweetAlertDialog.CUSTOM_IMAGE_TYPE)
                                             .setTitleText("Update Available")
                                             .setCustomImage(getDrawable(R.drawable.ic_update))
@@ -146,7 +146,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
 
     @Override
     protected void onResume() {

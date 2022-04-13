@@ -130,37 +130,37 @@ public class HomeFragment extends Fragment {
         //abcFunction();
         mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://communityfeedapp-default-rtdb.firebaseio.com/").getRef();
         setFireBaseNotificationId();
-        updateAppVersion(getActivity());
+        //updateAppVersion(getActivity());
         setupPowerMenu();
 
     }
 
-    public void updateAppVersion(Activity activity) {
-        try {
-            String currentVersion = activity.getPackageManager().getPackageInfo(activity.getPackageName(), 0).versionName;
-            if (helper.isInternetAvailable(activity)) {
+//    public void updateAppVersion(Activity activity) {
+//        try {
+//            String currentVersion = activity.getPackageManager().getPackageInfo(activity.getPackageName(), 0).versionName;
+//            if (helper.isInternetAvailable(activity)) {
+//
+//                VersionModel versionModel = new VersionModel();
+//                versionModel.setVersion(currentVersion);
+//                versionModel.setSeverity("High");
+//
+//                FirebaseDatabase.getInstance().getReference().child("vcs")
+//                        .child("version")
+//                        .setValue(versionModel);
+//            }
+//        } catch (PackageManager.NameNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
 
-                VersionModel versionModel = new VersionModel();
-                versionModel.setVersion(currentVersion);
-                versionModel.setSeverity("High");
-
-                FirebaseDatabase.getInstance().getReference().child("vcs")
-                        .child("version")
-                        .setValue(versionModel);
-            }
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public Boolean isInternetAvailable(Activity activity) {
-        ConnectivityManager cm =
-                (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-    }
+//    public Boolean isInternetAvailable(Activity activity) {
+//        ConnectivityManager cm =
+//                (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+//
+//        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+//        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+//    }
 
     private void setFireBaseNotificationId() {
         FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(task -> {

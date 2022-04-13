@@ -49,7 +49,7 @@
         android:layout_height="@dimen/_50mdp"
         android:layout_marginTop="@dimen/_6mdp"
         android:padding="@dimen/_3mdp"
-        android:src="@drawable/profile"
+        android:src="@drawable/placeholder"
         app:layout_constraintStart_toStartOf="@+id/textView3"
         app:layout_constraintTop_toBottomOf="@id/view10" />
 

@@ -30,7 +30,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:scaleType="centerCrop"
-                android:src="@drawable/post_6" />
+                android:src="@drawable/placeholder" />
 
             <View
                 android:id="@+id/view6"
@@ -45,7 +45,7 @@
         android:layout_width="@dimen/_90mdp"
         android:layout_height="@dimen/_90mdp"
         android:padding="@dimen/_3mdp"
-        android:src="@drawable/profile"
+        android:src="@drawable/placeholder"
         diagonal:civ_border_color="@color/white"
         diagonal:civ_border_width="@dimen/_4mdp"
         diagonal:layout_constraintBottom_toBottomOf="@+id/linearLayout"
@@ -82,7 +82,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_3mdp"
         android:fontFamily="@font/acme"
-        android:text="Ashley John"
+        android:text="Your Name"
         android:textColor="@color/black"
         android:textSize="@dimen/_14ssp"
         diagonal:layout_constraintEnd_toEndOf="@+id/profileImgOfUser"
@@ -93,7 +93,7 @@
         android:id="@+id/profession"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Doctor"
+        android:text="Designation"
         android:textSize="@dimen/_10ssp"
         diagonal:layout_constraintEnd_toEndOf="@+id/userName"
         diagonal:layout_constraintStart_toStartOf="@+id/userName"

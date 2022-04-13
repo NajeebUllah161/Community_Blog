@@ -52,7 +52,7 @@
         android:layout_height="@dimen/_50mdp"
         android:layout_marginTop="@dimen/_6mdp"
         android:padding="@dimen/_3mdp"
-        android:src="@drawable/profile"
+        android:src="@drawable/placeholder"
         app:layout_constraintStart_toStartOf="@+id/textView3"
         app:layout_constraintTop_toBottomOf="@id/view10" />
 
@@ -71,7 +71,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_6mdp"
-        android:text="Angelina Jones"
+        android:text="Your Name"
         android:textColor="@color/black"
         android:textSize="@dimen/_14mdp"
         app:layout_constraintBottom_toTopOf="@+id/userProfessionAddPost"
@@ -83,7 +83,7 @@
         android:id="@+id/userProfessionAddPost"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Clinical Surgeon"
+        android:text="Designation"
         app:layout_constraintBottom_toBottomOf="@+id/profileImgAddPost"
         app:layout_constraintStart_toStartOf="@+id/userNameAddPost"
         app:layout_constraintTop_toBottomOf="@+id/userNameAddPost" />

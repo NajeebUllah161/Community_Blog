@@ -10,7 +10,7 @@
         android:layout_height="@dimen/_55mdp"
         android:layout_marginRight="@dimen/_3mdp"
         android:padding="@dimen/_3mdp"
-        android:src="@drawable/profile"
+        android:src="@drawable/placeholder"
         diagonal:civ_border_color="@color/white"
         diagonal:civ_border_width="@dimen/_2mdp"
         diagonal:layout_constraintBottom_toBottomOf="parent"
