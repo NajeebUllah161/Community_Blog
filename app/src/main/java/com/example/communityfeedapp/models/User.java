@@ -7,26 +7,19 @@ public class User {
     private int followersCount;
     private String profileImage;
     private int userPerks;
-
-    public int getUserRating() {
-        return userRating;
-    }
-
-    public void setUserRating(int userRating) {
-        this.userRating = userRating;
-    }
-
-    private int userRating;
-
-    public int getTotalPosts() {
-        return totalPosts;
-    }
-
-    public void setTotalPosts(int totalPosts) {
-        this.totalPosts = totalPosts;
-    }
-
+    private int userUpVotes;
+    private int userDownVotes;
     private int totalPosts;
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
+    }
+
+    private boolean isAdmin;
 
     public User() {
     }
@@ -36,6 +29,30 @@ public class User {
         this.profession = profession;
         this.email = email;
         this.password = password;
+    }
+
+    public int getTotalPosts() {
+        return totalPosts;
+    }
+
+    public void setTotalPosts(int totalPosts) {
+        this.totalPosts = totalPosts;
+    }
+
+    public int getUserUpVotes() {
+        return userUpVotes;
+    }
+
+    public void setUserUpVotes(int userUpVotes) {
+        this.userUpVotes = userUpVotes;
+    }
+
+    public int getUserDownVotes() {
+        return userDownVotes;
+    }
+
+    public void setUserDownVotes(int userDownVotes) {
+        this.userDownVotes = userDownVotes;
     }
 
     public int getFollowersCount() {

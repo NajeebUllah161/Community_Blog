@@ -251,7 +251,7 @@ public class CommentActivity extends AppCompatActivity {
 
         //CommentLikeDislikeClick listener = (CommentLikeDislikeClick) this;
 
-        CommentAdapter commentAdapter = new CommentAdapter(this, list, postId);
+        CommentAdapter commentAdapter = new CommentAdapter(this, list, postId, postedBy);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
         binding.commentRv.setLayoutManager(linearLayoutManager);
         binding.commentRv.setAdapter(commentAdapter);

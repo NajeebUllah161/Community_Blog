@@ -66,7 +66,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         public void onItemClick(int position, PowerMenuItem item) {
             //Toast.makeText(context, item.getTitle(), Toast.LENGTH_SHORT).show();
             powerMenu.setSelectedPosition(position); // change selected item
-            if (item.getTitle().equals("Edit profile")) {
+            if (item.getTitle().equals("Edit post")) {
                 context.startActivity(intent);
             } else {
                 saveDeletedPost(post);
@@ -119,7 +119,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         Post model = postModelArrayList.get(position);
 
         // Check to restrict user to only edit his/her post
-        if (model.getPostedBy().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()) && !model.isSolved())
+        if ((model.getPostedBy().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) && !model.isSolved())
             holder.binding.verticalDotsPost.setVisibility(View.VISIBLE);
 
         // Setup Image from Firebase

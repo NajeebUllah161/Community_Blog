@@ -139,27 +139,27 @@ public class HomeFragment extends Fragment {
     }
 
 
-    private void abcFunction() {
-
-        List<String> followers = new ArrayList<>();
-        firebaseDatabase.getReference().child("Users").child(auth.getCurrentUser().getUid())
-                .child("followers").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    FollowModel followModel = dataSnapshot.getValue(FollowModel.class);
-                    followers.add(followModel.getFollowedBy());
-                }
-                Log.d("Followers", followers.toString());
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull @NotNull DatabaseError error) {
-
-            }
-        });
-    }
+//    private void abcFunction() {
+//
+//        List<String> followers = new ArrayList<>();
+//        firebaseDatabase.getReference().child("Users").child(auth.getCurrentUser().getUid())
+//                .child("followers").addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+//                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+//                    FollowModel followModel = dataSnapshot.getValue(FollowModel.class);
+//                    followers.add(followModel.getFollowedBy());
+//                }
+//                Log.d("Followers", followers.toString());
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+//
+//            }
+//        });
+//    }
 
     private void setupPowerMenu() {
 

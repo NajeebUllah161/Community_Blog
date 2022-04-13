@@ -154,13 +154,14 @@
                 android:id="@+id/commentRv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:reverseLayout="true"
                 android:layout_marginHorizontal="@dimen/_6mdp"
                 android:layout_marginTop="@dimen/_6mdp"
+                android:layout_marginBottom="@dimen/_16mdp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/like" />
+                app:layout_constraintTop_toBottomOf="@+id/like"
+                app:reverseLayout="true" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
@@ -209,8 +210,8 @@
         android:id="@+id/postCommentRecording"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
         android:layout_marginEnd="@dimen/_6mdp"
+        android:adjustViewBounds="true"
         app:layout_constraintBottom_toBottomOf="@+id/commentEt"
         app:layout_constraintEnd_toStartOf="@id/postCommentBtn"
         app:layout_constraintTop_toTopOf="@+id/commentEt"
@@ -221,15 +222,14 @@
         android:id="@+id/audioContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/_8mdp"
         android:background="@drawable/follow_active_btn"
         android:orientation="horizontal"
         android:padding="@dimen/_4mdp"
-        android:layout_marginBottom="@dimen/_8mdp"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/postCommentRecording"
-        app:layout_constraintStart_toStartOf="@+id/postCommentRecording"
         app:layout_constraintEnd_toEndOf="@id/postCommentRecording"
-      >
+        app:layout_constraintStart_toStartOf="@+id/postCommentRecording">
 
         <TextView
             android:id="@+id/recordingStatus"
@@ -289,6 +289,6 @@
         app:layout_constraintBottom_toTopOf="@+id/audioContainer"
         app:layout_constraintEnd_toEndOf="@+id/audioContainer"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/audioContainer"/>
+        app:layout_constraintStart_toStartOf="@+id/audioContainer" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

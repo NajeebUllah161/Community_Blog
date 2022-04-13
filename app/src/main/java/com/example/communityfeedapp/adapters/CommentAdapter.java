@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.text.Html;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.communityfeedapp.R;
@@ -28,12 +30,17 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
+import com.skydoves.powermenu.MenuAnimation;
+import com.skydoves.powermenu.OnMenuItemClickListener;
+import com.skydoves.powermenu.PowerMenu;
+import com.skydoves.powermenu.PowerMenuItem;
 import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip;
@@ -42,15 +49,46 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
 
     Context context;
     ArrayList<Comment> list;
-    String postId;
+    String postId,postedBy;
+    Comment comment;
+    PowerMenu powerMenu;
     String commentId;
     MediaPlayer player;
     int length;
 
-    public CommentAdapter(Context context, ArrayList<Comment> list, String postId) {
+    private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
+        @Override
+        public void onItemClick(int position, PowerMenuItem item) {
+            //Toast.makeText(context, item.getTitle(), Toast.LENGTH_SHORT).show();
+            powerMenu.setSelectedPosition(position); // change selected item
+            if (item.getTitle().equals("Delete comment")) {
+                FirebaseDatabase.getInstance().getReference().child("posts/" + postId + "/comments/" + comment.getCommentedAt()).removeValue()
+                        .addOnSuccessListener(unused -> {
+                            Toast.makeText(context, "Comment deleted!", Toast.LENGTH_SHORT).show();
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(context, "Unable to delete comment due to " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
+
+                Map<String, Object> comment = new HashMap<>();
+                comment.put("commentCount", ServerValue.increment(-1));
+                FirebaseDatabase.getInstance().getReference().child("posts/" + postId).updateChildren(comment)
+                        .addOnSuccessListener(unused -> Log.d("CommentAdapter", "Successfully deducted 1 from commentCount"))
+                        .addOnFailureListener(e -> Toast.makeText(context, "Unknown error occurred :" + e.getMessage(), Toast.LENGTH_SHORT).show());
+
+            } else {
+                Toast.makeText(context, "Select a valid option", Toast.LENGTH_SHORT).show();
+            }
+            powerMenu.dismiss();
+        }
+    };
+
+
+    public CommentAdapter(Context context, ArrayList<Comment> list, String postId, String postedBy) {
         this.context = context;
         this.list = list;
         this.postId = postId;
+        this.postedBy = postedBy;
     }
 
     @NonNull
@@ -130,12 +168,14 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                     @SuppressLint("NotifyDataSetChanged")
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        Comment comment = snapshot.getValue(Comment.class);
-                        if (comment.isVerified()) {
-                            //Log.d("IsVerified", String.valueOf(comment.isVerified()));
-                            holder.binding.commentCheckbox.setVisibility(View.GONE);
-                            holder.binding.verifiedImgView.setVisibility(View.VISIBLE);
-                            holder.binding.commentCheckbox.setChecked(true);
+                        if (snapshot.exists()) {
+                            Comment comment = snapshot.getValue(Comment.class);
+                            if (comment.isVerified()) {
+                                //Log.d("IsVerified", String.valueOf(comment.isVerified()));
+                                holder.binding.commentCheckbox.setVisibility(View.GONE);
+                                holder.binding.verifiedImgView.setVisibility(View.VISIBLE);
+                                holder.binding.commentCheckbox.setChecked(true);
+                            }
                         }
                     }
 
@@ -386,6 +426,29 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                     }
                 });
 
+
+        FirebaseDatabase.getInstance().getReference().child("Users")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                        User user = snapshot.getValue(User.class);
+
+                        if (!comment.isVerified() && (comment.getCommentedBy().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()) || user.isAdmin() || postedBy.equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))) {
+                            holder.binding.editComment.setVisibility(View.VISIBLE);
+                            setupCommentPowerMenu(comment, holder.binding);
+                        } else {
+                            holder.binding.editComment.setVisibility(View.GONE);
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+                    }
+                });
+
         holder.binding.verifiedImgView.setOnClickListener(view -> new SimpleTooltip.Builder(context)
                 .anchorView(view)
                 .text("Verified")
@@ -397,6 +460,32 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                 .build()
                 .show());
 
+    }
+
+    private void setupCommentPowerMenu(Comment comment, CommentSampleBinding binding) {
+
+        binding.editComment.setOnClickListener(view -> {
+            this.comment = comment;
+            List<PowerMenuItem> list = new ArrayList<>();
+            list.add(new PowerMenuItem("Delete comment"));
+
+            powerMenu = new PowerMenu.Builder(context)
+                    .addItemList(list) // list has "Novel", "Poetry", "Art"
+                    .setAnimation(MenuAnimation.SHOWUP_BOTTOM_RIGHT) // Animation start point (TOP | LEFT).
+                    .setMenuRadius(10f) // sets the corner radius.
+                    .setMenuShadow(10f) // sets the shadow.
+                    .setTextColor(ContextCompat.getColor(context, R.color.teal_700))
+                    .setTextGravity(Gravity.LEFT)
+                    .setTextTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD))
+                    .setSelectedTextColor(Color.WHITE)
+                    .setMenuColor(Color.WHITE)
+                    .setSelectedMenuColor(ContextCompat.getColor(context, R.color.black))
+                    .setOnMenuItemClickListener(onMenuItemClickListener)
+                    .build();
+
+            powerMenu.showAsDropDown(view);
+
+        });
     }
 
     private void fillDislike(CommentSampleBinding commentSampleBinding) {
