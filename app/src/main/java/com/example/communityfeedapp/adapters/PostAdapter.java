@@ -122,6 +122,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         if ((model.getPostedBy().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) && !model.isSolved())
             holder.binding.verticalDotsPost.setVisibility(View.VISIBLE);
 
+        if (model.getPostShares() != 0) {
+            holder.binding.share.setText(model.getPostShares() + "");
+        }
+
         // Setup Image from Firebase
         if (model.getPostImage() != null) {
             RequestOptions requestOptions = new RequestOptions();
@@ -335,6 +339,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         });
 
         holder.binding.share.setOnClickListener(view -> {
+
+            FirebaseDatabase.getInstance().getReference()
+                    .child("posts/" + model.getPostId() + "/postShares")
+                    .setValue(ServerValue.increment(1))
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(context, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
 
             BitmapDrawable bitmapDrawable = (BitmapDrawable) holder.binding.postImg.getDrawable();
             if (bitmapDrawable == null) {

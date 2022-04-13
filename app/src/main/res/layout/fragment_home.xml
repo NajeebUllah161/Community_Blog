@@ -26,7 +26,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_12mdp"
-                android:text="Discover"
+                android:text="Home"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_24font_mdp"
                 android:textStyle="bold"
@@ -45,15 +45,15 @@
                 app:layout_constraintEnd_toStartOf="@+id/filter"
                 app:layout_constraintTop_toTopOf="@+id/filter" />
 
-<!--            <com.google.android.material.checkbox.MaterialCheckBox-->
-<!--                android:id="@+id/isSolved"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginEnd="@dimen/_16mdp"-->
-<!--                android:visibility="invisible"-->
-<!--                app:layout_constraintBottom_toBottomOf="@+id/profile_image"-->
-<!--                app:layout_constraintEnd_toStartOf="@+id/profile_image"-->
-<!--                app:layout_constraintTop_toTopOf="@+id/profile_image" />-->
+            <!--            <com.google.android.material.checkbox.MaterialCheckBox-->
+            <!--                android:id="@+id/isSolved"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_marginEnd="@dimen/_16mdp"-->
+            <!--                android:visibility="invisible"-->
+            <!--                app:layout_constraintBottom_toBottomOf="@+id/profile_image"-->
+            <!--                app:layout_constraintEnd_toStartOf="@+id/profile_image"-->
+            <!--                app:layout_constraintTop_toTopOf="@+id/profile_image" />-->
 
             <ImageView
                 android:id="@+id/filter"

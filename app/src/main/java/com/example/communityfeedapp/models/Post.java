@@ -23,6 +23,16 @@ public class Post {
 
     private boolean isAllowed;
     private int postLikes;
+
+    public int getPostShares() {
+        return postShares;
+    }
+
+    public void setPostShares(int postShares) {
+        this.postShares = postShares;
+    }
+
+    private int postShares;
     private int commentCount;
 
     public Post() {
