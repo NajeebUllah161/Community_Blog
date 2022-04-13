@@ -1,9 +1,14 @@
 package com.example.communityfeedapp.fragments;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,6 +35,8 @@ import com.example.communityfeedapp.models.Post;
 import com.example.communityfeedapp.models.Story;
 import com.example.communityfeedapp.models.User;
 import com.example.communityfeedapp.models.UserStories;
+import com.example.communityfeedapp.models.VersionModel;
+import com.example.communityfeedapp.utils.helper;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -123,8 +130,36 @@ public class HomeFragment extends Fragment {
         //abcFunction();
         mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://communityfeedapp-default-rtdb.firebaseio.com/").getRef();
         setFireBaseNotificationId();
+        updateAppVersion(getActivity());
         setupPowerMenu();
 
+    }
+
+    public void updateAppVersion(Activity activity) {
+        try {
+            String currentVersion = activity.getPackageManager().getPackageInfo(activity.getPackageName(), 0).versionName;
+            if (helper.isInternetAvailable(activity)) {
+
+                VersionModel versionModel = new VersionModel();
+                versionModel.setVersion(currentVersion);
+                versionModel.setSeverity("High");
+
+                FirebaseDatabase.getInstance().getReference().child("vcs")
+                        .child("version")
+                        .setValue(versionModel);
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public Boolean isInternetAvailable(Activity activity) {
+        ConnectivityManager cm =
+                (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 
     private void setFireBaseNotificationId() {

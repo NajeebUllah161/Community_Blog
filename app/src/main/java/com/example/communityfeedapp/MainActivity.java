@@ -1,8 +1,9 @@
 package com.example.communityfeedapp;
 
 import android.annotation.SuppressLint;
-import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -10,7 +11,6 @@ import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -22,10 +22,15 @@ import com.example.communityfeedapp.fragments.HomeFragment;
 import com.example.communityfeedapp.fragments.NotificationFragment;
 import com.example.communityfeedapp.fragments.ProfileFragment;
 import com.example.communityfeedapp.fragments.SearchFragment;
+import com.example.communityfeedapp.models.VersionModel;
+import com.example.communityfeedapp.utils.helper;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
-import com.vansuita.pickimage.bean.PickResult;
-import com.vansuita.pickimage.listeners.IPickResult;
+import com.google.firebase.database.ValueEventListener;
+
+import org.jetbrains.annotations.NotNull;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
         setSupportActionBar(binding.toolbar);
         MainActivity.this.setTitle("My Profile");
+        checkAppUpdate();
 
         // When we open the application first
         // time the fragment should be shown to the user
@@ -80,6 +86,72 @@ public class MainActivity extends AppCompatActivity {
             fragmentTransaction.commit();
             return true;
         });
+    }
+
+    private void checkAppUpdate() {
+        if (helper.isInternetAvailable(this)) {
+            FirebaseDatabase.getInstance().getReference().child("vcs")
+                    .child("version").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        VersionModel versionModel = snapshot.getValue(VersionModel.class);
+                        Log.d("VersionTag", "Version" + versionModel.getVersion() + " Severity" + versionModel.getSeverity());
+                        try {
+                            String currentVersion = MainActivity.this.getPackageManager().getPackageInfo(MainActivity.this.getPackageName(), 0).versionName;
+                            if (!currentVersion.equals(versionModel.getVersion() + "")) {
+                                if (versionModel.getSeverity().contains("High")) {
+                                    new SweetAlertDialog(MainActivity.this, SweetAlertDialog.CUSTOM_IMAGE_TYPE)
+                                            .setTitleText("Update Available")
+                                            .setCustomImage(getDrawable(R.drawable.ic_update))
+                                            .setContentText("Current Verison: " + currentVersion + "\nLatest Version: " + versionModel.getVersion() + "\nPriority: " + versionModel.getSeverity())
+                                            .setConfirmText("Update Now")
+                                            .setCancelText("Later")
+                                            .setConfirmClickListener(sDialog -> {
+                                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=growtechsol.com")));
+                                                sDialog.dismissWithAnimation();
+                                            })
+                                            .setCancelClickListener(SweetAlertDialog::cancel)
+                                            .show();
+                                } else {
+                                    SweetAlertDialog dialog = new SweetAlertDialog(MainActivity.this, SweetAlertDialog.CUSTOM_IMAGE_TYPE)
+                                            .setTitleText("Update Available")
+                                            .setCustomImage(getDrawable(R.drawable.ic_update))
+                                            .setContentText("Current Verison: " + currentVersion + "\nLatest Version: " + versionModel.getVersion() + "\nPriority: " + versionModel.getSeverity())
+                                            .setConfirmText("Update")
+                                            .setConfirmClickListener(sDialog -> {
+                                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=growtechsol.com")));
+                                                sDialog.dismissWithAnimation();
+                                            });
+                                    dialog.setCancelable(false);
+                                    dialog.setCanceledOnTouchOutside(false);
+                                    dialog.show();
+                                }
+                            }
+
+                        } catch (PackageManager.NameNotFoundException e) {
+                            e.printStackTrace();
+                        }
+
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+                }
+            });
+
+        }
+
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkAppUpdate();
     }
 
     @Override
