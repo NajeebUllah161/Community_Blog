@@ -1,15 +1,16 @@
 {
   "project_info": {
     "project_number": "448496240959",
+    "firebase_url": "https://communityfeedapp-default-rtdb.firebaseio.com",
     "project_id": "communityfeedapp",
     "storage_bucket": "communityfeedapp.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:448496240959:android:5b67bac2217ba58a34eb8a",
+        "mobilesdk_app_id": "1:448496240959:android:a2d2106266ca8c0a34eb8a",
         "android_client_info": {
-          "package_name": "com.example.communityfeedapp"
+          "package_name": "community.growtechsol.com"
         }
       },
       "oauth_client": [

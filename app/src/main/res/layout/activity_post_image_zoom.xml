@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    tools:context=".activities.PostImageZoomActivity">
+    tools:context="community.growtechsol.com.activities.PostImageZoomActivity">
 
     <com.jsibbold.zoomage.ZoomageView
         android:id="@+id/postImageView"

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.communityfeedapp">
+    package="community.growtechsol.com">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -18,16 +18,16 @@
         android:roundIcon="@mipmap/ic_launcher_icon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CommunityFeedApp">
-        <activity android:name=".activities.PostImageZoomActivity" />
-        <activity android:name=".edit_dialogues.EditPostDialogue" />
+        <activity android:name="community.growtechsol.com.activities.PostImageZoomActivity" />
+        <activity android:name="community.growtechsol.com.edit_dialogues.EditPostDialogue" />
         <activity
-            android:name=".activities.CommentActivity"
+            android:name="community.growtechsol.com.activities.CommentActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.SignupActivity"
+            android:name="community.growtechsol.com.activities.SignupActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.LoginActivity"
+            android:name="community.growtechsol.com.activities.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -49,7 +49,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.example.communityfeedapp.fileprovider"
+            android:authorities="community.growtechsol.com.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
 
@@ -61,7 +61,7 @@
         </provider>
 
         <activity
-            android:name=".MainActivity"
+            android:name="community.growtechsol.com.MainActivity"
             android:exported="true" />
 
         <meta-data
