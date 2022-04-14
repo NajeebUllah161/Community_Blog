@@ -175,6 +175,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                                 holder.binding.commentCheckbox.setVisibility(View.GONE);
                                 holder.binding.verifiedImgView.setVisibility(View.VISIBLE);
                                 holder.binding.commentCheckbox.setChecked(true);
+                            }else{
+                                holder.binding.verifiedImgView.setVisibility(View.INVISIBLE);
                             }
                         }
                     }

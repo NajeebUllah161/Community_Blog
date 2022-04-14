@@ -412,7 +412,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             bitmapPostImg.compress(Bitmap.CompressFormat.PNG, 90, stream);
             stream.flush();
             stream.close();
-            uri = FileProvider.getUriForFile(context, "com.example.communityfeedapp.fileprovider", file);
+            uri = FileProvider.getUriForFile(context, "community.growtechsol.com.fileprovider", file);
 
         } catch (Exception e) {
             Toast.makeText(context, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
