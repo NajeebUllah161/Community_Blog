@@ -47,6 +47,8 @@ import com.skydoves.powermenu.PowerMenu;
 import com.skydoves.powermenu.PowerMenuItem;
 import com.squareup.picasso.Picasso;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -57,7 +59,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     ArrayList<Post> postModelArrayList;
     Context context;
-    PowerMenu powerMenu;
+    PowerMenu powerMenu,powerMenu2;
     Intent intent;
     String postId;
     Post post;
@@ -71,7 +73,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 context.startActivity(intent);
             } else {
                 saveDeletedPost(post);
-                FirebaseDatabase.getInstance().getReference().child("posts/" + postId).removeValue().addOnSuccessListener(unused -> {
+                FirebaseDatabase.getInstance().getReference().child("posts/" + postId).removeValue()
+                        .addOnSuccessListener(unused -> {
                     Toast.makeText(context, "Post deleted Successfully!", Toast.LENGTH_SHORT).show();
 
                     FirebaseDatabase.getInstance().getReference()
@@ -89,10 +92,38 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         }
     };
 
+    private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener2 = new OnMenuItemClickListener<PowerMenuItem>() {
+        @Override
+        public void onItemClick(int position, PowerMenuItem item) {
+            //Toast.makeText(context, item.getTitle(), Toast.LENGTH_SHORT).show();
+            powerMenu2.setSelectedPosition(position); // change selected item
+            if (item.getTitle().equals("Edit post")) {
+                context.startActivity(intent);
+            } else {
+                saveDeletedPost(post);
+                FirebaseDatabase.getInstance().getReference().child("posts/" + postId).removeValue()
+                        .addOnSuccessListener(unused -> {
+                            Toast.makeText(context, "Post deleted Successfully!", Toast.LENGTH_SHORT).show();
+
+                            FirebaseDatabase.getInstance().getReference()
+                                    .child("Users")
+                                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                    .child("totalPosts")
+                                    .setValue(ServerValue.increment(-1)).addOnSuccessListener(unused1 -> {
+                                Log.d("PostAdapter", "remove -1 from totalPostCount");
+                            }).addOnFailureListener(e -> {
+                                Toast.makeText(context, "Unable to deduct postCount due to" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
+                        }).addOnFailureListener(e -> Toast.makeText(context, "Unable to delete post due to!" + e.getMessage(), Toast.LENGTH_SHORT).show());
+            }
+            powerMenu2.dismiss();
+        }
+    };
+
     private void saveDeletedPost(Post post) {
         FirebaseDatabase.getInstance().getReference()
                 .child("DeletedPosts")
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child(post.getPostedBy())
                 .child(new Date() + "")
                 .setValue(post);
     }
@@ -424,42 +455,142 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     @SuppressLint("RtlHardcoded")
     private void handlePowerMenu(PostViewHolder holder, Post model) {
 
-        List<PowerMenuItem> list = new ArrayList<>();
-        list.add(new PowerMenuItem("Edit post"));
-        list.add(new PowerMenuItem("Delete post"));
+        FirebaseDatabase.getInstance().getReference().child("Users")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                        User user = snapshot.getValue(User.class);
+                        List<PowerMenuItem> list = new ArrayList<>();
+                        List<PowerMenuItem> list2 = new ArrayList<>();
 
-        powerMenu = new PowerMenu.Builder(context)
-                .addItemList(list) // list has "Novel", "Poetry", "Art"
-                .setAnimation(MenuAnimation.SHOWUP_BOTTOM_RIGHT) // Animation start point (TOP | LEFT).
-                .setMenuRadius(10f) // sets the corner radius.
-                .setMenuShadow(10f) // sets the shadow.
-                .setTextColor(ContextCompat.getColor(context, R.color.teal_700))
-                .setTextGravity(Gravity.LEFT)
-                .setTextTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD))
-                .setSelectedTextColor(Color.WHITE)
-                .setMenuColor(Color.WHITE)
-                .setSelectedMenuColor(ContextCompat.getColor(context, R.color.black))
-                .setOnMenuItemClickListener(onMenuItemClickListener)
-                .build();
+                        if(user.isAdmin() && !model.isSolved()){
+                            holder.binding.verticalDotsPost.setVisibility(View.VISIBLE);
+                            if(FirebaseAuth.getInstance().getCurrentUser().getUid().equals(model.getPostedBy())){
+                                Log.d("CHECKEQUAL","UID : " + FirebaseAuth.getInstance().getCurrentUser().getUid() + " postUID" + model.getPostedBy());
 
-        holder.binding.verticalDotsPost.setOnClickListener(view -> {
+                                list.add(new PowerMenuItem("Edit post"));
+                                list.add(new PowerMenuItem("Delete post"));
 
-            intent = new Intent(context, EditPostDialogue.class);
-            intent.putExtra("postTimeStampId", model.getPostedAt());
-            intent.putExtra("postImg", model.getPostImage());
-            intent.putExtra("postTitle", model.getPostTitle());
-            intent.putExtra("postDesc", model.getPostDescription());
-            intent.putExtra("postRecording", model.getPostRecording());
-            intent.putExtra("recTime", model.getRecTime());
+                                powerMenu = new PowerMenu.Builder(context)
+                                        .addItemList(list)
+                                        .setAnimation(MenuAnimation.SHOWUP_BOTTOM_RIGHT) // Animation start point (TOP | LEFT).
+                                        .setMenuRadius(10f) // sets the corner radius.
+                                        .setMenuShadow(10f) // sets the shadow.
+                                        .setTextColor(ContextCompat.getColor(context, R.color.teal_700))
+                                        .setTextGravity(Gravity.LEFT)
+                                        .setTextTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD))
+                                        .setSelectedTextColor(Color.WHITE)
+                                        .setMenuColor(Color.WHITE)
+                                        .setSelectedMenuColor(ContextCompat.getColor(context, R.color.black))
+                                        .setOnMenuItemClickListener(onMenuItemClickListener)
+                                        .build();
 
-            //Log.d("PostIdTimeStamp", String.valueOf(model.getPostedAt()));
-            postId = model.getPostId();
-            post = model;
-            powerMenu.showAsDropDown(view);
-            //Log.d("Equal",model.getPostedBy()+" " + FirebaseAuth.getInstance().getCurrentUser().getUid());
+                                holder.binding.verticalDotsPost.setOnClickListener(view -> {
 
-        });
+                                    intent = new Intent(context, EditPostDialogue.class);
+                                    intent.putExtra("postTimeStampId", model.getPostedAt());
+                                    intent.putExtra("postImg", model.getPostImage());
+                                    intent.putExtra("postTitle", model.getPostTitle());
+                                    intent.putExtra("postDesc", model.getPostDescription());
+                                    intent.putExtra("postRecording", model.getPostRecording());
+                                    intent.putExtra("recTime", model.getRecTime());
 
+                                    //Log.d("PostIdTimeStamp", String.valueOf(model.getPostedAt()));
+                                    postId = model.getPostId();
+                                    post = model;
+                                    powerMenu.showAsDropDown(view);
+                                    //Log.d("Equal",model.getPostedBy()+" " + FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+                                });
+
+
+                            }else{
+
+                                list2.add(new PowerMenuItem("Delete post"));
+
+                                powerMenu2 = new PowerMenu.Builder(context)
+                                        .addItemList(list2) // list has "Novel", "Poetry", "Art"
+                                        .setAnimation(MenuAnimation.SHOWUP_BOTTOM_RIGHT) // Animation start point (TOP | LEFT).
+                                        .setMenuRadius(10f) // sets the corner radius.
+                                        .setMenuShadow(10f) // sets the shadow.
+                                        .setTextColor(ContextCompat.getColor(context, R.color.teal_700))
+                                        .setTextGravity(Gravity.LEFT)
+                                        .setTextTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD))
+                                        .setSelectedTextColor(Color.WHITE)
+                                        .setMenuColor(Color.WHITE)
+                                        .setSelectedMenuColor(ContextCompat.getColor(context, R.color.black))
+                                        .setOnMenuItemClickListener(onMenuItemClickListener2)
+                                        .build();
+
+                                holder.binding.verticalDotsPost.setOnClickListener(view -> {
+
+                                    intent = new Intent(context, EditPostDialogue.class);
+                                    intent.putExtra("postTimeStampId", model.getPostedAt());
+                                    intent.putExtra("postImg", model.getPostImage());
+                                    intent.putExtra("postTitle", model.getPostTitle());
+                                    intent.putExtra("postDesc", model.getPostDescription());
+                                    intent.putExtra("postRecording", model.getPostRecording());
+                                    intent.putExtra("recTime", model.getRecTime());
+
+                                    //Log.d("PostIdTimeStamp", String.valueOf(model.getPostedAt()));
+                                    postId = model.getPostId();
+                                    post = model;
+                                    powerMenu2.showAsDropDown(view);
+                                    //Log.d("Equal",model.getPostedBy()+" " + FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+                                });
+
+
+
+                            }
+
+                        }else{
+
+                            list.add(new PowerMenuItem("Edit post"));
+                            list.add(new PowerMenuItem("Delete post"));
+
+                            powerMenu = new PowerMenu.Builder(context)
+                                    .addItemList(list)
+                                    .setAnimation(MenuAnimation.SHOWUP_BOTTOM_RIGHT) // Animation start point (TOP | LEFT).
+                                    .setMenuRadius(10f) // sets the corner radius.
+                                    .setMenuShadow(10f) // sets the shadow.
+                                    .setTextColor(ContextCompat.getColor(context, R.color.teal_700))
+                                    .setTextGravity(Gravity.LEFT)
+                                    .setTextTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD))
+                                    .setSelectedTextColor(Color.WHITE)
+                                    .setMenuColor(Color.WHITE)
+                                    .setSelectedMenuColor(ContextCompat.getColor(context, R.color.black))
+                                    .setOnMenuItemClickListener(onMenuItemClickListener)
+                                    .build();
+
+                            holder.binding.verticalDotsPost.setOnClickListener(view -> {
+
+                                intent = new Intent(context, EditPostDialogue.class);
+                                intent.putExtra("postTimeStampId", model.getPostedAt());
+                                intent.putExtra("postImg", model.getPostImage());
+                                intent.putExtra("postTitle", model.getPostTitle());
+                                intent.putExtra("postDesc", model.getPostDescription());
+                                intent.putExtra("postRecording", model.getPostRecording());
+                                intent.putExtra("recTime", model.getRecTime());
+
+                                //Log.d("PostIdTimeStamp", String.valueOf(model.getPostedAt()));
+                                postId = model.getPostId();
+                                post = model;
+                                powerMenu.showAsDropDown(view);
+                                //Log.d("Equal",model.getPostedBy()+" " + FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+                            });
+
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+                    }
+                });
     }
 
     @Override
