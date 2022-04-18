@@ -27,6 +27,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_12mdp"
                 android:text="Home"
+                android:visibility="gone"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_24font_mdp"
                 android:textStyle="bold"
@@ -39,6 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/_8mdp"
+                android:visibility="gone"
                 android:text="Filter"
                 android:textColor="@color/black"
                 app:layout_constraintBottom_toBottomOf="@+id/filter"
@@ -201,12 +203,27 @@
                 android:id="@+id/view5"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/_1mdp"
-                android:layout_marginTop="@dimen/_12mdp"
+                android:layout_marginTop="@dimen/_8mdp"
                 android:background="@android:color/darker_gray"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView" />
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/searchView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_8mdp"
+                android:layout_marginHorizontal="@dimen/_8mdp"
+                android:background="@drawable/search_view_bg"
+                app:iconifiedByDefault="false"
+                app:layout_constraintBottom_toBottomOf="@+id/textView9"
+                app:layout_constraintEnd_toStartOf="@+id/textView9"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/textView9"
+                app:queryHint="Search Here ...." />
 
             <com.cooltechworks.views.shimmer.ShimmerRecyclerView
                 android:id="@+id/dashboard_Rv"

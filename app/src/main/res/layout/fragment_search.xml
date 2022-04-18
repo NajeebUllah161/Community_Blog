@@ -10,8 +10,8 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_12mdp"
-        android:layout_marginTop="@dimen/_6mdp"
+        android:layout_marginStart="@dimen/_8mdp"
+        android:layout_marginTop="16dp"
         android:text="Add People"
         android:textColor="@color/black"
         android:textSize="@dimen/_20ssp"
@@ -23,12 +23,25 @@
         android:id="@+id/view2"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/_1mdp"
-        android:layout_marginTop="@dimen/_3mdp"
+        android:layout_marginTop="16dp"
         android:background="@android:color/darker_gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:iconifiedByDefault="false"
+        android:layout_margin="@dimen/_6mdp"
+        android:background="@drawable/search_view_bg"
+        app:layout_constraintBottom_toBottomOf="@+id/textView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textView"
+        app:layout_constraintTop_toTopOf="@+id/textView"
+        app:queryHint="Search Here ...." />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/usersRv"

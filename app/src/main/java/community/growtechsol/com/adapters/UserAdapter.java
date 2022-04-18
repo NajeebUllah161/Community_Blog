@@ -25,6 +25,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.viewHolder> {
     Context context;
@@ -33,6 +34,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.viewHolder> {
     public UserAdapter(Context context, ArrayList<User> list) {
         this.context = context;
         this.list = list;
+    }
+
+    public void setFilteredList(ArrayList<User> filteredList){
+        this.list = filteredList;
+        notifyDataSetChanged();
     }
 
     @NonNull

@@ -16,19 +16,10 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-
-import community.growtechsol.com.R;
-import community.growtechsol.com.adapters.PostAdapter;
-import community.growtechsol.com.adapters.StoryAdapter;
-
-import community.growtechsol.com.databinding.FragmentHomeBinding;
-import community.growtechsol.com.models.Post;
-import community.growtechsol.com.models.Story;
-import community.growtechsol.com.models.User;
-import community.growtechsol.com.models.UserStories;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -55,6 +46,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+import community.growtechsol.com.R;
+import community.growtechsol.com.adapters.PostAdapter;
+import community.growtechsol.com.adapters.StoryAdapter;
+import community.growtechsol.com.databinding.FragmentHomeBinding;
+import community.growtechsol.com.models.Post;
+import community.growtechsol.com.models.Story;
+import community.growtechsol.com.models.User;
+import community.growtechsol.com.models.UserStories;
+
 public class HomeFragment extends Fragment {
 
     ArrayList<Story> storyArrayList = new ArrayList<>();
@@ -70,6 +70,7 @@ public class HomeFragment extends Fragment {
     PowerMenu powerMenu;
     PostAdapter postAdapter;
     private DatabaseReference mDatabase;
+    String postFilterType = "all";
 
     private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
         @Override
@@ -83,6 +84,7 @@ public class HomeFragment extends Fragment {
                 binding.dashboardRv.hideShimmerAdapter();
                 loadProfileImg();
                 postAdapter.notifyDataSetChanged();
+                postFilterType = "solved";
 
             } else if (item.getTitle().equals("UnSolved")) {
 
@@ -91,6 +93,7 @@ public class HomeFragment extends Fragment {
                 binding.dashboardRv.hideShimmerAdapter();
                 loadProfileImg();
                 postAdapter.notifyDataSetChanged();
+                postFilterType = "unsolved";
 
             } else {
 
@@ -99,6 +102,7 @@ public class HomeFragment extends Fragment {
                 binding.dashboardRv.hideShimmerAdapter();
                 loadProfileImg();
                 postAdapter.notifyDataSetChanged();
+                postFilterType = "all";
 
             }
             powerMenu.dismiss();
@@ -120,10 +124,67 @@ public class HomeFragment extends Fragment {
 
         //abcFunction();
         mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://communityfeedapp-default-rtdb.firebaseio.com/").getRef();
+
         setFireBaseNotificationId();
         //updateAppVersion(getActivity());
         setupPowerMenu();
 
+    }
+
+    private void setupFunctions() {
+
+
+        binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filterList(newText);
+                return true;
+            }
+        });
+
+    }
+
+    private void filterList(String newText) {
+        ArrayList<Post> filteredList = new ArrayList<>();
+
+        if(postFilterType.equals("solved")){
+            for (Post post : postListSolved) {
+                if (post.getPostTitle().toLowerCase().contains(newText.toLowerCase())) {
+                    filteredList.add(post);
+                }
+            }
+
+        }else if(postFilterType.equals("unsolved")){
+            for (Post post : postListUnSolved) {
+                if (post.getPostTitle().toLowerCase().contains(newText.toLowerCase())) {
+                    filteredList.add(post);
+                }
+            }
+
+        }else{
+            for (Post post : postList) {
+                if (post.getPostTitle().toLowerCase().contains(newText.toLowerCase())) {
+                    filteredList.add(post);
+                }
+            }
+        }
+
+        //        for (Post post : postList) {
+//            if (post.getPostTitle().toLowerCase().contains(newText.toLowerCase())) {
+//                filteredList.add(post);
+//            }
+//        }
+
+        if (filteredList.isEmpty()) {
+            Toast.makeText(getContext(), "Not Data Found!", Toast.LENGTH_SHORT).show();
+        } else {
+            postAdapter.setFilteredList(filteredList);
+        }
     }
 
 //    public void updateAppVersion(Activity activity) {
@@ -423,6 +484,7 @@ public class HomeFragment extends Fragment {
         });
 
         binding.filter.setOnClickListener(view -> powerMenu.showAsDropDown(view));
+        setupFunctions();
 
         binding.profileImage.setOnClickListener(view -> ((BottomNavigationView) getActivity().findViewById(R.id.bottom_navigation_bar)).setSelectedItemId(R.id.item_userprofile));
         return binding.getRoot();
