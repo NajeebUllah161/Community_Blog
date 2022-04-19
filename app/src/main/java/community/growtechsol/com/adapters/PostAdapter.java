@@ -411,7 +411,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     private void shareTextOnly(String header, String description) {
 
-        String shareBody = header + "\n" + description + "\n\n" + "Visit now : https://play.google.com/store/apps/details?id=growtechsol.com";
+        String shareBody = header + "\n" + description + "\n\n" + "Visit now : https://play.google.com/store/apps/details?id=community.growtechsol.com";
 
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
@@ -423,7 +423,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     private void shareImageAndText(String header, String description, Bitmap bitmapPostImg) {
 
-        String shareBody = header + "\n" + description + "\n\n" + "Visit now : https://play.google.com/store/apps/details?id=growtechsol.com";
+        String shareBody = header + "\n" + description + "\n\n" + "Visit now : https://play.google.com/store/apps/details?id=community.growtechsol.com";
 
         Uri uri = saveImageToShare(bitmapPostImg);
 

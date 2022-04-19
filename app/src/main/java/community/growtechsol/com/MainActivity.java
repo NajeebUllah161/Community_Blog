@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
                                             .setConfirmText("Update Now")
                                             .setCancelText("Later")
                                             .setConfirmClickListener(sDialog -> {
-                                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=growtechsol.com")));
+                                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=community.growtechsol.com")));
                                                 sDialog.dismissWithAnimation();
                                             })
                                             .setCancelClickListener(SweetAlertDialog::cancel)

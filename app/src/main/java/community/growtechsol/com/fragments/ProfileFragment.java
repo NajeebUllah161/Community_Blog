@@ -2,9 +2,10 @@ package community.growtechsol.com.fragments;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,14 +13,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import community.growtechsol.com.R;
-import community.growtechsol.com.adapters.FollowersAdapter;
-import community.growtechsol.com.databinding.FragmentProfileBinding;
-import community.growtechsol.com.models.FollowModel;
-import community.growtechsol.com.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,6 +27,13 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+
+import community.growtechsol.com.R;
+import community.growtechsol.com.adapters.FollowersAdapter;
+import community.growtechsol.com.databinding.FragmentProfileBinding;
+import community.growtechsol.com.models.FollowModel;
+import community.growtechsol.com.models.User;
+import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -113,10 +117,22 @@ public class ProfileFragment extends Fragment {
                                 binding.userName.setText(getUser.getName());
                                 binding.profession.setText(getUser.getProfession());
                                 binding.followersTv.setText(getUser.getFollowersCount() + "");
-                                Log.d("User", String.valueOf(getUser.getUserPerks()));
                                 binding.userPerks.setText(getUser.getUserPerks() + "");
                                 binding.userPosts.setText(getUser.getTotalPosts() + "");
-                                Log.d("userPosts",getUser.getTotalPosts() + "");
+                                if (getUser.isAdmin()) {
+                                    setupVerificationTick();
+                                    binding.adminLikes.setText(getUser.getUserUpVotes() + "");
+                                    binding.adminDislikes.setText(getUser.getUserDownVotes() + "");
+                                } else {
+                                    binding.popularityView.setVisibility(View.GONE);
+                                    binding.popularitySvg.setVisibility(View.GONE);
+                                    binding.view10.setVisibility(View.GONE);
+                                    binding.textView8.setVisibility(View.GONE);
+                                    binding.adminLikes.setVisibility(View.GONE);
+                                    binding.adminDislikes.setVisibility(View.GONE);
+                                    binding.slash.setVisibility(View.GONE);
+                                    setConstraints();
+                                }
 
                             } else {
                                 Toast.makeText(getContext(), "No user exists", Toast.LENGTH_SHORT).show();
@@ -144,6 +160,30 @@ public class ProfileFragment extends Fragment {
         });
 
         return binding.getRoot();
+    }
+
+    private void setupVerificationTick() {
+
+        binding.verifiedAccountIcon.setVisibility(View.VISIBLE);
+
+        binding.verifiedAccountIcon.setOnClickListener(view -> new SimpleTooltip.Builder(getContext())
+                .anchorView(view)
+                .text("Admin")
+                .gravity(Gravity.TOP)
+                .backgroundColor(Color.parseColor("#FF018786"))
+                .arrowColor(Color.parseColor("#FF018786"))
+                .animated(true)
+                .transparentOverlay(false)
+                .build()
+                .show());
+    }
+
+    private void setConstraints() {
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone(binding.parentOfProfileFragment);
+        constraintSet.connect(R.id.textView7, ConstraintSet.END, R.id.parentOfProfileFragment, ConstraintSet.END, 0);
+        constraintSet.connect(R.id.callView, ConstraintSet.END, R.id.parentOfProfileFragment, ConstraintSet.END, 0);
+        constraintSet.applyTo(binding.parentOfProfileFragment);
     }
 
     @Override

@@ -19,11 +19,6 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import community.growtechsol.com.R;
-import community.growtechsol.com.databinding.CommentSampleBinding;
-import community.growtechsol.com.models.Comment;
-import community.growtechsol.com.models.Post;
-import community.growtechsol.com.models.User;
 import com.github.marlonlom.utilities.timeago.TimeAgo;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -44,13 +39,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import community.growtechsol.com.R;
+import community.growtechsol.com.databinding.CommentSampleBinding;
+import community.growtechsol.com.models.Comment;
+import community.growtechsol.com.models.Post;
+import community.growtechsol.com.models.User;
 import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip;
 
 public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHolder> {
 
     Context context;
     ArrayList<Comment> list;
-    String postId,postedBy;
+    String postId, postedBy;
     Comment comment;
     PowerMenu powerMenu;
     String commentId;
@@ -176,7 +176,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                                 holder.binding.commentCheckbox.setVisibility(View.GONE);
                                 holder.binding.verifiedImgView.setVisibility(View.VISIBLE);
                                 holder.binding.commentCheckbox.setChecked(true);
-                            }else{
+                            } else {
                                 holder.binding.verifiedImgView.setVisibility(View.INVISIBLE);
                             }
                         }
@@ -283,7 +283,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                     @Override
                     public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
 
-                        if(snapshot.exists()) {
+                        if (snapshot.exists()) {
                             Post post = snapshot.getValue(Post.class);
 
                             if (!post.isSolved()) {
@@ -292,11 +292,11 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                                 //&& !auth.getCurrentUser().getUid().equals(comment.getCommentedBy())
 
                                 FirebaseDatabase.getInstance().getReference().child("Users")
-                                .child(auth.getCurrentUser().getUid())
+                                        .child(auth.getCurrentUser().getUid())
                                         .addValueEventListener(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-                                                if(snapshot.exists()){
+                                                if (snapshot.exists()) {
                                                     User user = snapshot.getValue(User.class);
 
                                                     if (auth.getCurrentUser().getUid().equals(post.getPostedBy()) || user.isAdmin()) {
@@ -489,6 +489,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                                         .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                                         .setValue(true);
 
+                                setPopularity("UpVote",comment.getCommentedBy());
+
                                 fillLike(holder.binding);
                             });
                             holder.binding.dislike.setOnClickListener(view -> {
@@ -516,6 +518,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                                         .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                                         .setValue(false);
 
+                                setPopularity("DownVote",comment.getCommentedBy());
                                 fillDislike(holder.binding);
                             });
                             Log.d("Najeeb", "Doesn't exist" + snapshot);
@@ -561,6 +564,48 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                 .transparentOverlay(false)
                 .build()
                 .show());
+
+    }
+
+    private void setPopularity(String vote,String userId) {
+
+
+        FirebaseDatabase.getInstance()
+                .getReference()
+                .child("Users/" + userId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                User user = snapshot.getValue(User.class);
+                if(user.isAdmin()){
+                    Map<String, Object> userPopularity = new HashMap<>();
+
+                    if (vote.equals("UpVote")) {
+
+                        userPopularity.put("userUpVotes", ServerValue.increment(1));
+                        FirebaseDatabase.getInstance().getReference().child("Users")
+                                .child(userId)
+                                .updateChildren(userPopularity);
+
+                    } else if (vote.equals("DownVote")) {
+
+                        userPopularity.put("userDownVotes", ServerValue.increment(1));
+                        FirebaseDatabase.getInstance().getReference().child("Users")
+                                .child(userId)
+                                .updateChildren(userPopularity);
+
+                    } else {
+                        Toast.makeText(context, "Some unknown Error", Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    Log.d("CommentAdapter","User popularity is not calculated because he/she is not an admin");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 
