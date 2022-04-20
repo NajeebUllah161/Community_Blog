@@ -2,9 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:diagonal="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
     android:id="@+id/parentOfProfileFragment"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context="community.growtechsol.com.fragments.ProfileFragment">
 
     <LinearLayout
@@ -97,6 +98,7 @@
         android:layout_height="wrap_content"
         android:text="Designation"
         android:textSize="@dimen/_10ssp"
+        android:textColor="@color/gray"
         diagonal:layout_constraintEnd_toEndOf="@+id/userName"
         diagonal:layout_constraintStart_toStartOf="@+id/userName"
         diagonal:layout_constraintTop_toBottomOf="@+id/userName" />
@@ -208,6 +210,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/white"
             android:paddingHorizontal="@dimen/_6mdp"
             android:paddingVertical="@dimen/_3mdp">
 
@@ -218,6 +221,7 @@
                 android:layout_marginTop="@dimen/_6mdp"
                 android:text="Followers"
                 android:textAllCaps="true"
+                android:textColor="@color/gray"
                 android:textSize="@dimen/_12ssp"
                 diagonal:layout_constraintEnd_toStartOf="@+id/view8"
                 diagonal:layout_constraintHorizontal_bias="0.5"
@@ -253,6 +257,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Perks"
+                android:textColor="@color/gray"
                 android:textAllCaps="true"
                 android:textSize="@dimen/_12ssp"
                 diagonal:layout_constraintEnd_toStartOf="@+id/view9"
@@ -291,6 +296,7 @@
                 android:text="Posts"
                 android:textAllCaps="true"
                 android:textSize="@dimen/_12ssp"
+                android:textColor="@color/gray"
                 diagonal:layout_constraintEnd_toStartOf="@id/view10"
                 diagonal:layout_constraintHorizontal_bias="0.5"
                 diagonal:layout_constraintStart_toEndOf="@+id/view9"
@@ -328,6 +334,7 @@
                 android:text="Popularity"
                 android:textAllCaps="true"
                 android:textSize="@dimen/_12ssp"
+                android:textColor="@color/gray"
                 diagonal:layout_constraintEnd_toEndOf="parent"
                 diagonal:layout_constraintHorizontal_bias="0.5"
                 diagonal:layout_constraintStart_toEndOf="@+id/view10"
@@ -353,9 +360,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_4mdp"
-                android:textStyle="bold"
-                android:textSize="@dimen/_12font_mdp"
                 android:text="/"
+                android:textSize="@dimen/_12font_mdp"
+                android:textStyle="bold"
                 diagonal:layout_constraintBottom_toBottomOf="@+id/adminLikes"
                 diagonal:layout_constraintEnd_toStartOf="@id/adminDislikes"
                 diagonal:layout_constraintStart_toEndOf="@id/adminLikes"

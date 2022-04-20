@@ -6,8 +6,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,8 +40,6 @@ import com.skydoves.powermenu.PowerMenu;
 import com.skydoves.powermenu.PowerMenuItem;
 import com.squareup.picasso.Picasso;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -73,9 +69,7 @@ public class HomeFragment extends Fragment {
     FragmentHomeBinding binding;
     PowerMenu powerMenu;
     PostAdapter postAdapter;
-    private DatabaseReference mDatabase;
     String postFilterType = "all";
-
     private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
         @Override
         public void onItemClick(int position, PowerMenuItem item) {
@@ -112,6 +106,7 @@ public class HomeFragment extends Fragment {
             powerMenu.dismiss();
         }
     };
+    private DatabaseReference mDatabase;
 
     public HomeFragment() {
         // Required empty public constructor

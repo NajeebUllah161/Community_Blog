@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context="community.growtechsol.com.fragments.SearchFragment">
 
     <TextView
@@ -34,9 +35,9 @@
         android:id="@+id/searchView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:iconifiedByDefault="false"
         android:layout_margin="@dimen/_6mdp"
         android:background="@drawable/search_view_bg"
+        app:iconifiedByDefault="false"
         app:layout_constraintBottom_toBottomOf="@+id/textView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView"

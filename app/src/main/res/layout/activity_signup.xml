@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@color/white"
     android:layout_height="match_parent"
     tools:context="community.growtechsol.com.activities.SignupActivity">
 
@@ -41,6 +42,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_3mdp"
+        android:textColor="@color/gray"
         android:text="Keep Connected with friends"
         app:layout_constraintBottom_toTopOf="@+id/inputName"
         app:layout_constraintEnd_toEndOf="@+id/textView14"
@@ -68,6 +70,7 @@
             android:id="@+id/nameET"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@color/black"
             android:background="@android:color/transparent"
             android:hint="Name"
             android:inputType="textPersonName"
@@ -94,6 +97,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/professionET"
             android:layout_width="match_parent"
+            android:textColor="@color/black"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:hint="Profession"
@@ -124,6 +128,7 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:hint="Email"
+            android:textColor="@color/black"
             android:inputType="textWebEmailAddress"
             android:paddingBottom="@dimen/_4mdp" />
 
@@ -151,6 +156,7 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:hint="Password"
+            android:textColor="@color/black"
             android:inputType="textWebPassword"
             android:paddingBottom="@dimen/_4mdp" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -177,6 +183,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:includeFontPadding="false"
+        android:textColor="@color/gray"
         android:text="Already have an Account?"
         app:layout_constraintBottom_toBottomOf="@+id/goToLogin"
         app:layout_constraintEnd_toStartOf="@+id/goToLogin"

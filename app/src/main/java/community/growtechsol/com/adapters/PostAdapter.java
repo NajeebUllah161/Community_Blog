@@ -25,15 +25,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-
-import community.growtechsol.com.R;
-import community.growtechsol.com.activities.CommentActivity;
-import community.growtechsol.com.activities.PostImageZoomActivity;
-import community.growtechsol.com.databinding.DashboardRvSampleBinding;
-import community.growtechsol.com.edit_dialogues.EditPostDialogue;
-import community.growtechsol.com.models.Notification;
-import community.growtechsol.com.models.Post;
-import community.growtechsol.com.models.User;
 import com.github.marlonlom.utilities.timeago.TimeAgo;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -55,16 +46,23 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import community.growtechsol.com.R;
+import community.growtechsol.com.activities.CommentActivity;
+import community.growtechsol.com.activities.PostImageZoomActivity;
+import community.growtechsol.com.databinding.DashboardRvSampleBinding;
+import community.growtechsol.com.edit_dialogues.EditPostDialogue;
+import community.growtechsol.com.models.Notification;
+import community.growtechsol.com.models.Post;
+import community.growtechsol.com.models.User;
+
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
 
     ArrayList<Post> postModelArrayList;
     Context context;
-    PowerMenu powerMenu,powerMenu2;
+    PowerMenu powerMenu, powerMenu2;
     Intent intent;
     String postId;
     Post post;
-    boolean isAdmin;
-
     private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
         @Override
         public void onItemClick(int position, PowerMenuItem item) {
@@ -76,23 +74,22 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 saveDeletedPost(post);
                 FirebaseDatabase.getInstance().getReference().child("posts/" + postId).removeValue()
                         .addOnSuccessListener(unused -> {
-                    Toast.makeText(context, "Post deleted Successfully!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Post deleted Successfully!", Toast.LENGTH_SHORT).show();
 
-                    FirebaseDatabase.getInstance().getReference()
-                            .child("Users")
-                            .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                            .child("totalPosts")
-                            .setValue(ServerValue.increment(-1)).addOnSuccessListener(unused1 -> {
-                        Log.d("PostAdapter", "remove -1 from totalPostCount");
-                    }).addOnFailureListener(e -> {
-                        Toast.makeText(context, "Unable to deduct postCount due to" + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
-                }).addOnFailureListener(e -> Toast.makeText(context, "Unable to delete post due to!" + e.getMessage(), Toast.LENGTH_SHORT).show());
+                            FirebaseDatabase.getInstance().getReference()
+                                    .child("Users")
+                                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                    .child("totalPosts")
+                                    .setValue(ServerValue.increment(-1)).addOnSuccessListener(unused1 -> {
+                                Log.d("PostAdapter", "remove -1 from totalPostCount");
+                            }).addOnFailureListener(e -> {
+                                Toast.makeText(context, "Unable to deduct postCount due to" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
+                        }).addOnFailureListener(e -> Toast.makeText(context, "Unable to delete post due to!" + e.getMessage(), Toast.LENGTH_SHORT).show());
             }
             powerMenu.dismiss();
         }
     };
-
     private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener2 = new OnMenuItemClickListener<PowerMenuItem>() {
         @Override
         public void onItemClick(int position, PowerMenuItem item) {
@@ -120,6 +117,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             powerMenu2.dismiss();
         }
     };
+    boolean isAdmin;
+    MediaPlayer player;
+    int length;
+    public PostAdapter(ArrayList<Post> list, Context context) {
+        this.postModelArrayList = list;
+        this.context = context;
+    }
 
     private void saveDeletedPost(Post post) {
         FirebaseDatabase.getInstance().getReference()
@@ -129,15 +133,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 .setValue(post);
     }
 
-    MediaPlayer player;
-    int length;
-
-    public PostAdapter(ArrayList<Post> list, Context context) {
-        this.postModelArrayList = list;
-        this.context = context;
-    }
-
-    public void setFilteredList(ArrayList<Post> filteredList){
+    public void setFilteredList(ArrayList<Post> filteredList) {
         this.postModelArrayList = filteredList;
         notifyDataSetChanged();
     }
@@ -372,8 +368,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             Intent intent = new Intent(context, CommentActivity.class);
             intent.putExtra("postId", model.getPostId());
             intent.putExtra("postedBy", model.getPostedBy());
-            intent.putExtra("isSolved",model.isSolved());
-            intent.putExtra("isAdmin",isAdmin);
+            intent.putExtra("isSolved", model.isSolved());
+            intent.putExtra("isAdmin", isAdmin);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
         });
@@ -474,10 +470,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                         isAdmin = user.isAdmin();
 
-                        if(user.isAdmin() && !model.isSolved()){
+                        if (user.isAdmin() && !model.isSolved()) {
                             holder.binding.verticalDotsPost.setVisibility(View.VISIBLE);
-                            if(FirebaseAuth.getInstance().getCurrentUser().getUid().equals(model.getPostedBy())){
-                                Log.d("CHECKEQUAL","UID : " + FirebaseAuth.getInstance().getCurrentUser().getUid() + " postUID" + model.getPostedBy());
+                            if (FirebaseAuth.getInstance().getCurrentUser().getUid().equals(model.getPostedBy())) {
+                                Log.d("CHECKEQUAL", "UID : " + FirebaseAuth.getInstance().getCurrentUser().getUid() + " postUID" + model.getPostedBy());
 
                                 list.add(new PowerMenuItem("Edit post"));
                                 list.add(new PowerMenuItem("Delete post"));
@@ -515,7 +511,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                                 });
 
 
-                            }else{
+                            } else {
 
                                 list2.add(new PowerMenuItem("Delete post"));
 
@@ -552,10 +548,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                                 });
 
 
-
                             }
 
-                        }else{
+                        } else {
 
                             list.add(new PowerMenuItem("Edit post"));
                             list.add(new PowerMenuItem("Delete post"));

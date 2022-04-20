@@ -8,29 +8,30 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import community.growtechsol.com.MainActivity;
-import community.growtechsol.com.databinding.ActivityLoginBinding;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 
+import community.growtechsol.com.MainActivity;
+import community.growtechsol.com.databinding.ActivityLoginBinding;
+
 public class LoginActivity extends AppCompatActivity {
+
+    static {
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+    }
 
     ActivityLoginBinding binding;
     FirebaseAuth auth;
     FirebaseUser currentUser;
     ProgressDialog progressDialog;
-    static {
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        Log.d("CheckingErr","onCreateLoginActivity");
+        Log.d("CheckingErr", "onCreateLoginActivity");
         //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
@@ -75,12 +76,12 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
-        Log.d("CheckingErr","onStartLoginActivity");
+        Log.d("CheckingErr", "onStartLoginActivity");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("CheckingErr","onResumeLoginActivity");
+        Log.d("CheckingErr", "onResumeLoginActivity");
     }
 }

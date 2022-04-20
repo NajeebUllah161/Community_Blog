@@ -10,15 +10,6 @@ public class User {
     private int userUpVotes;
     private int userDownVotes;
     private int totalPosts;
-
-    public boolean isAdmin() {
-        return isAdmin;
-    }
-
-    public void setAdmin(boolean admin) {
-        isAdmin = admin;
-    }
-
     private boolean isAdmin;
 
     public User() {
@@ -29,6 +20,14 @@ public class User {
         this.profession = profession;
         this.email = email;
         this.password = password;
+    }
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
     }
 
     public int getTotalPosts() {

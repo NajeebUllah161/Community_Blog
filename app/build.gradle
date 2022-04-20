@@ -91,6 +91,7 @@ dependencies {
     implementation 'com.github.andreseko:sweet-alert-dialog:1.0.6'
     implementation 'com.github.douglasjunior:android-simple-tooltip:1.1.0'
 
+    //mentions and tags
 
 }
 apply plugin: 'com.google.gms.google-services'

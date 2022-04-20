@@ -101,6 +101,17 @@ public class AddPostFragment extends Fragment {
         // Required empty public constructor
     }
 
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -270,6 +281,24 @@ public class AddPostFragment extends Fragment {
         return binding.getRoot();
     }
 
+    //    @Override
+//    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//
+//        if (resultCode == RESULT_OK) {
+//            if (requestCode == 10) {
+//                if (data.getData() != null) {
+//                    uri = data.getData();
+//                    Log.d("Uri", String.valueOf(uri));
+//                    binding.postImage.setImageURI(uri);
+//                    binding.postImage.setVisibility(View.VISIBLE);
+//                    binding.removeImg.setVisibility(View.VISIBLE);
+//                    setButtonEnabled();
+//                }
+//            }
+//        }
+//    }
+
     private void setPickImage() {
         @SuppressLint("WrongConstant")
         PickSetup setup = new PickSetup()
@@ -304,24 +333,6 @@ public class AddPostFragment extends Fragment {
                 }).show(((FragmentActivity) getContext()).getSupportFragmentManager());
 
     }
-
-    //    @Override
-//    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//
-//        if (resultCode == RESULT_OK) {
-//            if (requestCode == 10) {
-//                if (data.getData() != null) {
-//                    uri = data.getData();
-//                    Log.d("Uri", String.valueOf(uri));
-//                    binding.postImage.setImageURI(uri);
-//                    binding.postImage.setVisibility(View.VISIBLE);
-//                    binding.removeImg.setVisibility(View.VISIBLE);
-//                    setButtonEnabled();
-//                }
-//            }
-//        }
-//    }
 
     private ArrayList<String> getFireBaseNotificationId() {
         mClient = new OkHttpClient();
@@ -466,18 +477,6 @@ public class AddPostFragment extends Fragment {
                 incrementTotalPostsCount();
             }).addOnFailureListener(e -> progressDialog.dismiss());
         }
-    }
-
-
-    public static void hideKeyboard(Activity activity) {
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        //Find the currently focused view, so we can grab the correct window token from it.
-        View view = activity.getCurrentFocus();
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
-        if (view == null) {
-            view = new View(activity);
-        }
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     private void incrementTotalPostsCount() {

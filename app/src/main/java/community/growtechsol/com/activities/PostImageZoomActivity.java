@@ -1,11 +1,11 @@
 package community.growtechsol.com.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -48,8 +48,7 @@ public class PostImageZoomActivity extends AppCompatActivity {
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
         // This work only for android 4.4+
-        if(currentApiVersion >= Build.VERSION_CODES.KITKAT)
-        {
+        if (currentApiVersion >= Build.VERSION_CODES.KITKAT) {
 
             getWindow().getDecorView().setSystemUiVisibility(flags);
 
@@ -59,8 +58,7 @@ public class PostImageZoomActivity extends AppCompatActivity {
             final View decorView = getWindow().getDecorView();
             decorView
                     .setOnSystemUiVisibilityChangeListener(visibility -> {
-                        if((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0)
-                        {
+                        if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
                             decorView.setSystemUiVisibility(flags);
                         }
                     });
@@ -69,11 +67,9 @@ public class PostImageZoomActivity extends AppCompatActivity {
 
     @SuppressLint("NewApi")
     @Override
-    public void onWindowFocusChanged(boolean hasFocus)
-    {
+    public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if(currentApiVersion >= Build.VERSION_CODES.KITKAT && hasFocus)
-        {
+        if (currentApiVersion >= Build.VERSION_CODES.KITKAT && hasFocus) {
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                             | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION

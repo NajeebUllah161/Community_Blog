@@ -10,10 +10,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import community.growtechsol.com.adapters.NotificationAdapter;
-
-import community.growtechsol.com.databinding.FragmentNotificationBinding;
-import community.growtechsol.com.models.Notification;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -21,6 +17,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+
+import community.growtechsol.com.adapters.NotificationAdapter;
+import community.growtechsol.com.databinding.FragmentNotificationBinding;
+import community.growtechsol.com.models.Notification;
 
 public class NotificationFragment extends Fragment {
 

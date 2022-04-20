@@ -37,8 +37,6 @@ import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -726,7 +724,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
 
     private void setupAdminActivity(String userId, String vote) {
         Date date = new Date();
-        String todayDate = (String) DateFormat.format("yyyy-MM-dd", date); // 2013
+        String todayDate = (String) DateFormat.format("yyyy-MM-dd", date);
 
         if (vote.equals("UpVote")) {
 
@@ -740,12 +738,12 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
 
         } else if (vote.contains("DownVote")) {
 
-                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users")
-                        .child(userId)
-                        .child("adminActivity")
-                        .child(todayDate)
-                        .child("userDownVotes");
-                ref.setValue(ServerValue.increment(1));
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users")
+                    .child(userId)
+                    .child("adminActivity")
+                    .child(todayDate)
+                    .child("userDownVotes");
+            ref.setValue(ServerValue.increment(1));
 
         }
     }

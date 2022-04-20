@@ -15,6 +15,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.andreseko.SweetAlert.SweetAlertDialog;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import org.jetbrains.annotations.NotNull;
 
 import community.growtechsol.com.activities.LoginActivity;
 import community.growtechsol.com.databinding.ActivityMainBinding;
@@ -25,13 +32,6 @@ import community.growtechsol.com.fragments.ProfileFragment;
 import community.growtechsol.com.fragments.SearchFragment;
 import community.growtechsol.com.models.VersionModel;
 import community.growtechsol.com.utils.helper;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import org.jetbrains.annotations.NotNull;
 
 public class MainActivity extends AppCompatActivity {
 

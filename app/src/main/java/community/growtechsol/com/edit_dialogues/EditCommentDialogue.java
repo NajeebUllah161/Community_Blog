@@ -78,7 +78,7 @@ public class EditCommentDialogue extends AppCompatActivity {
         Intent intent = getIntent();
         commentedBy = intent.getStringExtra("commentedBy");
         commentData = intent.getStringExtra("commentData");
-        commentedAt = intent.getLongExtra("commentedAt",0);
+        commentedAt = intent.getLongExtra("commentedAt", 0);
         postId = intent.getStringExtra("postId");
         commentRecording = intent.getStringExtra("commentRecording");
 

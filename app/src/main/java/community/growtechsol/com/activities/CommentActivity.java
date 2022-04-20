@@ -27,14 +27,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-
-import community.growtechsol.com.R;
-import community.growtechsol.com.adapters.CommentAdapter;
-import community.growtechsol.com.databinding.ActivityCommentBinding;
-import community.growtechsol.com.models.Comment;
-import community.growtechsol.com.models.Notification;
-import community.growtechsol.com.models.Post;
-import community.growtechsol.com.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -50,6 +42,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
 
+import community.growtechsol.com.R;
+import community.growtechsol.com.adapters.CommentAdapter;
+import community.growtechsol.com.databinding.ActivityCommentBinding;
+import community.growtechsol.com.models.Comment;
+import community.growtechsol.com.models.Notification;
+import community.growtechsol.com.models.Post;
+import community.growtechsol.com.models.User;
+
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static community.growtechsol.com.fragments.AddPostFragment.RequestPermissionCode;
@@ -59,7 +59,7 @@ public class CommentActivity extends AppCompatActivity {
     ActivityCommentBinding binding;
     Intent intent;
     String postId, postedBy;
-    boolean isSolved,isAdmin;
+    boolean isSolved, isAdmin;
     FirebaseDatabase firebaseDatabase;
     FirebaseAuth auth;
     ArrayList<Comment> list = new ArrayList<>();
@@ -73,6 +73,17 @@ public class CommentActivity extends AppCompatActivity {
     MediaPlayer mediaPlayer;
     int length;
     String downloadedRecordingLocation;
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -105,8 +116,8 @@ public class CommentActivity extends AppCompatActivity {
 
         postId = intent.getStringExtra("postId");
         postedBy = intent.getStringExtra("postedBy");
-        isSolved = intent.getBooleanExtra("isSolved",false);
-        isAdmin = intent.getBooleanExtra("isAdmin",false);
+        isSolved = intent.getBooleanExtra("isSolved", false);
+        isAdmin = intent.getBooleanExtra("isAdmin", false);
 
         firebaseDatabase.getReference()
                 .child("posts/" + postId)
@@ -256,7 +267,7 @@ public class CommentActivity extends AppCompatActivity {
         //CommentLikeDislikeClick listener = (CommentLikeDislikeClick) this;
 
         Log.d("Checkkkk", String.valueOf(isSolved));
-        CommentAdapter commentAdapter = new CommentAdapter(this, list, postId, postedBy,isSolved,isAdmin);
+        CommentAdapter commentAdapter = new CommentAdapter(this, list, postId, postedBy, isSolved, isAdmin);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
         binding.commentRv.setLayoutManager(linearLayoutManager);
         binding.commentRv.setAdapter(commentAdapter);
@@ -599,17 +610,6 @@ public class CommentActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         finish();
         return super.onOptionsItemSelected(item);
-    }
-
-    public static void hideKeyboard(Activity activity) {
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        //Find the currently focused view, so we can grab the correct window token from it.
-        View view = activity.getCurrentFocus();
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
-        if (view == null) {
-            view = new View(activity);
-        }
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     private void setButtonEnabled() {

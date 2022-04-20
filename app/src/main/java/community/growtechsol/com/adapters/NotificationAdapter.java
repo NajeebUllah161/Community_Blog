@@ -12,11 +12,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import community.growtechsol.com.R;
-import community.growtechsol.com.activities.CommentActivity;
-import community.growtechsol.com.databinding.NotificationRvSampleBinding;
-import community.growtechsol.com.models.Notification;
-import community.growtechsol.com.models.User;
 import com.github.marlonlom.utilities.timeago.TimeAgo;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -25,6 +20,12 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+
+import community.growtechsol.com.R;
+import community.growtechsol.com.activities.CommentActivity;
+import community.growtechsol.com.databinding.NotificationRvSampleBinding;
+import community.growtechsol.com.models.Notification;
+import community.growtechsol.com.models.User;
 
 public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.viewHolder> {
 
