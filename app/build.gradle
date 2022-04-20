@@ -93,5 +93,9 @@ dependencies {
 
     //mentions and tags
 
+    def socialview_version = "0.3-rc1"
+    implementation "com.hendraanggrian.appcompat:socialview:$socialview_version"
+    implementation "com.hendraanggrian.appcompat:socialview-commons:$socialview_version"
+
 }
 apply plugin: 'com.google.gms.google-services'

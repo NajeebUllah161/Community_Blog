@@ -275,6 +275,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                     holder.binding.userNameDashboard.setText(user.getName());
                     holder.binding.aboutDbTv.setText(user.getProfession());
+
                 } else {
                     Toast.makeText(context, "No user exists", Toast.LENGTH_SHORT).show();
                 }

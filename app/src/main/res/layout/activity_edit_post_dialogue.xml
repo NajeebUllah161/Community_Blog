@@ -90,7 +90,8 @@
     <EditText
         android:id="@+id/postTitle"
         android:layout_width="0dp"
-        android:textColor="@color/gray"
+        android:textColor="@color/black"
+        android:textColorHint="@color/gray"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/_12mdp"
         android:background="@android:color/transparent"
@@ -111,8 +112,9 @@
     <EditText
         android:id="@+id/postDescription"
         android:layout_width="0dp"
-        android:textColor="@color/gray"
+        android:textColor="@color/black"
         android:layout_height="0dp"
+        android:textColorHint="@color/gray"
         android:layout_marginEnd="@dimen/_12mdp"
         android:background="@android:color/transparent"
         android:ems="10"

@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -34,13 +35,17 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.hendraanggrian.appcompat.widget.Mention;
+import com.hendraanggrian.appcompat.widget.MentionArrayAdapter;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.Random;
+import java.util.Set;
 
 import community.growtechsol.com.R;
 import community.growtechsol.com.adapters.CommentAdapter;
@@ -64,6 +69,8 @@ public class CommentActivity extends AppCompatActivity {
     FirebaseAuth auth;
     ArrayList<Comment> list = new ArrayList<>();
     ProgressDialog progressDialog;
+    ArrayAdapter<Mention> mentionAdapter;
+    ArrayList<String> commenterNamesList;
 
     //Recording
     String AudioSavePathInDevice = null;
@@ -103,6 +110,7 @@ public class CommentActivity extends AppCompatActivity {
         progressDialog.setMessage("Please Wait...");
         progressDialog.setCancelable(false);
         progressDialog.setCanceledOnTouchOutside(false);
+        mentionAdapter = new MentionArrayAdapter<>(this);
 
         // Setting up toolbar
         setSupportActionBar(binding.toolbarCommentActivity);
@@ -231,7 +239,6 @@ public class CommentActivity extends AppCompatActivity {
             }
         });
 
-
         binding.postCommentBtn.setOnClickListener(view -> {
 
             progressDialog.show();
@@ -266,7 +273,7 @@ public class CommentActivity extends AppCompatActivity {
 
         //CommentLikeDislikeClick listener = (CommentLikeDislikeClick) this;
 
-        Log.d("Checkkkk", String.valueOf(isSolved));
+        //Log.d("Checkkkk", String.valueOf(isSolved));
         CommentAdapter commentAdapter = new CommentAdapter(this, list, postId, postedBy, isSolved, isAdmin);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
         binding.commentRv.setLayoutManager(linearLayoutManager);
@@ -284,6 +291,59 @@ public class CommentActivity extends AppCompatActivity {
                             list.add(comment);
                         }
                         commentAdapter.notifyDataSetChanged();
+//
+//                        FirebaseDatabase.getInstance()
+//                                .getReference()
+//                                .child("Users").addValueEventListener(new ValueEventListener() {
+//                            @Override
+//                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                                ArrayList<String> commenterNames = new ArrayList<>();
+//                                ArrayList<String> commenterDesignation = new ArrayList<>();
+//                                ArrayList<String> commenterPhoto = new ArrayList<>();
+//                                int size = list.size();
+//
+//                                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+//                                    User user = dataSnapshot.getValue(User.class);
+//
+//                                    for (int i = 0; i < size; i++) {
+//                                        Comment comment = list.get(i);
+//                                        if (dataSnapshot.getKey().equals(comment.getCommentedBy())) {
+//                                            commenterNames.add(user.getName());
+//                                            commenterDesignation.add(user.getProfession());
+//                                            commenterPhoto.add(user.getProfileImage());
+//                                        }
+//                                    }
+//
+//                                    if (dataSnapshot.getKey().equals(postedBy)) {
+//                                        commenterNames.add(user.getName());
+//                                        commenterDesignation.add(user.getProfession());
+//                                        commenterPhoto.add(user.getProfileImage());
+//                                    }
+//                                }
+//
+//                                commenterNamesList = removeDuplicates(commenterNames);
+//                                ArrayList<String> commenterDesignationList = removeDuplicates(commenterDesignation);
+//                                ArrayList<String> commenterPhotoList = removeDuplicates(commenterPhoto);
+//
+//                                for (int i = 0; i < commenterNamesList.size(); i++) {
+//                                    if (commenterPhotoList.get(i) != null) {
+//                                        mentionAdapter.add(new Mention(commenterNamesList.get(i).replaceAll(" ", ""), "", commenterPhotoList.get(i)));
+//                                    } else {
+//                                        mentionAdapter.add(new Mention(commenterNamesList.get(i).replaceAll(" ",""), "", R.drawable.placeholder));
+//                                    }
+//                                }
+//
+//                                binding.commentEt.setMentionAdapter(mentionAdapter);
+//                                binding.commentEt.setMentionEnabled(true);
+//                                binding.commentEt.setOnMentionClickListener((view, text) -> Toast.makeText(CommentActivity.this, text, Toast.LENGTH_SHORT).show());
+//                            }
+//
+//                            @Override
+//                            public void onCancelled(@NonNull DatabaseError error) {
+//                                Toast.makeText(CommentActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+//                            }
+//                        });
+
                     }
 
                     @Override
@@ -622,4 +682,24 @@ public class CommentActivity extends AppCompatActivity {
         binding.postCommentBtn.setEnabled(false);
     }
 
+
+    // Function to remove duplicates from an ArrayList
+    public static <T> ArrayList<T> removeDuplicates(ArrayList<T> list) {
+
+        // Create a new LinkedHashSet
+        Set<T> set = new LinkedHashSet<>();
+
+        // Add the elements to set
+        set.addAll(list);
+
+        // Clear the list
+        list.clear();
+
+        // add the elements of set
+        // with no duplicates to the list
+        list.addAll(set);
+
+        // return the list
+        return list;
+    }
 }

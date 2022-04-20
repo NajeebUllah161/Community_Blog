@@ -44,6 +44,7 @@
     <TextView
         android:id="@+id/time"
         android:layout_width="wrap_content"
+        android:textColor="@color/gray"
         android:layout_height="wrap_content"
         android:text="just now"
         app:layout_constraintStart_toStartOf="@+id/commentData"
@@ -55,6 +56,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_10mdp"
         android:layout_marginTop="@dimen/_6mdp"
+        android:textColor="@color/gray"
         android:drawableStart="@drawable/ic_commentlike"
         android:drawablePadding="@dimen/_8mdp"
         android:gravity="center"
@@ -68,6 +70,7 @@
     <TextView
         android:id="@+id/dislike"
         android:layout_width="wrap_content"
+        android:textColor="@color/gray"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_6mdp"
         android:layout_marginTop="@dimen/_6mdp"
