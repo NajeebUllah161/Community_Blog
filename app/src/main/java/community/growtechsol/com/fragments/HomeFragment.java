@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +42,8 @@ import com.skydoves.powermenu.PowerMenu;
 import com.skydoves.powermenu.PowerMenuItem;
 import com.squareup.picasso.Picasso;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -152,21 +156,21 @@ public class HomeFragment extends Fragment {
     private void filterList(String newText) {
         ArrayList<Post> filteredList = new ArrayList<>();
 
-        if(postFilterType.equals("solved")){
+        if (postFilterType.equals("solved")) {
             for (Post post : postListSolved) {
                 if (post.getPostTitle().toLowerCase().contains(newText.toLowerCase())) {
                     filteredList.add(post);
                 }
             }
 
-        }else if(postFilterType.equals("unsolved")){
+        } else if (postFilterType.equals("unsolved")) {
             for (Post post : postListUnSolved) {
                 if (post.getPostTitle().toLowerCase().contains(newText.toLowerCase())) {
                     filteredList.add(post);
                 }
             }
 
-        }else{
+        } else {
             for (Post post : postList) {
                 if (post.getPostTitle().toLowerCase().contains(newText.toLowerCase())) {
                     filteredList.add(post);

@@ -186,6 +186,7 @@
         android:layout_marginBottom="@dimen/_6mdp"
         android:background="@android:color/transparent"
         android:ems="10"
+        android:maxLength="250"
         android:hint="Write a comment..."
         android:inputType="textMultiLine|textPersonName"
         android:maxLines="2"

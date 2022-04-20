@@ -2,10 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/addPost"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="community.growtechsol.com.fragments.AddPostFragment">
+    tools:context=".edit_dialogues.EditCommentDialogue">
 
     <TextView
         android:id="@+id/textView3"
@@ -14,7 +13,7 @@
         android:layout_marginStart="@dimen/_12mdp"
         android:layout_marginTop="@dimen/_6mdp"
         android:fontFamily="@font/roboto_black"
-        android:text="Create Post"
+        android:text="Edit Comment"
         android:textColor="@color/black"
         android:textSize="@dimen/_15font_mdp"
         app:layout_constraintBottom_toBottomOf="@+id/postBtn"
@@ -29,7 +28,7 @@
         android:layout_marginEnd="@dimen/_12mdp"
         android:background="@drawable/follow_active_btn"
         android:enabled="false"
-        android:text="Post"
+        android:text="Update"
         android:textColor="@color/gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -47,7 +46,7 @@
 
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/profileImgAddPost"
+        android:id="@+id/profileImgEditComment"
         android:layout_width="@dimen/_50mdp"
         android:layout_height="@dimen/_50mdp"
         android:layout_marginTop="@dimen/_6mdp"
@@ -61,116 +60,63 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@drawable/gray_circle"
-        app:layout_constraintBottom_toBottomOf="@id/profileImgAddPost"
-        app:layout_constraintEnd_toEndOf="@+id/profileImgAddPost"
-        app:layout_constraintStart_toStartOf="@+id/profileImgAddPost"
-        app:layout_constraintTop_toTopOf="@+id/profileImgAddPost" />
+        app:layout_constraintBottom_toBottomOf="@id/profileImgEditComment"
+        app:layout_constraintEnd_toEndOf="@+id/profileImgEditComment"
+        app:layout_constraintStart_toStartOf="@+id/profileImgEditComment"
+        app:layout_constraintTop_toTopOf="@+id/profileImgEditComment" />
 
     <TextView
-        android:id="@+id/userNameAddPost"
+        android:id="@+id/userNameEditComment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_6mdp"
         android:text="Your Name"
         android:textColor="@color/black"
         android:textSize="@dimen/_14mdp"
-        app:layout_constraintBottom_toTopOf="@+id/userProfessionAddPost"
-        app:layout_constraintStart_toEndOf="@+id/profileImgAddPost"
-        app:layout_constraintTop_toTopOf="@+id/profileImgAddPost"
+        app:layout_constraintBottom_toTopOf="@+id/userProfessionEditComment"
+        app:layout_constraintStart_toEndOf="@+id/profileImgEditComment"
+        app:layout_constraintTop_toTopOf="@+id/profileImgEditComment"
         app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
-        android:id="@+id/userProfessionAddPost"
+        android:id="@+id/userProfessionEditComment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Designation"
-        app:layout_constraintBottom_toBottomOf="@+id/profileImgAddPost"
-        app:layout_constraintStart_toStartOf="@+id/userNameAddPost"
-        app:layout_constraintTop_toBottomOf="@+id/userNameAddPost" />
+        app:layout_constraintBottom_toBottomOf="@+id/profileImgEditComment"
+        app:layout_constraintStart_toStartOf="@+id/userNameEditComment"
+        app:layout_constraintTop_toBottomOf="@+id/userNameEditComment" />
 
     <EditText
-        android:id="@+id/postTitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/_12mdp"
-        android:layout_marginBottom="@dimen/_2mdp"
-        android:background="@android:color/transparent"
-        android:ems="10"
-        android:gravity="top"
-        android:maxLength="80"
-        android:hint="Add post title.."
-        android:inputType="textMultiLine|textPersonName"
-        android:maxLines="4"
-        android:paddingTop="@dimen/_8mdp"
-        android:textSize="@dimen/_18font_mdp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/postDescription"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/profileImgAddPost"
-        app:layout_constraintTop_toBottomOf="@+id/profileImgAddPost" />
-
-    <EditText
-        android:id="@+id/postDescription"
+        android:id="@+id/commentDescription"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginEnd="@dimen/_12mdp"
-        android:layout_marginBottom="@dimen/_2mdp"
         android:background="@android:color/transparent"
         android:ems="10"
+        android:maxLength="250"
+        android:layout_marginTop="@dimen/_16mdp"
+        android:layout_marginBottom="@dimen/_32mdp"
+        android:layout_marginHorizontal="@dimen/_8mdp"
         android:gravity="top"
-        android:maxLength="150"
-        android:hint="What's on your mind?"
+        android:hint="Edit Your Comment ..."
         android:inputType="textMultiLine|textPersonName"
         android:maxLines="4"
         android:paddingTop="@dimen/_8mdp"
         android:textSize="@dimen/_18font_mdp"
-        app:layout_constraintBottom_toTopOf="@+id/postImage"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/profileImgAddPost"
-        app:layout_constraintTop_toBottomOf="@+id/postTitle" />
-
-    <ImageView
-        android:id="@+id/removeImg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_cross"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/postImage"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <ImageView
-        android:id="@+id/postImage"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/_170mdp"
-        android:layout_marginHorizontal="@dimen/_12mdp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/placeholder"
-        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/view11"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileImgAddPost" />
-
-    <ImageView
-        android:id="@+id/addImg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/_12mdp"
-        android:layout_marginBottom="@dimen/_6mdp"
-        android:src="@drawable/ic_image"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/userProfessionEditComment" />
 
     <ImageView
         android:id="@+id/addRecording"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/_8mdp"
+        android:layout_marginEnd="@dimen/_12mdp"
+        android:layout_marginBottom="@dimen/_6mdp"
         android:src="@drawable/ic_recording_icon"
-        app:layout_constraintBottom_toBottomOf="@+id/addImg"
-        app:layout_constraintEnd_toStartOf="@+id/addImg"
-        app:layout_constraintTop_toTopOf="@+id/addImg" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/audioContainer"
@@ -251,12 +197,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_12mdp"
-        android:text="Add to your post"
+        android:text="Update your comment"
         android:textColor="@color/black"
         android:textSize="@dimen/_12font_mdp"
-        app:layout_constraintBottom_toBottomOf="@+id/addImg"
+        app:layout_constraintBottom_toBottomOf="@+id/addRecording"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/addImg" />
+        app:layout_constraintTop_toTopOf="@+id/addRecording" />
 
     <View
         android:id="@+id/view11"
@@ -264,7 +210,7 @@
         android:layout_height="@dimen/_1mdp"
         android:layout_marginBottom="@dimen/_6mdp"
         android:background="#DADADA"
-        app:layout_constraintBottom_toTopOf="@+id/addImg"
+        app:layout_constraintBottom_toTopOf="@+id/addRecording"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />

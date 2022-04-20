@@ -44,7 +44,7 @@
 
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/profileImgAddPost"
+        android:id="@+id/profileImgEditPost"
         android:layout_width="@dimen/_50mdp"
         android:layout_height="@dimen/_50mdp"
         android:layout_marginTop="@dimen/_6mdp"
@@ -58,32 +58,32 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@drawable/gray_circle"
-        app:layout_constraintBottom_toBottomOf="@id/profileImgAddPost"
-        app:layout_constraintEnd_toEndOf="@+id/profileImgAddPost"
-        app:layout_constraintStart_toStartOf="@+id/profileImgAddPost"
-        app:layout_constraintTop_toTopOf="@+id/profileImgAddPost" />
+        app:layout_constraintBottom_toBottomOf="@id/profileImgEditPost"
+        app:layout_constraintEnd_toEndOf="@+id/profileImgEditPost"
+        app:layout_constraintStart_toStartOf="@+id/profileImgEditPost"
+        app:layout_constraintTop_toTopOf="@+id/profileImgEditPost" />
 
     <TextView
-        android:id="@+id/userNameAddPost"
+        android:id="@+id/userNameEditPost"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_6mdp"
-        android:text="Angelina Jones"
+        android:text="Your Name"
         android:textColor="@color/black"
         android:textSize="@dimen/_14mdp"
-        app:layout_constraintBottom_toTopOf="@+id/userProfessionAddPost"
-        app:layout_constraintStart_toEndOf="@+id/profileImgAddPost"
-        app:layout_constraintTop_toTopOf="@+id/profileImgAddPost"
+        app:layout_constraintBottom_toTopOf="@+id/userProfessionEditPost"
+        app:layout_constraintStart_toEndOf="@+id/profileImgEditPost"
+        app:layout_constraintTop_toTopOf="@+id/profileImgEditPost"
         app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
-        android:id="@+id/userProfessionAddPost"
+        android:id="@+id/userProfessionEditPost"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Clinical Surgeon"
-        app:layout_constraintBottom_toBottomOf="@+id/profileImgAddPost"
-        app:layout_constraintStart_toStartOf="@+id/userNameAddPost"
-        app:layout_constraintTop_toBottomOf="@+id/userNameAddPost" />
+        android:text="Designation"
+        app:layout_constraintBottom_toBottomOf="@+id/profileImgEditPost"
+        app:layout_constraintStart_toStartOf="@+id/userNameEditPost"
+        app:layout_constraintTop_toBottomOf="@+id/userNameEditPost" />
 
     <EditText
         android:id="@+id/postTitle"
@@ -92,6 +92,7 @@
         android:layout_marginEnd="@dimen/_12mdp"
         android:background="@android:color/transparent"
         android:ems="10"
+        android:maxLength="80"
         android:gravity="top"
         android:hint="Add post title.."
         android:inputType="textMultiLine|textPersonName"
@@ -101,8 +102,8 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/postDescription"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/profileImgAddPost"
-        app:layout_constraintTop_toBottomOf="@+id/profileImgAddPost" />
+        app:layout_constraintStart_toStartOf="@+id/profileImgEditPost"
+        app:layout_constraintTop_toBottomOf="@+id/profileImgEditPost" />
 
     <EditText
         android:id="@+id/postDescription"
@@ -115,11 +116,12 @@
         android:hint="What's on your mind?"
         android:inputType="textMultiLine|textPersonName"
         android:maxLines="4"
+        android:maxLength="150"
         android:paddingTop="@dimen/_8mdp"
         android:textSize="@dimen/_18font_mdp"
         app:layout_constraintBottom_toTopOf="@+id/postImage"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/profileImgAddPost"
+        app:layout_constraintStart_toStartOf="@+id/profileImgEditPost"
         app:layout_constraintTop_toBottomOf="@+id/postTitle" />
 
     <ImageView
@@ -142,7 +144,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileImgAddPost" />
+        app:layout_constraintTop_toBottomOf="@+id/profileImgEditPost" />
 
     <ImageView
         android:id="@+id/addImg"

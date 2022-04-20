@@ -30,11 +30,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import community.growtechsol.com.R;
-import community.growtechsol.com.databinding.FragmentAddPostBinding;
-import community.growtechsol.com.models.FollowModel;
-import community.growtechsol.com.models.Post;
-import community.growtechsol.com.models.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -64,6 +59,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import community.growtechsol.com.R;
+import community.growtechsol.com.databinding.FragmentAddPostBinding;
+import community.growtechsol.com.models.FollowModel;
+import community.growtechsol.com.models.Post;
+import community.growtechsol.com.models.User;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -163,7 +163,7 @@ public class AddPostFragment extends Fragment {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String title = binding.postTitle.getText().toString();
                 String description = binding.postDescription.getText().toString();
-                if (!title.isEmpty() || !description.isEmpty() || uri != null) {
+                if (!title.isEmpty() || !description.isEmpty() || uri != null || AudioSavePathInDevice != null) {
                     setButtonEnabled();
                 } else {
                     setButtonDisabled();
@@ -186,7 +186,7 @@ public class AddPostFragment extends Fragment {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String header = binding.postTitle.getText().toString();
                 String description = binding.postDescription.getText().toString();
-                if (!description.isEmpty() || !header.isEmpty() || uri != null) {
+                if (!description.isEmpty() || !header.isEmpty() || uri != null || AudioSavePathInDevice != null) {
                     setButtonEnabled();
                 } else {
                     setButtonDisabled();

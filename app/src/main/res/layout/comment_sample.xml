@@ -86,6 +86,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_12mdp"
         android:visibility="gone"
+        android:paddingHorizontal="@dimen/_8mdp"
         android:layout_marginBottom="@dimen/_2mdp"
         android:src="@drawable/ic_edit_comment"
         app:layout_constraintBottom_toBottomOf="parent"

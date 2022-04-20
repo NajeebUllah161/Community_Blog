@@ -15,16 +15,17 @@
         android:roundIcon="@mipmap/ic_launcher_icon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CommunityFeedApp">
-        <activity android:name="community.growtechsol.com.activities.PostImageZoomActivity" />
-        <activity android:name="community.growtechsol.com.edit_dialogues.EditPostDialogue" />
+        <activity android:name=".edit_dialogues.EditCommentDialogue"></activity>
+        <activity android:name=".activities.PostImageZoomActivity" />
+        <activity android:name=".edit_dialogues.EditPostDialogue" />
         <activity
-            android:name="community.growtechsol.com.activities.CommentActivity"
+            android:name=".activities.CommentActivity"
             android:exported="false" />
         <activity
-            android:name="community.growtechsol.com.activities.SignupActivity"
+            android:name=".activities.SignupActivity"
             android:exported="false" />
         <activity
-            android:name="community.growtechsol.com.activities.LoginActivity"
+            android:name=".activities.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -43,22 +44,18 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/picker_provider_paths" />
         </provider>
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="community.growtechsol.com.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
-
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/paths"
-                />
-
+                android:resource="@xml/paths" />
         </provider>
 
         <activity
-            android:name="community.growtechsol.com.MainActivity"
+            android:name=".MainActivity"
             android:exported="true" />
 
         <meta-data

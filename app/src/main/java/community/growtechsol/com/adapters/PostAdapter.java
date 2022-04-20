@@ -63,6 +63,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     Intent intent;
     String postId;
     Post post;
+    boolean isAdmin;
 
     private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
         @Override
@@ -371,6 +372,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             Intent intent = new Intent(context, CommentActivity.class);
             intent.putExtra("postId", model.getPostId());
             intent.putExtra("postedBy", model.getPostedBy());
+            intent.putExtra("isSolved",model.isSolved());
+            intent.putExtra("isAdmin",isAdmin);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
         });
@@ -468,6 +471,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         User user = snapshot.getValue(User.class);
                         List<PowerMenuItem> list = new ArrayList<>();
                         List<PowerMenuItem> list2 = new ArrayList<>();
+
+                        isAdmin = user.isAdmin();
 
                         if(user.isAdmin() && !model.isSolved()){
                             holder.binding.verticalDotsPost.setVisibility(View.VISIBLE);

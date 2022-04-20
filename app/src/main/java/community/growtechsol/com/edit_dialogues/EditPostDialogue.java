@@ -28,11 +28,6 @@ import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-
-import community.growtechsol.com.R;
-import community.growtechsol.com.databinding.ActivityEditPostDialogueBinding;
-import community.growtechsol.com.models.Post;
-import community.growtechsol.com.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -55,7 +50,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import community.growtechsol.com.R;
+import community.growtechsol.com.databinding.ActivityEditPostDialogueBinding;
 import community.growtechsol.com.fragments.AddPostFragment;
+import community.growtechsol.com.models.Post;
+import community.growtechsol.com.models.User;
 
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -200,9 +199,9 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
                             Picasso.get()
                                     .load(user.getProfileImage())
                                     .placeholder(R.drawable.placeholder)
-                                    .into(binding.profileImgAddPost);
-                            binding.userNameAddPost.setText(user.getName());
-                            binding.userProfessionAddPost.setText(user.getProfession());
+                                    .into(binding.profileImgEditPost);
+                            binding.userNameEditPost.setText(user.getName());
+                            binding.userProfessionEditPost.setText(user.getProfession());
                         }
                     }
 
@@ -222,7 +221,7 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String title = binding.postTitle.getText().toString();
                 String description = binding.postDescription.getText().toString();
-                if (!title.isEmpty() || !description.isEmpty() || uri != null || hasImage) {
+                if (!title.isEmpty() || !description.isEmpty() || uri != null || hasImage || AudioSavePathInDevice != null) {
                     setButtonEnabled();
                 } else {
                     setButtonDisabled();
@@ -245,7 +244,7 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String title = binding.postTitle.getText().toString();
                 String description = binding.postDescription.getText().toString();
-                if (!description.isEmpty() || !title.isEmpty() || uri != null || hasImage) {
+                if (!description.isEmpty() || !title.isEmpty() || uri != null || hasImage || AudioSavePathInDevice != null) {
                     setButtonEnabled();
                 } else {
                     setButtonDisabled();
@@ -282,21 +281,13 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
             return true;
         });
 
-        binding.play.setOnClickListener(view -> {
-            playRecording();
-        });
+        binding.play.setOnClickListener(view -> playRecording());
 
-        binding.pause.setOnClickListener(view -> {
-            pauseRecording();
-        });
+        binding.pause.setOnClickListener(view -> pauseRecording());
 
-        binding.resume.setOnClickListener(view -> {
-            resumeRecording();
-        });
+        binding.resume.setOnClickListener(view -> resumeRecording());
 
-        binding.removeRecording.setOnClickListener(view -> {
-            removeRecording();
-        });
+        binding.removeRecording.setOnClickListener(view -> removeRecording());
 
         binding.postBtn.setOnClickListener(view -> {
 
@@ -321,22 +312,7 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
                     progressDialog.dismiss();
                     Toast.makeText(this, "Failed to Upload Audio", Toast.LENGTH_SHORT).show();
                 });
-            }
-            //            else if (mediaPlayer != null && downloadedRecordingLocation != null) {
-//                Log.d("Checkpoint", "mediaPlayer and Download recording Path NOT NULL");
-//                Uri downloadedRecordingUri = Uri.fromFile(new File(downloadedRecordingLocation));
-//                storageReference.putFile(downloadedRecordingUri).addOnSuccessListener(taskSnapshot -> {
-//                    storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
-//                        uploadPostImgAudioAndData(uri);
-//                    }).addOnFailureListener(e -> {
-//                        Toast.makeText(this, "Failed to download audio Url", Toast.LENGTH_SHORT).show();
-//                    });
-//
-//                }).addOnFailureListener(e -> {
-//                    Toast.makeText(this, "Failed to Upload Audio", Toast.LENGTH_SHORT).show();
-//                });
-//            }
-            else {
+            } else {
                 Log.d("Checkpoint", "mediaPlayer and Path ARE NULL");
                 uploadPostImgAndData();
             }
@@ -393,7 +369,7 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
                     firebaseDatabase.getReference().child("posts").child(String.valueOf(timeStamp))
                             .setValue(post).addOnSuccessListener(unused -> {
                         progressDialog.dismiss();
-                        Toast.makeText(this, "Posted Successfully", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Post Edited Successfully", Toast.LENGTH_SHORT).show();
                         //switchFragment();
                     }).addOnFailureListener(e -> progressDialog.dismiss());
                 });
@@ -598,28 +574,8 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
 
             mediaPlayer.start();
             //Toast.makeText(getContext(),"Recording Playing",Toast.LENGTH_LONG).show();
-            mediaPlayer.setOnCompletionListener(mediaPlayer -> {
-                binding.pause.setVisibility(View.GONE);
-                binding.play.setVisibility(View.VISIBLE);
-            });
-        }
-//        else if (downloadedRecordingLocation != null) {
-//            mediaPlayer = new MediaPlayer();
-//            try {
-//                mediaPlayer.setDataSource(downloadedRecordingLocation);
-//                mediaPlayer.prepare();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//
-//            mediaPlayer.start();
-//            //Toast.makeText(getContext(),"Recording Playing",Toast.LENGTH_LONG).show();
-//            mediaPlayer.setOnCompletionListener(mediaPlayer -> {
-//                binding.pause.setVisibility(View.GONE);
-//                binding.play.setVisibility(View.VISIBLE);
-//            });
-//        }
-        else {
+
+        } else {
 
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -633,6 +589,11 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
             mediaPlayer.start();
             Log.d("AddPostFragment", "Audio is not recorded");
         }
+
+        mediaPlayer.setOnCompletionListener(mediaPlayer -> {
+            binding.pause.setVisibility(View.GONE);
+            binding.play.setVisibility(View.VISIBLE);
+        });
     }
 
     private void stopRecording() {

@@ -59,6 +59,7 @@ public class CommentActivity extends AppCompatActivity {
     ActivityCommentBinding binding;
     Intent intent;
     String postId, postedBy;
+    boolean isSolved,isAdmin;
     FirebaseDatabase firebaseDatabase;
     FirebaseAuth auth;
     ArrayList<Comment> list = new ArrayList<>();
@@ -104,6 +105,8 @@ public class CommentActivity extends AppCompatActivity {
 
         postId = intent.getStringExtra("postId");
         postedBy = intent.getStringExtra("postedBy");
+        isSolved = intent.getBooleanExtra("isSolved",false);
+        isAdmin = intent.getBooleanExtra("isAdmin",false);
 
         firebaseDatabase.getReference()
                 .child("posts/" + postId)
@@ -252,7 +255,8 @@ public class CommentActivity extends AppCompatActivity {
 
         //CommentLikeDislikeClick listener = (CommentLikeDislikeClick) this;
 
-        CommentAdapter commentAdapter = new CommentAdapter(this, list, postId, postedBy);
+        Log.d("Checkkkk", String.valueOf(isSolved));
+        CommentAdapter commentAdapter = new CommentAdapter(this, list, postId, postedBy,isSolved,isAdmin);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
         binding.commentRv.setLayoutManager(linearLayoutManager);
         binding.commentRv.setAdapter(commentAdapter);
@@ -288,6 +292,7 @@ public class CommentActivity extends AppCompatActivity {
                 .addOnSuccessListener(unused -> {
                             progressDialog.dismiss();
                             binding.commentEt.setText("");
+                            removeRecording();
                             Toast.makeText(this, "Commented Successfully!", Toast.LENGTH_SHORT).show();
 
                             Notification notification = new Notification();
@@ -352,6 +357,7 @@ public class CommentActivity extends AppCompatActivity {
                 .addOnSuccessListener(unused -> {
                             progressDialog.dismiss();
                             binding.commentEt.setText("");
+                            removeRecording();
                             Toast.makeText(CommentActivity.this, "Commented Successfully!", Toast.LENGTH_SHORT).show();
 
                             Notification notification = new Notification();

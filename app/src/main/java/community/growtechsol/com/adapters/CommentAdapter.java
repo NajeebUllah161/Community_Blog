@@ -3,11 +3,13 @@ package community.growtechsol.com.adapters;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.text.Html;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -23,6 +25,7 @@ import com.github.marlonlom.utilities.timeago.TimeAgo;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
@@ -34,13 +37,17 @@ import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import community.growtechsol.com.R;
 import community.growtechsol.com.databinding.CommentSampleBinding;
+import community.growtechsol.com.edit_dialogues.EditCommentDialogue;
 import community.growtechsol.com.models.Comment;
 import community.growtechsol.com.models.Post;
 import community.growtechsol.com.models.User;
@@ -51,18 +58,23 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
     Context context;
     ArrayList<Comment> list;
     String postId, postedBy;
+    boolean isSolved, isAdmin;
     Comment comment;
     PowerMenu powerMenu;
     String commentId;
     MediaPlayer player;
     int length;
+    Intent intent;
+    CommentSampleBinding globalBinding;
 
     private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
         @Override
         public void onItemClick(int position, PowerMenuItem item) {
             //Toast.makeText(context, item.getTitle(), Toast.LENGTH_SHORT).show();
             powerMenu.setSelectedPosition(position); // change selected item
-            if (item.getTitle().equals("Delete comment")) {
+            if (item.getTitle().equals("Edit comment")) {
+                context.startActivity(intent);
+            } else if (item.getTitle().equals("Delete comment")) {
                 FirebaseDatabase.getInstance().getReference().child("posts/" + postId + "/comments/" + comment.getCommentedAt()).removeValue()
                         .addOnSuccessListener(unused -> {
                             Toast.makeText(context, "Comment deleted!", Toast.LENGTH_SHORT).show();
@@ -77,6 +89,100 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                         .addOnSuccessListener(unused -> Log.d("CommentAdapter", "Successfully deducted 1 from commentCount"))
                         .addOnFailureListener(e -> Toast.makeText(context, "Unknown error occurred :" + e.getMessage(), Toast.LENGTH_SHORT).show());
 
+            } else if (item.getTitle().equals("Verify comment")) {
+                FirebaseDatabase.getInstance().getReference()
+                        .child("posts/" + postId)
+                        .addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+
+                                if (snapshot.exists()) {
+                                    Post post = snapshot.getValue(Post.class);
+
+                                    if (!post.isSolved()) {
+                                        //Log.d("SnapshotSolved", String.valueOf(snapshot.getValue()));
+                                        FirebaseAuth auth = FirebaseAuth.getInstance();
+                                        //&& !auth.getCurrentUser().getUid().equals(comment.getCommentedBy())
+
+                                        FirebaseDatabase.getInstance().getReference().child("Users")
+                                                .child(auth.getCurrentUser().getUid())
+                                                .addValueEventListener(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                                                        if (snapshot.exists()) {
+                                                            User user = snapshot.getValue(User.class);
+
+                                                            if (auth.getCurrentUser().getUid().equals(post.getPostedBy()) || user.isAdmin()) {
+
+                                                                //Log.d("CommentedBy", comment.getCommentedBy());
+                                                                if (!globalBinding.commentCheckbox.isChecked()) {
+
+                                                                    globalBinding.commentCheckbox.setChecked(true);
+                                                                    //holder.binding.commentCheckbox.setVisibility(View.VISIBLE);
+
+                                                                    FirebaseDatabase.getInstance().getReference()
+                                                                            .child("posts/" + postId + "/comments/" + comment.getCommentedAt())
+                                                                            .addValueEventListener(new ValueEventListener() {
+                                                                                @SuppressLint("NotifyDataSetChanged")
+                                                                                @Override
+                                                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                                                    Log.d("Key", snapshot.getKey());
+                                                                                    commentId = snapshot.getKey();
+                                                                                }
+
+                                                                                @Override
+                                                                                public void onCancelled(@NonNull DatabaseError error) {
+                                                                                    Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                                }
+                                                                            });
+
+                                                                    comment.setVerified(true);
+                                                                    FirebaseDatabase.getInstance().getReference()
+                                                                            .child("posts/" + postId + "/comments")
+                                                                            .child(comment.getCommentedAt() + "")
+                                                                            .setValue(comment);
+
+                                                                    FirebaseDatabase.getInstance().getReference()
+                                                                            .child("Users")
+                                                                            .child(comment.getCommentedBy())
+                                                                            .child("userPerks")
+                                                                            .setValue(ServerValue.increment(1)).addOnSuccessListener(unused -> {
+                                                                        Toast.makeText(context, "Rating updated", Toast.LENGTH_SHORT).show();
+                                                                    }).addOnFailureListener(e -> {
+                                                                        Toast.makeText(context, "Failed to update rating", Toast.LENGTH_SHORT).show();
+                                                                    });
+
+                                                                    FirebaseDatabase.getInstance().getReference()
+                                                                            .child("posts/" + postId)
+                                                                            .child("/solved")
+                                                                            .setValue(true).addOnSuccessListener(unused -> ((Activity) context).finish())
+                                                                            .addOnFailureListener(e -> {
+                                                                                Toast.makeText(context, "Failed to verify comment due to " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                            });
+
+                                                                }
+                                                            }
+
+                                                        }
+
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+                                                    }
+                                                });
+
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+                            }
+                        });
+
             } else {
                 Toast.makeText(context, "Select a valid option", Toast.LENGTH_SHORT).show();
             }
@@ -85,11 +191,13 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
     };
 
 
-    public CommentAdapter(Context context, ArrayList<Comment> list, String postId, String postedBy) {
+    public CommentAdapter(Context context, ArrayList<Comment> list, String postId, String postedBy, boolean isSolved, boolean isAdmin) {
         this.context = context;
         this.list = list;
         this.postId = postId;
         this.postedBy = postedBy;
+        this.isSolved = isSolved;
+        this.isAdmin = isAdmin;
     }
 
     @NonNull
@@ -274,103 +382,106 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
 //                    }
 //                });
 
-
+/**
+ * This below code was used to verify comment (by clicking on commentSample).
+ * Now comment verification happens from dropdown
+ */
         // above code was previously used for this below code. IF below code causes crash,
         // then use above code and comment-out this below code.
-        FirebaseDatabase.getInstance().getReference()
-                .child("posts/" + postId)
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-
-                        if (snapshot.exists()) {
-                            Post post = snapshot.getValue(Post.class);
-
-                            if (!post.isSolved()) {
-                                //Log.d("SnapshotSolved", String.valueOf(snapshot.getValue()));
-                                FirebaseAuth auth = FirebaseAuth.getInstance();
-                                //&& !auth.getCurrentUser().getUid().equals(comment.getCommentedBy())
-
-                                FirebaseDatabase.getInstance().getReference().child("Users")
-                                        .child(auth.getCurrentUser().getUid())
-                                        .addValueEventListener(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-                                                if (snapshot.exists()) {
-                                                    User user = snapshot.getValue(User.class);
-
-                                                    if (auth.getCurrentUser().getUid().equals(post.getPostedBy()) || user.isAdmin()) {
-
-                                                        //Log.d("CommentedBy", comment.getCommentedBy());
-                                                        holder.binding.commentSample.setOnClickListener(view -> {
-                                                            if (!holder.binding.commentCheckbox.isChecked()) {
-
-                                                                holder.binding.commentCheckbox.setChecked(true);
-                                                                //holder.binding.commentCheckbox.setVisibility(View.VISIBLE);
-
-                                                                FirebaseDatabase.getInstance().getReference()
-                                                                        .child("posts/" + postId + "/comments/" + comment.getCommentedAt())
-                                                                        .addValueEventListener(new ValueEventListener() {
-                                                                            @SuppressLint("NotifyDataSetChanged")
-                                                                            @Override
-                                                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                                                Log.d("Key", snapshot.getKey());
-                                                                                commentId = snapshot.getKey();
-                                                                            }
-
-                                                                            @Override
-                                                                            public void onCancelled(@NonNull DatabaseError error) {
-                                                                                Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
-                                                                            }
-                                                                        });
-
-                                                                comment.setVerified(true);
-                                                                FirebaseDatabase.getInstance().getReference()
-                                                                        .child("posts/" + postId + "/comments")
-                                                                        .child(comment.getCommentedAt() + "")
-                                                                        .setValue(comment);
-
-                                                                FirebaseDatabase.getInstance().getReference()
-                                                                        .child("Users")
-                                                                        .child(comment.getCommentedBy())
-                                                                        .child("userPerks")
-                                                                        .setValue(ServerValue.increment(1)).addOnSuccessListener(unused -> {
-                                                                    Toast.makeText(context, "Rating updated", Toast.LENGTH_SHORT).show();
-                                                                }).addOnFailureListener(e -> {
-                                                                    Toast.makeText(context, "Failed to update rating", Toast.LENGTH_SHORT).show();
-                                                                });
-
-                                                                FirebaseDatabase.getInstance().getReference()
-                                                                        .child("posts/" + postId)
-                                                                        .child("/solved")
-                                                                        .setValue(true).addOnSuccessListener(unused -> ((Activity) context).finish())
-                                                                        .addOnFailureListener(e -> {
-                                                                            Toast.makeText(context, "Failed to verify comment due to " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                                                        });
-
-                                                            }
-                                                        });
-                                                    }
-
-                                                }
-
-                                            }
-
-                                            @Override
-                                            public void onCancelled(@NonNull @NotNull DatabaseError error) {
-
-                                            }
-                                        });
-
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull @NotNull DatabaseError error) {
-
-                    }
-                });
+//        FirebaseDatabase.getInstance().getReference()
+//                .child("posts/" + postId)
+//                .addValueEventListener(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+//
+//                        if (snapshot.exists()) {
+//                            Post post = snapshot.getValue(Post.class);
+//
+//                            if (!post.isSolved()) {
+//                                //Log.d("SnapshotSolved", String.valueOf(snapshot.getValue()));
+//                                FirebaseAuth auth = FirebaseAuth.getInstance();
+//                                //&& !auth.getCurrentUser().getUid().equals(comment.getCommentedBy())
+//
+//                                FirebaseDatabase.getInstance().getReference().child("Users")
+//                                        .child(auth.getCurrentUser().getUid())
+//                                        .addValueEventListener(new ValueEventListener() {
+//                                            @Override
+//                                            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+//                                                if (snapshot.exists()) {
+//                                                    User user = snapshot.getValue(User.class);
+//
+//                                                    if (auth.getCurrentUser().getUid().equals(post.getPostedBy()) || user.isAdmin()) {
+//
+//                                                        //Log.d("CommentedBy", comment.getCommentedBy());
+//                                                        holder.binding.commentSample.setOnClickListener(view -> {
+//                                                            if (!holder.binding.commentCheckbox.isChecked()) {
+//
+//                                                                holder.binding.commentCheckbox.setChecked(true);
+//                                                                //holder.binding.commentCheckbox.setVisibility(View.VISIBLE);
+//
+//                                                                FirebaseDatabase.getInstance().getReference()
+//                                                                        .child("posts/" + postId + "/comments/" + comment.getCommentedAt())
+//                                                                        .addValueEventListener(new ValueEventListener() {
+//                                                                            @SuppressLint("NotifyDataSetChanged")
+//                                                                            @Override
+//                                                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                                                                                Log.d("Key", snapshot.getKey());
+//                                                                                commentId = snapshot.getKey();
+//                                                                            }
+//
+//                                                                            @Override
+//                                                                            public void onCancelled(@NonNull DatabaseError error) {
+//                                                                                Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
+//                                                                            }
+//                                                                        });
+//
+//                                                                comment.setVerified(true);
+//                                                                FirebaseDatabase.getInstance().getReference()
+//                                                                        .child("posts/" + postId + "/comments")
+//                                                                        .child(comment.getCommentedAt() + "")
+//                                                                        .setValue(comment);
+//
+//                                                                FirebaseDatabase.getInstance().getReference()
+//                                                                        .child("Users")
+//                                                                        .child(comment.getCommentedBy())
+//                                                                        .child("userPerks")
+//                                                                        .setValue(ServerValue.increment(1)).addOnSuccessListener(unused -> {
+//                                                                    Toast.makeText(context, "Rating updated", Toast.LENGTH_SHORT).show();
+//                                                                }).addOnFailureListener(e -> {
+//                                                                    Toast.makeText(context, "Failed to update rating", Toast.LENGTH_SHORT).show();
+//                                                                });
+//
+//                                                                FirebaseDatabase.getInstance().getReference()
+//                                                                        .child("posts/" + postId)
+//                                                                        .child("/solved")
+//                                                                        .setValue(true).addOnSuccessListener(unused -> ((Activity) context).finish())
+//                                                                        .addOnFailureListener(e -> {
+//                                                                            Toast.makeText(context, "Failed to verify comment due to " + e.getMessage(), Toast.LENGTH_SHORT).show();
+//                                                                        });
+//
+//                                                            }
+//                                                        });
+//                                                    }
+//
+//                                                }
+//
+//                                            }
+//
+//                                            @Override
+//                                            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+//
+//                                            }
+//                                        });
+//
+//                            }
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull @NotNull DatabaseError error) {
+//
+//                    }
+//                });
 
 
         FirebaseDatabase.getInstance()
@@ -489,7 +600,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                                         .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                                         .setValue(true);
 
-                                setPopularity("UpVote",comment.getCommentedBy());
+                                setPopularity("UpVote", comment.getCommentedBy());
 
                                 fillLike(holder.binding);
                             });
@@ -518,7 +629,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                                         .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                                         .setValue(false);
 
-                                setPopularity("DownVote",comment.getCommentedBy());
+                                setPopularity("DownVote", comment.getCommentedBy());
                                 fillDislike(holder.binding);
                             });
                             Log.d("Najeeb", "Doesn't exist" + snapshot);
@@ -567,7 +678,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
 
     }
 
-    private void setPopularity(String vote,String userId) {
+    private void setPopularity(String vote, String userId) {
 
 
         FirebaseDatabase.getInstance()
@@ -576,7 +687,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User user = snapshot.getValue(User.class);
-                if(user.isAdmin()){
+                if (user.isAdmin()) {
                     Map<String, Object> userPopularity = new HashMap<>();
 
                     if (vote.equals("UpVote")) {
@@ -586,6 +697,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                                 .child(userId)
                                 .updateChildren(userPopularity);
 
+                        setupAdminActivity(userId, "UpVote");
+
                     } else if (vote.equals("DownVote")) {
 
                         userPopularity.put("userDownVotes", ServerValue.increment(1));
@@ -593,11 +706,13 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                                 .child(userId)
                                 .updateChildren(userPopularity);
 
+                        setupAdminActivity(userId, "DownVote");
+
                     } else {
                         Toast.makeText(context, "Some unknown Error", Toast.LENGTH_SHORT).show();
                     }
-                }else{
-                    Log.d("CommentAdapter","User popularity is not calculated because he/she is not an admin");
+                } else {
+                    Log.d("CommentAdapter", "User popularity is not calculated because he/she is not an admin");
                 }
             }
 
@@ -609,12 +724,52 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
 
     }
 
+    private void setupAdminActivity(String userId, String vote) {
+        Date date = new Date();
+        String todayDate = (String) DateFormat.format("yyyy-MM-dd", date); // 2013
+
+        if (vote.equals("UpVote")) {
+
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users")
+                    .child(userId)
+                    .child("adminActivity")
+                    .child(todayDate)
+                    .child("userUpVotes");
+            ref.setValue(ServerValue.increment(1));
+
+
+        } else if (vote.contains("DownVote")) {
+
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users")
+                        .child(userId)
+                        .child("adminActivity")
+                        .child(todayDate)
+                        .child("userDownVotes");
+                ref.setValue(ServerValue.increment(1));
+
+        }
+    }
+
     private void setupCommentPowerMenu(Comment comment, CommentSampleBinding binding) {
 
         binding.editComment.setOnClickListener(view -> {
             this.comment = comment;
             List<PowerMenuItem> list = new ArrayList<>();
-            list.add(new PowerMenuItem("Delete comment"));
+            if (isAdmin && comment.getCommentedBy().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                list.add(new PowerMenuItem("Edit comment"));
+                list.add(new PowerMenuItem("Delete comment"));
+            } else if (isAdmin && !comment.getCommentedBy().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                list.add(new PowerMenuItem("Delete comment"));
+            } else if (!isAdmin && !comment.getCommentedBy().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                list.add(new PowerMenuItem("Delete comment"));
+            } else {
+                list.add(new PowerMenuItem("Edit comment"));
+                list.add(new PowerMenuItem("Delete comment"));
+            }
+
+            if (!isSolved && !comment.isVerified() && (postedBy.equals(FirebaseAuth.getInstance().getCurrentUser().getUid()) || isAdmin)) {
+                list.add(new PowerMenuItem("Verify comment"));
+            }
 
             powerMenu = new PowerMenu.Builder(context)
                     .addItemList(list) // list has "Novel", "Poetry", "Art"
@@ -629,6 +784,15 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                     .setSelectedMenuColor(ContextCompat.getColor(context, R.color.black))
                     .setOnMenuItemClickListener(onMenuItemClickListener)
                     .build();
+
+            intent = new Intent(context, EditCommentDialogue.class);
+            intent.putExtra("commentedBy", comment.getCommentedBy());
+            intent.putExtra("commentData", comment.getCommentBody());
+            intent.putExtra("commentedAt", comment.getCommentedAt());
+            intent.putExtra("postId", postId);
+            intent.putExtra("commentRecording", comment.getCommentRecording());
+
+            globalBinding = binding;
 
             powerMenu.showAsDropDown(view);
 
