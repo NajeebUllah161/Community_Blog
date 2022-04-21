@@ -342,16 +342,16 @@ public class HomeFragment extends Fragment {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Post post = dataSnapshot.getValue(Post.class);
                     post.setPostId(dataSnapshot.getKey());
-                    if (post.isAllowed()) {
-                        postList.add(post);
-                        if (post.isSolved()) {
-                            //Log.d("Solved", "solved");
-                            postListSolved.add(post);
-                        } else {
-                            postListUnSolved.add(post);
-                            //Log.d("Solved", "not");
-                        }
+                    //if (post.isAllowed()) {
+                    postList.add(post);
+                    if (post.isSolved()) {
+                        //Log.d("Solved", "solved");
+                        postListSolved.add(post);
+                    } else {
+                        postListUnSolved.add(post);
+                        //Log.d("Solved", "not");
                     }
+                    //}
                 }
                 binding.dashboardRv.setAdapter(postAdapter);
                 binding.dashboardRv.hideShimmerAdapter();

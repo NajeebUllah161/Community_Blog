@@ -241,6 +241,20 @@ public class CommentActivity extends AppCompatActivity {
 
         binding.postCommentBtn.setOnClickListener(view -> {
 
+//            ArrayList<String> mentionList = new ArrayList<>();
+//            String commentData = binding.commentEt.getText().toString();
+//            String[] words = commentData.split(" ");
+//            for (String word : words)
+//                if (word.contains("@")) {
+//                    String finalWords = word.substring(word.lastIndexOf("@"));
+//                    mentionList.add(finalWords);
+//
+//                }
+//
+//            for (int i = 0; i < mentionList.size(); i++) {
+//                Log.d("MentionList", mentionList.get(i).replaceAll("@","") + " " + i);
+//            }
+
             progressDialog.show();
 
             Comment comment = new Comment();
@@ -291,7 +305,7 @@ public class CommentActivity extends AppCompatActivity {
                             list.add(comment);
                         }
                         commentAdapter.notifyDataSetChanged();
-//
+
 //                        FirebaseDatabase.getInstance()
 //                                .getReference()
 //                                .child("Users").addValueEventListener(new ValueEventListener() {
@@ -329,7 +343,7 @@ public class CommentActivity extends AppCompatActivity {
 //                                    if (commenterPhotoList.get(i) != null) {
 //                                        mentionAdapter.add(new Mention(commenterNamesList.get(i).replaceAll(" ", ""), "", commenterPhotoList.get(i)));
 //                                    } else {
-//                                        mentionAdapter.add(new Mention(commenterNamesList.get(i).replaceAll(" ",""), "", R.drawable.placeholder));
+//                                        mentionAdapter.add(new Mention(commenterNamesList.get(i).replaceAll(" ", ""), "", R.drawable.placeholder));
 //                                    }
 //                                }
 //
@@ -420,6 +434,7 @@ public class CommentActivity extends AppCompatActivity {
     private void uploadCommentWithRecording(Uri uri, Comment comment) {
 
         comment.setCommentRecording(uri.toString());
+        String commentData = binding.commentEt.getText().toString();
 
         firebaseDatabase.getReference()
                 .child("posts/" + postId + "/comments")
@@ -445,6 +460,8 @@ public class CommentActivity extends AppCompatActivity {
                                     .setValue(notification);
                             hideKeyboard(CommentActivity.this);
 
+                            sendNotificationToMentioned(commentData);
+
                         }
                 ).addOnFailureListener(e -> {
             progressDialog.dismiss();
@@ -466,7 +483,7 @@ public class CommentActivity extends AppCompatActivity {
                                 .child("posts/" + postId + "/commentCount")
                                 .setValue(commentCount + 1)
                                 .addOnSuccessListener(unused1 -> {
-                                    Toast.makeText(CommentActivity.this, "Comment count incremented", Toast.LENGTH_SHORT).show();
+                                    Log.d("CommentActivity", "Comment count incremented");
 
                                 }).addOnFailureListener(e -> {
                             Toast.makeText(CommentActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -478,6 +495,11 @@ public class CommentActivity extends AppCompatActivity {
                         Toast.makeText(CommentActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void sendNotificationToMentioned(String commentData) {
+
+
     }
 
     private void removeRecording() {

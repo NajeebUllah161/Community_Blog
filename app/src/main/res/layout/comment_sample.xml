@@ -34,7 +34,7 @@
         android:autoLink="all"
         android:justificationMode="inter_word"
         android:linksClickable="true"
-        android:text="User name"
+        android:text="Your comment"
         android:textColor="@color/black"
         android:textSize="@dimen/_14mdp"
         app:layout_constraintEnd_toStartOf="@+id/commentCheckbox"
@@ -128,7 +128,7 @@
         android:layout_marginBottom="@dimen/_8mdp"
         android:background="@drawable/follow_active_btn"
         android:padding="@dimen/_4mdp"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 

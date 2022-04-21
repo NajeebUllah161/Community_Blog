@@ -47,7 +47,7 @@
         android:textColor="@color/gray"
         android:layout_height="wrap_content"
         android:includeFontPadding="false"
-        android:text="Profession"
+        android:text="Designation"
         app:layout_constraintStart_toStartOf="@+id/userName_dashboard"
         app:layout_constraintTop_toBottomOf="@+id/userName_dashboard" />
 

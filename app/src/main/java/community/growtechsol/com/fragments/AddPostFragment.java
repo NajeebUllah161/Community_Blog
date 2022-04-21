@@ -447,7 +447,7 @@ public class AddPostFragment extends Fragment {
                     firebaseDatabase.getReference().child("posts").child(String.valueOf(post.getPostedAt()))
                             .setValue(post).addOnSuccessListener(unused -> {
                         progressDialog.dismiss();
-                        Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "You post is under review!", Toast.LENGTH_SHORT).show();
                         sendNotification();
                         hideKeyboard(getActivity());
                         incrementTotalPostsCount();
