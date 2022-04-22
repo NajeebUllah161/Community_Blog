@@ -4,14 +4,14 @@
     android:id="@+id/singlePost"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="15dp">
+    android:layout_marginBottom="@dimen/_12mdp">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_image_dashboard"
         android:layout_width="@dimen/_40mdp"
         android:layout_height="@dimen/_40mdp"
-        android:layout_marginTop="8dp"
-        android:padding="4dp"
+        android:layout_marginTop="@dimen/_6mdp"
+        android:padding="@dimen/_3mdp"
         android:src="@drawable/placeholder"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -30,11 +30,12 @@
         android:id="@+id/userName_dashboard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:textIsSelectable="true"
+        android:layout_marginStart="@dimen/_6mdp"
         android:includeFontPadding="false"
         android:text="User Name"
         android:textColor="@color/black"
-        android:textSize="20sp"
+        android:textSize="@dimen/_15font_mdp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/profile_image_dashboard"
         app:layout_constraintStart_toEndOf="@+id/profile_image_dashboard"
@@ -53,16 +54,15 @@
 
     <ImageView
         android:id="@+id/verticalDotsPost"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="8dp"
+        android:layout_width="@dimen/_18mdp"
+        android:layout_height="@dimen/_18mdp"
+        android:layout_marginEnd="@dimen/_6mdp"
         android:contentDescription="TODO"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/profile_image_dashboard"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/profile_image_dashboard"
         app:srcCompat="@drawable/ic_more" />
-
 
     <androidx.cardview.widget.CardView
         android:id="@+id/postImageContainer"
@@ -98,6 +98,7 @@
     <TextView
         android:id="@+id/postTitleDesign"
         android:layout_width="0dp"
+        android:textIsSelectable="true"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/_6mdp"
         android:layout_marginTop="@dimen/_6mdp"
@@ -112,6 +113,7 @@
     <TextView
         android:id="@+id/postDescriptionDesign"
         android:layout_width="0dp"
+        android:textIsSelectable="true"
         android:layout_height="wrap_content"
         android:textColor="@color/gray"
         android:layout_marginHorizontal="@dimen/_6mdp"

@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                                             .setContentText("Current Verison: " + currentVersion + "\nLatest Version: " + versionModel.getVersion() + "\nPriority: " + versionModel.getSeverity())
                                             .setConfirmText("Update")
                                             .setConfirmClickListener(sDialog -> {
-                                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=growtechsol.com")));
+                                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=community.growtechsol.com")));
                                                 sDialog.dismissWithAnimation();
                                             });
                                     dialog.setCancelable(false);

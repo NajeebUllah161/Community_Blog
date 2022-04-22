@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_6mdp"
         android:layout_marginEnd="@dimen/_12mdp"
-        android:text="Comment Text"
+        android:text="Notification Data"
         android:textColor="@color/black"
         android:textSize="@dimen/_14ssp"
         app:layout_constraintBottom_toBottomOf="@+id/profile_img_notificationRv"
@@ -48,7 +48,7 @@
         android:textColor="@color/gray"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="time of comment"
+        android:text="time of notification"
         app:layout_constraintStart_toStartOf="@+id/notificationTitle"
         app:layout_constraintTop_toBottomOf="@+id/notificationTitle" />
 

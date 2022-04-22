@@ -39,6 +39,8 @@ import com.hendraanggrian.appcompat.widget.Mention;
 import com.hendraanggrian.appcompat.widget.MentionArrayAdapter;
 import com.squareup.picasso.Picasso;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -241,19 +243,24 @@ public class CommentActivity extends AppCompatActivity {
 
         binding.postCommentBtn.setOnClickListener(view -> {
 
-//            ArrayList<String> mentionList = new ArrayList<>();
-//            String commentData = binding.commentEt.getText().toString();
-//            String[] words = commentData.split(" ");
-//            for (String word : words)
-//                if (word.contains("@")) {
-//                    String finalWords = word.substring(word.lastIndexOf("@"));
-//                    mentionList.add(finalWords);
-//
-//                }
-//
-//            for (int i = 0; i < mentionList.size(); i++) {
-//                Log.d("MentionList", mentionList.get(i).replaceAll("@","") + " " + i);
-//            }
+            ArrayList<String> mentionList = new ArrayList<>();
+            ArrayList<String> mentionListFiltered = new ArrayList<>();
+            ArrayList<String> mentionListFinal;
+            String commentData = binding.commentEt.getText().toString();
+            String[] words = commentData.split(" ");
+            for (String word : words)
+                if (word.contains("@")) {
+                    String finalWords = word.substring(word.lastIndexOf("@"));
+                    mentionList.add(finalWords);
+
+                }
+
+            for (int i = 0; i < mentionList.size(); i++) {
+                Log.d("MentionList", mentionList.get(i).replaceAll("@", "") + " " + i);
+                mentionListFiltered.add(mentionList.get(i).replaceAll("@", ""));
+            }
+
+            mentionListFinal = removeDuplicates(mentionListFiltered);
 
             progressDialog.show();
 
@@ -270,7 +277,7 @@ public class CommentActivity extends AppCompatActivity {
                 Uri recordingUri = Uri.fromFile(new File(AudioSavePathInDevice));
                 storageReference.putFile(recordingUri).addOnSuccessListener(taskSnapshot -> {
                     storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
-                        uploadCommentWithRecording(uri, comment);
+                        uploadCommentWithRecording(uri, comment, mentionListFinal);
                     }).addOnFailureListener(e -> {
                         progressDialog.dismiss();
                         Toast.makeText(this, "Failed to download audio Url", Toast.LENGTH_SHORT).show();
@@ -280,7 +287,7 @@ public class CommentActivity extends AppCompatActivity {
                     Toast.makeText(this, "Failed to upload comment audio due to" + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
             } else {
-                uploadCommentWithoutRecording(comment);
+                uploadCommentWithoutRecording(comment, mentionListFinal);
             }
 
         });
@@ -306,57 +313,59 @@ public class CommentActivity extends AppCompatActivity {
                         }
                         commentAdapter.notifyDataSetChanged();
 
-//                        FirebaseDatabase.getInstance()
-//                                .getReference()
-//                                .child("Users").addValueEventListener(new ValueEventListener() {
-//                            @Override
-//                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                                ArrayList<String> commenterNames = new ArrayList<>();
-//                                ArrayList<String> commenterDesignation = new ArrayList<>();
-//                                ArrayList<String> commenterPhoto = new ArrayList<>();
-//                                int size = list.size();
-//
-//                                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-//                                    User user = dataSnapshot.getValue(User.class);
-//
-//                                    for (int i = 0; i < size; i++) {
-//                                        Comment comment = list.get(i);
-//                                        if (dataSnapshot.getKey().equals(comment.getCommentedBy())) {
-//                                            commenterNames.add(user.getName());
-//                                            commenterDesignation.add(user.getProfession());
-//                                            commenterPhoto.add(user.getProfileImage());
-//                                        }
-//                                    }
-//
-//                                    if (dataSnapshot.getKey().equals(postedBy)) {
-//                                        commenterNames.add(user.getName());
-//                                        commenterDesignation.add(user.getProfession());
-//                                        commenterPhoto.add(user.getProfileImage());
-//                                    }
-//                                }
-//
-//                                commenterNamesList = removeDuplicates(commenterNames);
-//                                ArrayList<String> commenterDesignationList = removeDuplicates(commenterDesignation);
-//                                ArrayList<String> commenterPhotoList = removeDuplicates(commenterPhoto);
-//
-//                                for (int i = 0; i < commenterNamesList.size(); i++) {
-//                                    if (commenterPhotoList.get(i) != null) {
-//                                        mentionAdapter.add(new Mention(commenterNamesList.get(i).replaceAll(" ", ""), "", commenterPhotoList.get(i)));
-//                                    } else {
-//                                        mentionAdapter.add(new Mention(commenterNamesList.get(i).replaceAll(" ", ""), "", R.drawable.placeholder));
-//                                    }
-//                                }
-//
-//                                binding.commentEt.setMentionAdapter(mentionAdapter);
-//                                binding.commentEt.setMentionEnabled(true);
-//                                binding.commentEt.setOnMentionClickListener((view, text) -> Toast.makeText(CommentActivity.this, text, Toast.LENGTH_SHORT).show());
-//                            }
-//
-//                            @Override
-//                            public void onCancelled(@NonNull DatabaseError error) {
-//                                Toast.makeText(CommentActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-//                            }
-//                        });
+                        FirebaseDatabase.getInstance()
+                                .getReference()
+                                .child("Users").addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                ArrayList<String> commenterNames = new ArrayList<>();
+                                ArrayList<String> commenterDesignation = new ArrayList<>();
+                                ArrayList<String> commenterPhoto = new ArrayList<>();
+                                int size = list.size();
+
+                                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                    User user = dataSnapshot.getValue(User.class);
+
+                                    for (int i = 0; i < size; i++) {
+                                        Comment comment = list.get(i);
+                                        if (dataSnapshot.getKey().equals(comment.getCommentedBy())) {
+                                            commenterNames.add(user.getName());
+                                            commenterDesignation.add(user.getProfession());
+                                            commenterPhoto.add(user.getProfileImage());
+                                        }
+                                    }
+
+                                    if (dataSnapshot.getKey().equals(postedBy)) {
+                                        commenterNames.add(user.getName());
+                                        commenterDesignation.add(user.getProfession());
+                                        commenterPhoto.add(user.getProfileImage());
+                                    }
+                                }
+
+                                ArrayList<String> commenterNamesList = removeDuplicates(commenterNames);
+                                ArrayList<String> commenterDesignationList = removeDuplicates(commenterDesignation);
+                                ArrayList<String> commenterPhotoList = removeDuplicates(commenterPhoto);
+
+                                mentionAdapter.clear();
+                                Log.d("CommenterNamessss", commenterPhotoList.size() + " " + commenterNamesList.size());
+                                for (int i = 0; i < commenterNamesList.size(); i++) {
+                                    if (commenterPhotoList.get(i) != null) {
+                                        mentionAdapter.add(new Mention(commenterNamesList.get(i).replaceAll(" ", ""), "", commenterPhotoList.get(i)));
+                                    } else {
+                                        mentionAdapter.add(new Mention(commenterNamesList.get(i).replaceAll(" ", ""), "", R.drawable.placeholder));
+                                    }
+                                }
+
+                                binding.commentEt.setMentionAdapter(mentionAdapter);
+                                binding.commentEt.setMentionEnabled(true);
+                                //binding.commentEt.setOnMentionClickListener((view, text) -> Toast.makeText(CommentActivity.this, text, Toast.LENGTH_SHORT).show());
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Toast.makeText(CommentActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
 
                     }
 
@@ -368,7 +377,7 @@ public class CommentActivity extends AppCompatActivity {
 
     }
 
-    private void uploadCommentWithoutRecording(Comment comment) {
+    private void uploadCommentWithoutRecording(Comment comment, ArrayList<String> mentionListFinal) {
 
         firebaseDatabase.getReference()
                 .child("posts/" + postId + "/comments")
@@ -377,6 +386,7 @@ public class CommentActivity extends AppCompatActivity {
                 .addOnSuccessListener(unused -> {
                             progressDialog.dismiss();
                             binding.commentEt.setText("");
+                            binding.commentEt.setSelection(0);
                             removeRecording();
                             Toast.makeText(this, "Commented Successfully!", Toast.LENGTH_SHORT).show();
 
@@ -393,6 +403,8 @@ public class CommentActivity extends AppCompatActivity {
                                     .push()
                                     .setValue(notification);
                             hideKeyboard(CommentActivity.this);
+
+                            sendNotificationToMentionList(mentionListFinal);
 
                         }
                 ).addOnFailureListener(e -> {
@@ -431,10 +443,9 @@ public class CommentActivity extends AppCompatActivity {
                 });
     }
 
-    private void uploadCommentWithRecording(Uri uri, Comment comment) {
+    private void uploadCommentWithRecording(Uri uri, Comment comment, ArrayList<String> mentionListFinal) {
 
         comment.setCommentRecording(uri.toString());
-        String commentData = binding.commentEt.getText().toString();
 
         firebaseDatabase.getReference()
                 .child("posts/" + postId + "/comments")
@@ -443,6 +454,8 @@ public class CommentActivity extends AppCompatActivity {
                 .addOnSuccessListener(unused -> {
                             progressDialog.dismiss();
                             binding.commentEt.setText("");
+                            binding.commentEt.setSelection(0);
+
                             removeRecording();
                             Toast.makeText(CommentActivity.this, "Commented Successfully!", Toast.LENGTH_SHORT).show();
 
@@ -460,7 +473,7 @@ public class CommentActivity extends AppCompatActivity {
                                     .setValue(notification);
                             hideKeyboard(CommentActivity.this);
 
-                            sendNotificationToMentioned(commentData);
+                            sendNotificationToMentionList(mentionListFinal);
 
                         }
                 ).addOnFailureListener(e -> {
@@ -497,9 +510,66 @@ public class CommentActivity extends AppCompatActivity {
                 });
     }
 
-    private void sendNotificationToMentioned(String commentData) {
+    private void sendNotificationToMentionList(ArrayList<String> mentionListFinal) {
 
+        ArrayList<String> mentionedUsersIds = new ArrayList<>();
 
+        firebaseDatabase.getReference().child("Users")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            User user = dataSnapshot.getValue(User.class);
+                            for (int i = 0; i < mentionListFinal.size(); i++) {
+                                if (user.getName().replaceAll(" ", "").equals(mentionListFinal.get(i))) {
+                                    mentionedUsersIds.add(dataSnapshot.getKey());
+                                }
+                            }
+                        }
+
+                        for (int i = 0; i < mentionedUsersIds.size(); i++) {
+                            Log.d("UsersID's", mentionedUsersIds.get(i));
+                            sendNotificationsToMentioned(mentionedUsersIds.get(i));
+
+                        }
+
+//                        for (int i = 0; i < mentionedUsersIds.size(); i++) {
+//
+//                            Notification notification = new Notification();
+//                            notification.setNotificationBy(mentionedUsersIds.get(i));
+//                            notification.setNotificaitonAt(new Date().getTime());
+//                            notification.setPostId(postId);
+//                            notification.setPostedBy(postedBy);
+//                            notification.setNotificationType("mention");
+//
+//                            FirebaseDatabase.getInstance().getReference()
+//                                    .child("notification")
+//                                    .child(postedBy)
+//                                    .push()
+//                                    .setValue(notification);
+//                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+                    }
+                });
+    }
+
+    private void sendNotificationsToMentioned(String userId) {
+        Notification notification = new Notification();
+        notification.setNotificationBy(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        notification.setNotificaitonAt(new Date().getTime());
+        notification.setPostId(postId);
+        notification.setPostedBy(postedBy);
+        notification.setNotificationType("mention");
+
+        FirebaseDatabase.getInstance().getReference()
+                .child("notification")
+                .child(userId)
+                .push()
+                .setValue(notification);
     }
 
     private void removeRecording() {
@@ -581,7 +651,7 @@ public class CommentActivity extends AppCompatActivity {
 //            }
 //
 //            mediaPlayer.start();
-//            Log.d("AddPostFragment", "Audio is not recorded");
+            Log.d("CommentActivity", "Audio is not recorded");
         }
     }
 
@@ -617,7 +687,7 @@ public class CommentActivity extends AppCompatActivity {
 
     private void startRecording() {
 
-//        if (postRecording != null) {
+        //        if (postRecording != null) {
 //            downloadedRecordingLocation = null;
 //            binding.audioContainer.setVisibility(View.GONE);
 //            binding.removeRecording.setVisibility(View.GONE);

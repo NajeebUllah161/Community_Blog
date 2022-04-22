@@ -30,6 +30,7 @@
         android:id="@+id/commentData"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:textIsSelectable="true"
         android:layout_marginStart="@dimen/_6mdp"
         android:autoLink="all"
         android:justificationMode="inter_word"

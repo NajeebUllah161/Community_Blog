@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,13 +14,17 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.marlonlom.utilities.timeago.TimeAgo;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import community.growtechsol.com.R;
 import community.growtechsol.com.activities.CommentActivity;
@@ -63,12 +68,19 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                                 .placeholder(R.drawable.placeholder)
                                 .into(holder.binding.profileImgNotificationRv);
 
-                        if (type.equals("like")) {
-                            holder.binding.notificationTitle.setText(Html.fromHtml("<b>" + user.getName() + "</b>" + " Liked your post"));
-                        } else if (type.equals("comment")) {
-                            holder.binding.notificationTitle.setText(Html.fromHtml("<b>" + user.getName() + "</b>" + " Commented on your post"));
-                        } else {
-                            holder.binding.notificationTitle.setText(Html.fromHtml("<b>" + user.getName() + "</b>" + " started following you"));
+                        switch (type) {
+                            case "like":
+                                holder.binding.notificationTitle.setText(Html.fromHtml("<b>" + user.getName() + "</b>" + " Liked your post"));
+                                break;
+                            case "comment":
+                                holder.binding.notificationTitle.setText(Html.fromHtml("<b>" + user.getName() + "</b>" + " Commented on your post"));
+                                break;
+                            case "mention":
+                                holder.binding.notificationTitle.setText(Html.fromHtml("<b>" + user.getName() + "</b>" + " Mentioned you in a comment"));
+                                break;
+                            default:
+                                holder.binding.notificationTitle.setText(Html.fromHtml("<b>" + user.getName() + "</b>" + " started following you"));
+                                break;
                         }
                         String timeOfNotification = TimeAgo.using(notification.getNotificaitonAt());
                         holder.binding.notificationTime.setText(timeOfNotification);
@@ -79,25 +91,27 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                         Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
-        holder.binding.openNotification.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!type.equals("follow")) {
 
-                    FirebaseDatabase.getInstance().getReference()
-                            .child("notification")
-                            .child(notification.getPostedBy())
-                            .child(notification.getNotificationId())
-                            .child("checkOpen")
-                            .setValue(true);
+        holder.binding.openNotification.setOnClickListener(view -> {
+            if (!type.equals("follow")) {
 
-                    holder.binding.openNotification.setBackgroundColor(Color.parseColor("#FFFFFF"));
-                    Intent intent = new Intent(context, CommentActivity.class);
-                    intent.putExtra("postId", notification.getPostId());
-                    intent.putExtra("postedBy", notification.getPostedBy());
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent);
-                }
+                Map<String, Object> notificationCheck = new HashMap<>();
+                notificationCheck.put("checkOpen", true);
+
+                DatabaseReference dr = FirebaseDatabase.getInstance().getReference()
+                        .child("notification")
+                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                        .child(notification.getNotificationId());
+
+                Log.d("DatabaseReference", dr.toString());
+                dr.updateChildren(notificationCheck);
+
+                holder.binding.openNotification.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                Intent intent = new Intent(context, CommentActivity.class);
+                intent.putExtra("postId", notification.getPostId());
+                intent.putExtra("postedBy", notification.getPostedBy());
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
             }
         });
         Boolean checkOpen = notification.isCheckOpen();
