@@ -343,9 +343,13 @@ public class CommentActivity extends AppCompatActivity {
                                 }
 
                                 ArrayList<String> commenterNamesList = removeDuplicates(commenterNames);
-                                ArrayList<String> commenterDesignationList = removeDuplicates(commenterDesignation);
+                                //ArrayList<String> commenterDesignationList = removeDuplicates(commenterDesignation);
                                 ArrayList<String> commenterPhotoList = removeDuplicates(commenterPhoto);
 
+                                int incrementedLength = commenterNamesList.size() - commenterPhotoList.size();
+                                for (int i = 0; i < incrementedLength; i++) {
+                                    commenterPhotoList.add(null);
+                                }
                                 mentionAdapter.clear();
                                 Log.d("CommenterNamessss", commenterPhotoList.size() + " " + commenterNamesList.size());
                                 for (int i = 0; i < commenterNamesList.size(); i++) {

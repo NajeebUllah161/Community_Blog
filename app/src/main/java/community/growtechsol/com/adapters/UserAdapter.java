@@ -2,6 +2,7 @@ package community.growtechsol.com.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
@@ -24,6 +26,7 @@ import java.util.Date;
 import community.growtechsol.com.R;
 import community.growtechsol.com.databinding.UserSampleBinding;
 import community.growtechsol.com.models.FollowModel;
+import community.growtechsol.com.models.Following;
 import community.growtechsol.com.models.Notification;
 import community.growtechsol.com.models.User;
 
@@ -114,6 +117,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.viewHolder> {
                                                 .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show()))
                                         .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show());
 
+
+                                setFollowing(user);
+
                             });
 
 
@@ -126,6 +132,31 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.viewHolder> {
                     }
                 });
 
+
+    }
+
+    private void setFollowing(User user) {
+
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        Following following = new Following();
+        following.setFollowing(user.getUserId());
+        following.setFollowedAt(new Date().getTime());
+
+        FirebaseDatabase.getInstance().getReference()
+                .child("Users/" + auth.getCurrentUser().getUid() + "/following/" + user.getUserId())
+                .setValue(following)
+                .addOnSuccessListener(unused -> {
+                    Log.d("UserAdapter","You started following : " + user.getName());
+                    FirebaseDatabase.getInstance().getReference()
+                            .child("Users/" + auth.getCurrentUser().getUid() + "/followingCount")
+                            .setValue(ServerValue.increment(1))
+                            .addOnSuccessListener(unused1 -> {
+                                Log.d("UserAdapter","Your following count is incremented by +1");
+                            })
+                            .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show());
+
+                })
+                .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show());
 
     }
 

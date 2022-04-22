@@ -5,6 +5,16 @@ public class User {
     private String coverPhoto;
     private String userId;
     private int followersCount;
+
+    public int getFollowingCount() {
+        return followingCount;
+    }
+
+    public void setFollowingCount(int followingCount) {
+        this.followingCount = followingCount;
+    }
+
+    private int followingCount;
     private String profileImage;
     private int userPerks;
     private int userUpVotes;
