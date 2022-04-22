@@ -97,5 +97,9 @@ dependencies {
     implementation "com.hendraanggrian.appcompat:socialview:$socialview_version"
     implementation "com.hendraanggrian.appcompat:socialview-commons:$socialview_version"
 
+    //chooser dialogue
+    implementation 'com.github.mejdi14:Flat-Dialog-Android:1.0.5'
+
+
 }
 apply plugin: 'com.google.gms.google-services'

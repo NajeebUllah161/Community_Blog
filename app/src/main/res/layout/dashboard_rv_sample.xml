@@ -43,6 +43,15 @@
         app:layout_constraintVertical_bias="0.16000003" />
 
     <TextView
+        android:id="@+id/userPerksOnDb"
+        android:layout_width="wrap_content"
+        android:text=" 0"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@+id/userName_dashboard"
+        app:layout_constraintBottom_toBottomOf="@+id/userName_dashboard"
+        app:layout_constraintTop_toTopOf="@+id/userName_dashboard" />
+
+    <TextView
         android:id="@+id/aboutDbTv"
         android:layout_width="wrap_content"
         android:textColor="@color/gray"

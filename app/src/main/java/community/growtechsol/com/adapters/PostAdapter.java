@@ -54,6 +54,7 @@ import community.growtechsol.com.edit_dialogues.EditPostDialogue;
 import community.growtechsol.com.models.Notification;
 import community.growtechsol.com.models.Post;
 import community.growtechsol.com.models.User;
+import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
 
@@ -120,6 +121,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     boolean isAdmin;
     MediaPlayer player;
     int length;
+
     public PostAdapter(ArrayList<Post> list, Context context) {
         this.postModelArrayList = list;
         this.context = context;
@@ -275,6 +277,18 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                     holder.binding.userNameDashboard.setText(user.getName());
                     holder.binding.aboutDbTv.setText(user.getProfession());
+                    holder.binding.userPerksOnDb.setText(" (" + user.getUserPerks() + ")");
+
+                    holder.binding.userPerksOnDb.setOnClickListener(view -> new SimpleTooltip.Builder(context)
+                            .anchorView(view)
+                            .text("User has " + user.getUserPerks() + " correct answers")
+                            .gravity(Gravity.TOP)
+                            .backgroundColor(Color.parseColor("#FF018786"))
+                            .arrowColor(Color.parseColor("#FF018786"))
+                            .animated(true)
+                            .transparentOverlay(false)
+                            .build()
+                            .show());
 
                 } else {
                     Toast.makeText(context, "No user exists", Toast.LENGTH_SHORT).show();
