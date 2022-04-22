@@ -1,7 +1,6 @@
 package community.growtechsol.com.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,37 +15,40 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 
 import community.growtechsol.com.R;
 import community.growtechsol.com.databinding.FriendRvSampleBinding;
 import community.growtechsol.com.models.FollowModel;
+import community.growtechsol.com.models.Following;
 import community.growtechsol.com.models.User;
 
-public class FollowersAdapter extends RecyclerView.Adapter<FollowersAdapter.viewHolder> {
+public class FollowingAdapter extends RecyclerView.Adapter<FollowingAdapter.viewHolder> {
 
-    ArrayList<FollowModel> list;
+    ArrayList<Following> list;
     Context context;
 
-    public FollowersAdapter(ArrayList<FollowModel> list, Context context) {
+    public FollowingAdapter(ArrayList<Following> list, Context context) {
         this.list = list;
         this.context = context;
     }
 
     @NonNull
     @Override
-    public viewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public viewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.friend_rv_sample, parent, false);
         return new viewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull viewHolder holder, int position) {
-        FollowModel followModel = list.get(position);
+    public void onBindViewHolder(@NotNull FollowingAdapter.viewHolder holder, int position) {
+        Following followingList = list.get(position);
         FirebaseDatabase
                 .getInstance()
                 .getReference()
-                .child("Users/" + followModel.getFollowedBy())
+                .child("Users/" + followingList.getFollowing())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -69,7 +71,6 @@ public class FollowersAdapter extends RecyclerView.Adapter<FollowersAdapter.view
                     }
                 });
 
-
     }
 
     @Override
@@ -78,10 +79,9 @@ public class FollowersAdapter extends RecyclerView.Adapter<FollowersAdapter.view
     }
 
     public class viewHolder extends RecyclerView.ViewHolder {
-
         FriendRvSampleBinding binding;
 
-        public viewHolder(@NonNull View itemView) {
+        public viewHolder(@NotNull View itemView) {
             super(itemView);
 
             binding = FriendRvSampleBinding.bind(itemView);

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,8 +31,10 @@ import java.util.ArrayList;
 
 import community.growtechsol.com.R;
 import community.growtechsol.com.adapters.FollowersAdapter;
+import community.growtechsol.com.adapters.FollowingAdapter;
 import community.growtechsol.com.databinding.FragmentProfileBinding;
 import community.growtechsol.com.models.FollowModel;
+import community.growtechsol.com.models.Following;
 import community.growtechsol.com.models.User;
 import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip;
 
@@ -42,6 +45,7 @@ public class ProfileFragment extends Fragment {
     private static final int COVER_PHOTO_REQUEST_CODE = 11;
     private static final int PROFILE_PHOTO_REQUEST_CODE = 12;
     ArrayList<FollowModel> list;
+    ArrayList<Following> followingList;
     FragmentProfileBinding binding;
     FirebaseAuth auth;
     FirebaseStorage firebaseStorage;
@@ -92,9 +96,11 @@ public class ProfileFragment extends Fragment {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-
+                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+
+        setFollowing();
 
         // Fetch User data from firebase database
         firebaseDatabase.getReference().child("Users/" + auth.getCurrentUser().getUid())
@@ -119,6 +125,8 @@ public class ProfileFragment extends Fragment {
                                 binding.followersTv.setText(getUser.getFollowersCount() + "");
                                 binding.userPerks.setText(getUser.getUserPerks() + "");
                                 binding.userPosts.setText(getUser.getTotalPosts() + "");
+                                binding.followersCount.setText(" ("+getUser.getFollowersCount() + ")");
+                                binding.followingCount.setText(" ("+getUser.getFollowingCount() + ")");
                                 if (getUser.isAdmin()) {
                                     setupVerificationTick();
                                     binding.adminLikes.setText(getUser.getUserUpVotes() + "");
@@ -146,7 +154,6 @@ public class ProfileFragment extends Fragment {
                     }
                 });
 
-
         binding.changeCoverPhoto.setOnClickListener(v -> {
             Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
             galleryIntent.setType("image/*");
@@ -160,6 +167,37 @@ public class ProfileFragment extends Fragment {
         });
 
         return binding.getRoot();
+    }
+
+    private void setFollowing() {
+        followingList = new ArrayList<>();
+
+        FollowingAdapter adapter = new FollowingAdapter(followingList, getContext());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),
+                LinearLayoutManager.HORIZONTAL,
+                false);
+        binding.followingRv.setLayoutManager(linearLayoutManager);
+        binding.followingRv.setAdapter(adapter);
+
+        firebaseDatabase.getReference().child("Users/" + auth.getCurrentUser().getUid() + "/following")
+                .addValueEventListener(new ValueEventListener() {
+                    @SuppressLint("NotifyDataSetChanged")
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        followingList.clear();
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            Following following = dataSnapshot.getValue(Following.class);
+                            Log.d("Following",following.getFollowing() + " " + following.getFollowedAt());
+                            followingList.add(following);
+                        }
+                        adapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void setupVerificationTick() {
@@ -195,7 +233,6 @@ public class ProfileFragment extends Fragment {
                 if (data.getData() != null) {
                     Uri uri = data.getData();
                     binding.coverPhoto.setImageURI(uri);
-
 
                     final StorageReference storageReference = firebaseStorage
                             .getReference()
