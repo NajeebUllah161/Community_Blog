@@ -1,9 +1,8 @@
 package community.growtechsol.com.models;
 
 public class User {
-    private String name, profession, email, password;
-    private String coverPhoto;
-    private String userId;
+
+    private String name, profession, email, password,coverPhoto,userId;
     private int followersCount;
 
     public int getFollowingCount() {

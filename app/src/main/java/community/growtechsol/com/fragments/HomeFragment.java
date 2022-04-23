@@ -70,38 +70,32 @@ public class HomeFragment extends Fragment {
     PowerMenu powerMenu;
     PostAdapter postAdapter;
     String postFilterType = "all";
+
     private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
         @Override
         public void onItemClick(int position, PowerMenuItem item) {
-            //Toast.makeText(getContext(), item.getTitle(), Toast.LENGTH_SHORT).show();
-            powerMenu.setSelectedPosition(position); // change selected item
+            powerMenu.setSelectedPosition(position);
             if (item.getTitle().equals("Solved")) {
-
                 postAdapter = new PostAdapter(postListSolved, getContext());
                 binding.dashboardRv.setAdapter(postAdapter);
                 binding.dashboardRv.hideShimmerAdapter();
                 loadProfileImg();
                 postAdapter.notifyDataSetChanged();
                 postFilterType = "solved";
-
             } else if (item.getTitle().equals("UnSolved")) {
-
                 postAdapter = new PostAdapter(postListUnSolved, getContext());
                 binding.dashboardRv.setAdapter(postAdapter);
                 binding.dashboardRv.hideShimmerAdapter();
                 loadProfileImg();
                 postAdapter.notifyDataSetChanged();
                 postFilterType = "unsolved";
-
             } else {
-
                 postAdapter = new PostAdapter(postList, getContext());
                 binding.dashboardRv.setAdapter(postAdapter);
                 binding.dashboardRv.hideShimmerAdapter();
                 loadProfileImg();
                 postAdapter.notifyDataSetChanged();
                 postFilterType = "all";
-
             }
             powerMenu.dismiss();
         }
@@ -121,17 +115,74 @@ public class HomeFragment extends Fragment {
         auth = FirebaseAuth.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
 
-        //abcFunction();
         mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://communityfeedapp-default-rtdb.firebaseio.com/").getRef();
-
         setFireBaseNotificationId();
-        //updateAppVersion(getActivity());
         setupPowerMenu();
 
     }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        // Inflate the layout for this fragment
+        binding = FragmentHomeBinding.inflate(inflater, container, false);
+
+        setupFunctions();
+
+        return binding.getRoot();
+    }
+
     private void setupFunctions() {
 
+        setupAdapters();
+        setupEventListeners();
+
+    }
+
+    private void setupEventListeners() {
+
+        binding.addStoryImg.setOnClickListener(view1 -> galleryLauncher.launch("image/*"));
+
+        galleryLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), result -> {
+            binding.addStoryImg.setImageURI(result);
+            dialog.show();
+            final StorageReference reference = firebaseStorage.getReference()
+                    .child("stories")
+                    .child(FirebaseAuth.getInstance().getUid())
+                    .child(new Date().getTime() + "");
+            reference.putFile(result).addOnSuccessListener(taskSnapshot -> reference.getDownloadUrl().addOnSuccessListener(uri -> {
+                Story story = new Story();
+                story.setStoryAt(new Date().getTime());
+                firebaseDatabase.getReference()
+                        .child("stories")
+                        .child(FirebaseAuth.getInstance().getUid())
+                        .child("postedBy")
+                        .setValue(story.getStoryAt()).addOnSuccessListener(unused -> {
+                    UserStories stories = new UserStories(uri.toString(), story.getStoryAt());
+
+                    firebaseDatabase.getReference()
+                            .child("stories")
+                            .child(FirebaseAuth.getInstance().getUid())
+                            .child("userStories")
+                            .push()
+                            .setValue(stories);
+                    dialog.dismiss();
+
+                }).addOnFailureListener(e -> {
+                    dialog.dismiss();
+                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+            }).addOnFailureListener(e -> {
+                dialog.dismiss();
+                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            })).addOnFailureListener(e -> {
+                dialog.dismiss();
+                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            });
+        });
+
+        binding.filter.setOnClickListener(view -> powerMenu.showAsDropDown(view));
 
         binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -146,135 +197,11 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        binding.profileImage.setOnClickListener(view -> ((BottomNavigationView) getActivity().findViewById(R.id.bottom_navigation_bar)).setSelectedItemId(R.id.item_userprofile));
+
     }
 
-    private void filterList(String newText) {
-        ArrayList<Post> filteredList = new ArrayList<>();
-
-        if (postFilterType.equals("solved")) {
-            for (Post post : postListSolved) {
-                if (post.getPostTitle().toLowerCase().contains(newText.toLowerCase())) {
-                    filteredList.add(post);
-                }
-            }
-
-        } else if (postFilterType.equals("unsolved")) {
-            for (Post post : postListUnSolved) {
-                if (post.getPostTitle().toLowerCase().contains(newText.toLowerCase())) {
-                    filteredList.add(post);
-                }
-            }
-
-        } else {
-            for (Post post : postList) {
-                if (post.getPostTitle().toLowerCase().contains(newText.toLowerCase())) {
-                    filteredList.add(post);
-                }
-            }
-        }
-
-        //        for (Post post : postList) {
-//            if (post.getPostTitle().toLowerCase().contains(newText.toLowerCase())) {
-//                filteredList.add(post);
-//            }
-//        }
-
-        if (filteredList.isEmpty()) {
-            Toast.makeText(getContext(), "Not Data Found!", Toast.LENGTH_SHORT).show();
-        } else {
-            postAdapter.setFilteredList(filteredList);
-        }
-    }
-
-//    public void updateAppVersion(Activity activity) {
-//        try {
-//            String currentVersion = activity.getPackageManager().getPackageInfo(activity.getPackageName(), 0).versionName;
-//            if (helper.isInternetAvailable(activity)) {
-//
-//                VersionModel versionModel = new VersionModel();
-//                versionModel.setVersion(currentVersion);
-//                versionModel.setSeverity("High");
-//
-//                FirebaseDatabase.getInstance().getReference().child("vcs")
-//                        .child("version")
-//                        .setValue(versionModel);
-//            }
-//        } catch (PackageManager.NameNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
-
-//    public Boolean isInternetAvailable(Activity activity) {
-//        ConnectivityManager cm =
-//                (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
-//
-//        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-//        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-//    }
-
-    private void setFireBaseNotificationId() {
-        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                String token = task.getResult().getToken();
-                HashMap<String, String> hashMap = new HashMap<>();
-                hashMap.put("notification_id", token);
-                mDatabase.child("system").child("notification").child(auth.getCurrentUser().getUid()).setValue(hashMap);
-            }
-        });
-    }
-
-
-//    private void abcFunction() {
-//
-//        List<String> followers = new ArrayList<>();
-//        firebaseDatabase.getReference().child("Users").child(auth.getCurrentUser().getUid())
-//                .child("followers").addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-//                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-//                    FollowModel followModel = dataSnapshot.getValue(FollowModel.class);
-//                    followers.add(followModel.getFollowedBy());
-//                }
-//                Log.d("Followers", followers.toString());
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull @NotNull DatabaseError error) {
-//
-//            }
-//        });
-//    }
-
-    private void setupPowerMenu() {
-
-        List<PowerMenuItem> list = new ArrayList<>();
-        list.add(new PowerMenuItem("All"));
-        list.add(new PowerMenuItem("Solved"));
-        list.add(new PowerMenuItem("UnSolved"));
-
-        powerMenu = new PowerMenu.Builder(getContext())
-                .addItemList(list) // list has "Novel", "Poetry", "Art"
-                .setAnimation(MenuAnimation.SHOWUP_BOTTOM_RIGHT) // Animation start point (TOP | LEFT).
-                .setMenuRadius(10f) // sets the corner radius.
-                .setMenuShadow(10f) // sets the shadow.
-                .setTextColor(ContextCompat.getColor(getContext(), R.color.teal_700))
-                .setTextGravity(Gravity.LEFT)
-                .setTextTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD))
-                .setSelectedTextColor(Color.WHITE)
-                .setMenuColor(Color.WHITE)
-                .setSelectedMenuColor(ContextCompat.getColor(getContext(), R.color.black))
-                .setOnMenuItemClickListener(onMenuItemClickListener)
-                .build();
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-        // Inflate the layout for this fragment
-        binding = FragmentHomeBinding.inflate(inflater, container, false);
+    private void setupAdapters() {
 
         binding.dashboardRv.showShimmerAdapter();
 
@@ -365,133 +292,76 @@ public class HomeFragment extends Fragment {
             }
         });
 
-//        binding.isSolved.setOnCheckedChangeListener((compoundButton, b) -> {
-//            if (b) {
-//                firebaseDatabase.getReference().child("posts").addValueEventListener(new ValueEventListener() {
-//                    @SuppressLint("NotifyDataSetChanged")
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                        postList.clear();
-//                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-//                            Post post = dataSnapshot.getValue(Post.class);
-//                            post.setPostId(dataSnapshot.getKey());
-//                            if (post.isSolved()) {
-//                                Log.d("Solved", "solved");
-//                                postList.add(post);
-//                            } else {
-//                                Log.d("Solved", "not");
-//                            }
-//                        }
-//                        binding.dashboardRv.setAdapter(postAdapter);
-//                        binding.dashboardRv.hideShimmerAdapter();
-//                        loadProfileImg();
-//                        postAdapter.notifyDataSetChanged();
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError error) {
-//                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//            } else {
-//                firebaseDatabase.getReference().child("posts").addValueEventListener(new ValueEventListener() {
-//                    @SuppressLint("NotifyDataSetChanged")
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                        postList.clear();
-//                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-//                            Post post = dataSnapshot.getValue(Post.class);
-//                            post.setPostId(dataSnapshot.getKey());
-//                            postList.add(post);
-//                        }
-//                        binding.dashboardRv.setAdapter(postAdapter);
-//                        binding.dashboardRv.hideShimmerAdapter();
-//                        loadProfileImg();
-//                        postAdapter.notifyDataSetChanged();
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError error) {
-//                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//            }
-//
-//        });
+    }
 
-        binding.addStoryImg.setOnClickListener(view1 -> galleryLauncher.launch("image/*"));
+    private void filterList(String newText) {
+        ArrayList<Post> filteredList = new ArrayList<>();
 
-        galleryLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), new ActivityResultCallback<Uri>() {
-            @Override
-            public void onActivityResult(Uri result) {
-                binding.addStoryImg.setImageURI(result);
-                dialog.show();
-                final StorageReference reference = firebaseStorage.getReference()
-                        .child("stories")
-                        .child(FirebaseAuth.getInstance().getUid())
-                        .child(new Date().getTime() + "");
-                reference.putFile(result).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                Story story = new Story();
-                                story.setStoryAt(new Date().getTime());
-                                firebaseDatabase.getReference()
-                                        .child("stories")
-                                        .child(FirebaseAuth.getInstance().getUid())
-                                        .child("postedBy")
-                                        .setValue(story.getStoryAt()).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void unused) {
-                                        UserStories stories = new UserStories(uri.toString(), story.getStoryAt());
+        if (postFilterType.equals("solved")) {
+            for (Post post : postListSolved) {
+                if (post.getPostTitle().toLowerCase().contains(newText.toLowerCase())) {
+                    filteredList.add(post);
+                }
+            }
 
-                                        firebaseDatabase.getReference()
-                                                .child("stories")
-                                                .child(FirebaseAuth.getInstance().getUid())
-                                                .child("userStories")
-                                                .push()
-                                                .setValue(stories);
-                                        dialog.dismiss();
+        } else if (postFilterType.equals("unsolved")) {
+            for (Post post : postListUnSolved) {
+                if (post.getPostTitle().toLowerCase().contains(newText.toLowerCase())) {
+                    filteredList.add(post);
+                }
+            }
 
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        dialog.dismiss();
-                                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                dialog.dismiss();
-                                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        dialog.dismiss();
-                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+        } else {
+            for (Post post : postList) {
+                if (post.getPostTitle().toLowerCase().contains(newText.toLowerCase())) {
+                    filteredList.add(post);
+                }
+            }
+        }
+
+        if (filteredList.isEmpty()) {
+            Toast.makeText(getContext(), "Not Data Found!", Toast.LENGTH_SHORT).show();
+        } else {
+            postAdapter.setFilteredList(filteredList);
+        }
+    }
+
+    private void setFireBaseNotificationId() {
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                String token = task.getResult().getToken();
+                HashMap<String, String> hashMap = new HashMap<>();
+                hashMap.put("notification_id", token);
+                mDatabase.child("system").child("notification").child(auth.getCurrentUser().getUid()).setValue(hashMap);
             }
         });
+    }
 
-        binding.filter.setOnClickListener(view -> powerMenu.showAsDropDown(view));
-        setupFunctions();
+    private void setupPowerMenu() {
 
-        binding.profileImage.setOnClickListener(view -> ((BottomNavigationView) getActivity().findViewById(R.id.bottom_navigation_bar)).setSelectedItemId(R.id.item_userprofile));
-        return binding.getRoot();
+        List<PowerMenuItem> list = new ArrayList<>();
+        list.add(new PowerMenuItem("All"));
+        list.add(new PowerMenuItem("Solved"));
+        list.add(new PowerMenuItem("UnSolved"));
+
+        powerMenu = new PowerMenu.Builder(getContext())
+                .addItemList(list) // list has "Novel", "Poetry", "Art"
+                .setAnimation(MenuAnimation.SHOWUP_BOTTOM_RIGHT) // Animation start point (TOP | LEFT).
+                .setMenuRadius(10f) // sets the corner radius.
+                .setMenuShadow(10f) // sets the shadow.
+                .setTextColor(ContextCompat.getColor(getContext(), R.color.teal_700))
+                .setTextGravity(Gravity.LEFT)
+                .setTextTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD))
+                .setSelectedTextColor(Color.WHITE)
+                .setMenuColor(Color.WHITE)
+                .setSelectedMenuColor(ContextCompat.getColor(getContext(), R.color.black))
+                .setOnMenuItemClickListener(onMenuItemClickListener)
+                .build();
     }
 
     private void loadProfileImg() {
 
-        FirebaseDatabase.getInstance()
+        firebaseDatabase
                 .getReference()
                 .child("Users/" + Objects.requireNonNull(auth.getCurrentUser()).getUid()).addValueEventListener(new ValueEventListener() {
             @Override

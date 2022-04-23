@@ -49,9 +49,9 @@ public class ProfileFragment extends Fragment {
     ArrayList<FollowModel> list;
     ArrayList<Following> followingList;
     FragmentProfileBinding binding;
-    FirebaseAuth auth;
-    FirebaseStorage firebaseStorage;
     FirebaseDatabase firebaseDatabase;
+    FirebaseStorage firebaseStorage;
+    FirebaseAuth auth;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -62,9 +62,9 @@ public class ProfileFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
+        firebaseDatabase = FirebaseDatabase.getInstance();
         auth = FirebaseAuth.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
-        firebaseDatabase = FirebaseDatabase.getInstance();
 
     }
 
@@ -292,8 +292,6 @@ public class ProfileFragment extends Fragment {
                 .show());
 
     }
-
-
 
     private void setConstraints() {
         ConstraintSet constraintSet = new ConstraintSet();

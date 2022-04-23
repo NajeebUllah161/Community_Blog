@@ -63,14 +63,13 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
 
     ActivityEditPostDialogueBinding binding;
     Uri uri;
-    Bitmap bitmapImg;
     FirebaseAuth auth;
     FirebaseDatabase firebaseDatabase;
     FirebaseStorage firebaseStorage;
-    ProgressDialog progressDialog, populateDataProgressDialogue;
+    ProgressDialog progressDialog;
     String postImg, postTitle, postDescription, postRecording, downloadedRecordingLocation, recTime;
     long timeStamp;
-    boolean hasImage, hasRecording = false;
+    boolean hasImage = false;
 
     //Recording
     String AudioSavePathInDevice = null;
@@ -93,7 +92,6 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
         auth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
-        //populateDataProgressDialogue = new ProgressDialog(this);
         progressDialog = new ProgressDialog(this);
 
         //audio recording
@@ -106,12 +104,6 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
         postDescription = intent.getStringExtra("postDesc");
         postRecording = intent.getStringExtra("postRecording");
         recTime = intent.getStringExtra("recTime");
-        /*
-        Log.d("timeStamp", String.valueOf(timeStamp));
-        Log.d("postImg", String.valueOf(postImg));
-        Log.d("postTitle", String.valueOf(postTitle));
-        Log.d("postDesc", String.valueOf(postDescription));
-        */
 
         setupFunctions();
         populateData();
@@ -119,11 +111,7 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
 
     @SuppressLint("CheckResult")
     private void populateData() {
-        //populateDataProgressDialogue.show();
         if (postImg != null) {
-            //new DownloadImage().execute();
-            //Log.d("postImg", postImg);
-            //Picasso.get().load(postImg).placeholder(R.drawable.placeholder).into(binding.postImage);
             RequestOptions requestOptions = new RequestOptions();
             requestOptions.placeholder(R.drawable.placeholder);
             Glide.with(this)
@@ -136,14 +124,11 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
         }
 
         if (postRecording != null) {
-            //new DownloadRecording().execute();
-
             binding.audioContainer.setVisibility(View.VISIBLE);
             binding.removeRecording.setVisibility(View.VISIBLE);
             binding.play.setVisibility(View.VISIBLE);
 
         } else {
-            //populateDataProgressDialogue.dismiss();
             binding.audioContainer.setVisibility(View.GONE);
             binding.removeRecording.setVisibility(View.GONE);
         }
@@ -176,13 +161,6 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
         progressDialog.setMessage("Please Wait...");
         progressDialog.setCancelable(false);
         progressDialog.setCanceledOnTouchOutside(false);
-
-        //  populateDataProgressDialogue.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        //  populateDataProgressDialogue.setTitle("Loading Data");
-        //  populateDataProgressDialogue.setMessage("Please Wait...");
-        //  populateDataProgressDialogue.setCancelable(false);
-        //  populateDataProgressDialogue.setCanceledOnTouchOutside(false);
-
 
         if ((postTitle == null || postTitle.isEmpty()) && (postDescription == null || postDescription.isEmpty()) && (postImg == null || postImg.isEmpty()) && (postRecording == null || postRecording.isEmpty())) {
             setButtonDisabled();
@@ -257,13 +235,7 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
             }
         });
 
-        binding.addImg.setOnClickListener(view -> {
-//            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//            intent.setType("image/*");
-//            startActivityForResult(intent, 10);
-            setPickImage();
-
-        });
+        binding.addImg.setOnClickListener(view -> setPickImage());
 
         binding.removeImg.setOnClickListener(view -> {
             removeImage();
@@ -378,32 +350,6 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
                 Toast.makeText(this, "Failed to Post", Toast.LENGTH_SHORT).show();
             });
         }
-//        else if (hasImage) {
-//            //Log.d("Checkpoint", "else if");
-//            Uri uriDownloaded = getImageUri(this, bitmapImg);
-//            storageReference.putFile(uriDownloaded).addOnSuccessListener(taskSnapshot -> {
-//                storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
-//                    Post post = new Post();
-//                    post.setPostImage(uri.toString());
-//                    post.setPostRecording(audioUri.toString());
-//                    post.setPostedBy(auth.getCurrentUser().getUid());
-//                    post.setCreatedAt(new Date().toString());
-//                    post.setPostTitle(binding.postTitle.getText().toString());
-//                    post.setPostDescription(binding.postDescription.getText().toString());
-//                    post.setPostedAt(timeStamp);
-//
-//                    firebaseDatabase.getReference().child("posts").child(String.valueOf(timeStamp))
-//                            .setValue(post).addOnSuccessListener(unused -> {
-//                        progressDialog.dismiss();
-//                        Toast.makeText(this, "Post Edited Successfully", Toast.LENGTH_SHORT).show();
-//                        finish();
-//                    }).addOnFailureListener(e -> progressDialog.dismiss());
-//                });
-//            }).addOnFailureListener(e -> {
-//                progressDialog.dismiss();
-//                Toast.makeText(this, "Failed to Edit Post", Toast.LENGTH_SHORT).show();
-//            });
-//        }
         else {
             Post post = new Post();
             post.setPostImage(postImg);
@@ -456,44 +402,7 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
                 Toast.makeText(this, "Failed to Edit Post", Toast.LENGTH_SHORT).show();
             });
         }
-//        else if (hasImage) {
-//            //Log.d("Checkpoint", "else if");
-//            Uri uriDownloaded = getImageUri(this, bitmapImg);
-//            storageReference.putFile(uriDownloaded).addOnSuccessListener(taskSnapshot -> {
-//                storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
-//                    Post post = new Post();
-//                    post.setPostImage(uri.toString());
-//                    post.setPostedBy(auth.getCurrentUser().getUid());
-//                    post.setCreatedAt(new Date().toString());
-//                    post.setPostTitle(binding.postTitle.getText().toString());
-//                    post.setPostDescription(binding.postDescription.getText().toString());
-//                    post.setPostedAt(timeStamp);
-//
-//                    firebaseDatabase.getReference().child("posts").child(String.valueOf(timeStamp))
-//                            .setValue(post).addOnSuccessListener(unused -> {
-//                        progressDialog.dismiss();
-//                        Toast.makeText(this, "Post Edited Successfully", Toast.LENGTH_SHORT).show();
-//                        finish();
-//                    }).addOnFailureListener(e -> progressDialog.dismiss());
-//                });
-//            }).addOnFailureListener(e -> {
-//                progressDialog.dismiss();
-//                Toast.makeText(this, "Failed to Edit Post", Toast.LENGTH_SHORT).show();
-//            });
-//        }
         else {
-
-            Log.d("Checkpoint", "else");
-
-            //            Post post = new Post();
-//            post.setPostImage(postImg);
-//            post.setPostRecording(postRecording);
-//            post.setRecTime(recTime);
-//            post.setPostedBy(auth.getCurrentUser().getUid());
-//            post.setCreatedAt(new Date().toString());
-//            post.setPostTitle(binding.postTitle.getText().toString());
-//            post.setPostDescription(binding.postDescription.getText().toString());
-//            post.setPostedAt(timeStamp);
 
             Map<String, Object> post = new HashMap<>();
             post.put("postImage", postImg);
@@ -573,7 +482,6 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
             }
 
             mediaPlayer.start();
-            //Toast.makeText(getContext(),"Recording Playing",Toast.LENGTH_LONG).show();
 
         } else {
 
@@ -651,14 +559,10 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
             try {
                 mediaRecorder.prepare();
                 mediaRecorder.start();
-            } catch (IllegalStateException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
+            } catch (IllegalStateException | IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            //Toast.makeText(getContext(),"Recording started",Toast.LENGTH_LONG).show();
         } else {
             requestPermission();
         }
@@ -721,30 +625,6 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
         }
     }
 
-    //    public Uri getImageUri(Context inContext, Bitmap inImage) {
-//        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-//        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-//        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
-//        return Uri.parse(path);
-//    }
-
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//
-//        if (resultCode == RESULT_OK) {
-//            if (requestCode == 10) {
-//                if (data.getData() != null) {
-//                    uri = data.getData();
-//                    binding.postImage.setImageURI(uri);
-//                    binding.postImage.setVisibility(View.VISIBLE);
-//                    binding.removeImg.setVisibility(View.VISIBLE);
-//                    setButtonEnabled();
-//                }
-//            }
-//        }
-//    }
-
     private void setButtonEnabled() {
         binding.postBtn.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.follow_btn_bg));
         binding.postBtn.setTextColor(this.getResources().getColor(R.color.white));
@@ -765,99 +645,5 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
         binding.removeImg.setVisibility(View.VISIBLE);
         setButtonEnabled();
     }
-
-    //    private void downloadPostImage() {
-//        Bitmap imgBitmap = null;
-//        URL newUrl = null;
-//        try {
-//            newUrl = new URL(postImg);
-//        } catch (MalformedURLException e) {
-//            e.printStackTrace();
-//        }
-//        try {
-//            imgBitmap = BitmapFactory.decodeStream(newUrl.openConnection().getInputStream());
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        Bitmap finalImgBitmap = imgBitmap;
-//        runOnUiThread(() -> {
-//            bitmapImg = finalImgBitmap;
-//            binding.postImage.setImageBitmap(finalImgBitmap);
-//            hasImage = true;
-//            setButtonEnabled();
-//        });
-//    }
-
-//    @SuppressLint("WrongConstant")
-//    private void downloadPostRecording() {
-//
-//        try {
-//
-//            File cacheDir = new File(android.os.Environment.getExternalStorageDirectory(), "Folder Name");
-//            if (!cacheDir.exists())
-//                cacheDir.mkdirs();
-//
-//            String fileLocation = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" +
-//                    CreateRandomAudioFileName(5) + "AudioRecording.3gp";
-//
-//            File f = new File(fileLocation);
-//            URL url = new URL(postRecording);
-//
-//            InputStream input = new BufferedInputStream(url.openStream());
-//            OutputStream output = new FileOutputStream(f);
-//
-//            byte data[] = new byte[1024];
-//            long total = 0;
-//            int count = 0;
-//            while ((count = input.read(data)) != -1) {
-//                total++;
-//                Log.e("while", "A" + total);
-//
-//                output.write(data, 0, count);
-//            }
-//
-//            output.flush();
-//            output.close();
-//            input.close();
-//
-//            runOnUiThread(() -> {
-//                Log.d("Checkpoint", fileLocation);
-//                binding.audioContainer.setVisibility(View.VISIBLE);
-//                binding.removeRecording.setVisibility(View.VISIBLE);
-//                binding.play.setVisibility(View.VISIBLE);
-//
-//                downloadedRecordingLocation = fileLocation;
-//                hasRecording = true;
-//                populateDataProgressDialogue.dismiss();
-//
-//            });
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (MalformedURLException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
-
-//    @SuppressLint("StaticFieldLeak")
-//    class DownloadImage extends AsyncTask<Void, Void, Void> {
-//
-//        @Override
-//        protected Void doInBackground(Void... voids) {
-//            downloadPostImage();
-//            return null;
-//        }
-//    }
-//
-//    class DownloadRecording extends AsyncTask<Void, Void, Void> {
-//
-//        @Override
-//        protected Void doInBackground(Void... voids) {
-//            downloadPostRecording();
-//            return null;
-//        }
-//    }
 
 }

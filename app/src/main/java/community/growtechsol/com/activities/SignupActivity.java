@@ -28,6 +28,15 @@ public class SignupActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
 
+        setupFunctions();
+    }
+
+    private void setupFunctions() {
+        setupEventListeners();
+    }
+
+    private void setupEventListeners() {
+
         binding.signUpBtn.setOnClickListener(v -> createUser());
 
         binding.goToLogin.setOnClickListener(v -> {

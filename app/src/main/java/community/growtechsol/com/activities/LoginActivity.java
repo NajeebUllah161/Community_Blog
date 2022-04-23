@@ -31,17 +31,21 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        Log.d("CheckingErr", "onCreateLoginActivity");
-        //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        //Log.d("CheckingErr", "onCreateLoginActivity");
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
         progressDialog = new ProgressDialog(LoginActivity.this);
 
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setTitle("Logging In");
-        progressDialog.setMessage("Please Wait...");
-        progressDialog.setCancelable(false);
-        progressDialog.setCanceledOnTouchOutside(false);
+        setupFunctions();
+
+    }
+
+    private void setupFunctions() {
+        setupProgressDialogue();
+        setupEventListeners();
+    }
+
+    private void setupEventListeners() {
 
         binding.loginBtn.setOnClickListener(v -> {
             progressDialog.show();
@@ -66,6 +70,16 @@ public class LoginActivity extends AppCompatActivity {
             Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
             startActivity(intent);
         });
+    }
+
+    private void setupProgressDialogue() {
+
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setTitle("Logging In");
+        progressDialog.setMessage("Please Wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.setCanceledOnTouchOutside(false);
+
     }
 
     @Override

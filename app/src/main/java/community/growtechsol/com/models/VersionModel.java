@@ -2,8 +2,7 @@ package community.growtechsol.com.models;
 
 public class VersionModel {
 
-    private String version;
-    private String severity;
+    private String version,severity;
 
     public VersionModel() {
     }

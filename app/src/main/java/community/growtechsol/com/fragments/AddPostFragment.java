@@ -101,17 +101,6 @@ public class AddPostFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static void hideKeyboard(Activity activity) {
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        //Find the currently focused view, so we can grab the correct window token from it.
-        View view = activity.getCurrentFocus();
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
-        if (view == null) {
-            view = new View(activity);
-        }
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,45 +113,27 @@ public class AddPostFragment extends Fragment {
         //audio recording
         random = new Random();
 
-        //Broadcast Notification
-
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentAddPostBinding.inflate(inflater, container, false);
 
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setTitle("Post Uploading");
-        progressDialog.setMessage("Please Wait...");
-        progressDialog.setCancelable(false);
-        progressDialog.setCanceledOnTouchOutside(false);
+        setupFunctions();
 
-        mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://communityfeedapp-default-rtdb.firebaseio.com/").getRef();
+        return binding.getRoot();
+    }
 
-        firebaseDatabase.getReference().child("Users/" + auth.getCurrentUser().getUid())
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            User user = snapshot.getValue(User.class);
-                            Picasso.get()
-                                    .load(user.getProfileImage())
-                                    .placeholder(R.drawable.placeholder)
-                                    .into(binding.profileImgAddPost);
-                            binding.userNameAddPost.setText(user.getName());
-                            binding.userProfessionAddPost.setText(user.getProfession());
-                        }
-                    }
+    private void setupFunctions() {
+        setupProgressDialogue();
+        loadUserData();
+        setupEventListeners();
+    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
+    @SuppressLint("ClickableViewAccessibility")
+    private void setupEventListeners() {
 
         binding.postTitle.addTextChangedListener(new TextWatcher() {
             @Override
@@ -210,13 +181,7 @@ public class AddPostFragment extends Fragment {
             }
         });
 
-        binding.addImg.setOnClickListener(view -> {
-            //            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//            intent.setType("image/*");
-//            startActivityForResult(intent, 10);
-            setPickImage();
-
-        });
+        binding.addImg.setOnClickListener(view -> setPickImage());
 
         binding.addRecording.setOnTouchListener((view, motionEvent) -> {
             switch (motionEvent.getAction()) {
@@ -245,8 +210,6 @@ public class AddPostFragment extends Fragment {
 
         binding.removeImg.setOnClickListener(view -> removeImgFromPost());
 
-        //setFireBaseNotificationId();
-
         binding.postBtn.setOnClickListener(view -> {
 
             progressDialog.show();
@@ -256,7 +219,7 @@ public class AddPostFragment extends Fragment {
                     .child(auth.getCurrentUser().getUid())
                     .child(new Date().getTime() + "");
 
-            Log.d("CheckNull", AudioSavePathInDevice + " " + mediaRecorder);
+            //Log.d("CheckNull", AudioSavePathInDevice + " " + mediaRecorder);
             if (mediaRecorder != null && AudioSavePathInDevice != null) {
                 //Log.d("Checkpoint", "mediaPlayer and Path NOT NULL");
                 Uri recordingUri = Uri.fromFile(new File(AudioSavePathInDevice));
@@ -273,31 +236,46 @@ public class AddPostFragment extends Fragment {
                     Toast.makeText(getContext(), "Failed to Upload Audio", Toast.LENGTH_SHORT).show();
                 });
             } else {
-                Log.d("Checkpoint", "mediaPlayer and Path ARE NULL");
+                //Log.d("Checkpoint", "mediaPlayer and Path ARE NULL");
                 uploadPostImgAndData();
             }
         });
 
-        return binding.getRoot();
     }
 
-    //    @Override
-//    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//
-//        if (resultCode == RESULT_OK) {
-//            if (requestCode == 10) {
-//                if (data.getData() != null) {
-//                    uri = data.getData();
-//                    Log.d("Uri", String.valueOf(uri));
-//                    binding.postImage.setImageURI(uri);
-//                    binding.postImage.setVisibility(View.VISIBLE);
-//                    binding.removeImg.setVisibility(View.VISIBLE);
-//                    setButtonEnabled();
-//                }
-//            }
-//        }
-//    }
+    private void loadUserData() {
+        mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://communityfeedapp-default-rtdb.firebaseio.com/").getRef();
+
+        firebaseDatabase.getReference().child("Users/" + auth.getCurrentUser().getUid())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            User user = snapshot.getValue(User.class);
+                            Picasso.get()
+                                    .load(user.getProfileImage())
+                                    .placeholder(R.drawable.placeholder)
+                                    .into(binding.profileImgAddPost);
+                            binding.userNameAddPost.setText(user.getName());
+                            binding.userProfessionAddPost.setText(user.getProfession());
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
+    }
+
+    private void setupProgressDialogue() {
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setTitle("Post Uploading");
+        progressDialog.setMessage("Please Wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.setCanceledOnTouchOutside(false);
+    }
 
     private void setPickImage() {
         @SuppressLint("WrongConstant")
@@ -318,7 +296,6 @@ public class AddPostFragment extends Fragment {
                     if (r.getError() == null) {
                         uri = r.getUri();
                         Log.d("Uri", String.valueOf(uri));
-                        //Glide.with(getContext()).load(r.getBitmap()).into(binding.postImage);
                         binding.postImage.setImageBitmap(r.getBitmap());
                         binding.postImage.setVisibility(View.VISIBLE);
                         binding.removeImg.setVisibility(View.VISIBLE);
@@ -347,9 +324,9 @@ public class AddPostFragment extends Fragment {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         String key = dataSnapshot.getKey();
                         String description = dataSnapshot.child("notification_id").getValue(String.class);
-                        Log.d("KeyDesc", key + " " + description);
-//                        myArrayList.add(description);
-//                        mKeysArraylist.add(key);
+                        //Log.d("KeyDesc", key + " " + description);
+                        //myArrayList.add(description);
+                        //mKeysArraylist.add(key);
                         notificationsKV.put(key, description);
 
                     }
@@ -371,7 +348,7 @@ public class AddPostFragment extends Fragment {
                                 }
                             }
 
-                            Log.d("NotificationId", String.valueOf(myArrayList));
+                            //Log.d("NotificationId", String.valueOf(myArrayList));
 
                             JSONArray regArray = new JSONArray(myArrayList);
                             sendMessage(regArray, "New Post", binding.userNameAddPost.getText().toString() + " has added a new Post, click to see details", "icon", "message");
@@ -424,6 +401,58 @@ public class AddPostFragment extends Fragment {
 
     }
 
+    private void uploadPostImgAndData() {
+
+        final StorageReference storageReference = firebaseStorage.getReference().child("posts")
+                .child(auth.getCurrentUser().getUid())
+                .child(timeStamp + "");
+
+        if (uri != null) {
+            storageReference.putFile(uri).addOnSuccessListener(taskSnapshot -> {
+                storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+                    Post post = new Post();
+                    post.setPostImage(uri.toString());
+                    post.setRecTime(String.valueOf(timeStamp));
+                    post.setPostedBy(auth.getCurrentUser().getUid());
+                    post.setCreatedAt(new Date().toString());
+                    post.setSolved(false);
+                    post.setPostTitle(binding.postTitle.getText().toString());
+                    post.setPostDescription(binding.postDescription.getText().toString());
+                    post.setPostedAt(new Date().getTime());
+
+                    firebaseDatabase.getReference().child("posts").child(String.valueOf(post.getPostedAt()))
+                            .setValue(post).addOnSuccessListener(unused -> {
+                        progressDialog.dismiss();
+                        Toast.makeText(getContext(), "Posted Successfully!", Toast.LENGTH_SHORT).show();
+                        sendNotification();
+                        hideKeyboard(getActivity());
+                        incrementTotalPostsCount();
+                    }).addOnFailureListener(e -> progressDialog.dismiss());
+                });
+            }).addOnFailureListener(e -> {
+                progressDialog.dismiss();
+                Toast.makeText(getContext(), "Failed to Post", Toast.LENGTH_SHORT).show();
+            });
+        } else {
+            Post post = new Post();
+            post.setPostedBy(auth.getCurrentUser().getUid());
+            post.setCreatedAt(new Date().toString());
+            post.setSolved(false);
+            post.setPostTitle(binding.postTitle.getText().toString());
+            post.setPostDescription(binding.postDescription.getText().toString());
+            post.setPostedAt(new Date().getTime());
+
+            firebaseDatabase.getReference().child("posts").child(String.valueOf(post.getPostedAt()))
+                    .setValue(post).addOnSuccessListener(unused -> {
+                progressDialog.dismiss();
+                Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
+                sendNotification();
+                hideKeyboard(getActivity());
+                incrementTotalPostsCount();
+            }).addOnFailureListener(e -> progressDialog.dismiss());
+        }
+    }
+
     private void uploadPostImgAudioAndData(Uri audioUri) {
 
         final StorageReference storageReference = firebaseStorage.getReference().child("posts")
@@ -447,7 +476,7 @@ public class AddPostFragment extends Fragment {
                     firebaseDatabase.getReference().child("posts").child(String.valueOf(post.getPostedAt()))
                             .setValue(post).addOnSuccessListener(unused -> {
                         progressDialog.dismiss();
-                        Toast.makeText(getContext(), "You post is under review!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Posted Successfully!", Toast.LENGTH_SHORT).show();
                         sendNotification();
                         hideKeyboard(getActivity());
                         incrementTotalPostsCount();
@@ -480,15 +509,15 @@ public class AddPostFragment extends Fragment {
     }
 
     private void incrementTotalPostsCount() {
-        FirebaseDatabase.getInstance().getReference()
+       firebaseDatabase.getReference()
                 .child("Users")
                 .child(auth.getCurrentUser().getUid())
                 .child("totalPosts")
                 .setValue(ServerValue.increment(1)).addOnSuccessListener(unused -> {
-            Toast.makeText(getContext(), "Post count updated", Toast.LENGTH_SHORT).show();
+            Log.d("AddPostFragment", "Post count updated");
             ((BottomNavigationView) getActivity().findViewById(R.id.bottom_navigation_bar)).setSelectedItemId(R.id.item_home);
         }).addOnFailureListener(e -> {
-            Toast.makeText(getContext(), "Failed to update post count", Toast.LENGTH_SHORT).show();
+            Log.d("AddPostFragment", "Failed to update post count");
             ((BottomNavigationView) getActivity().findViewById(R.id.bottom_navigation_bar)).setSelectedItemId(R.id.item_home);
         });
     }
@@ -497,56 +526,60 @@ public class AddPostFragment extends Fragment {
         getFireBaseNotificationId();
     }
 
-    private void uploadPostImgAndData() {
+    public void sendMessage(final JSONArray recipients, final String title, final String body, final String icon, final String message) {
 
-        final StorageReference storageReference = firebaseStorage.getReference().child("posts")
-                .child(auth.getCurrentUser().getUid())
-                .child(timeStamp + "");
+        new AsyncTask<String, String, String>() {
+            @SuppressLint("StaticFieldLeak")
+            @RequiresApi(api = Build.VERSION_CODES.Q)
+            @Override
+            protected String doInBackground(String... params) {
+                try {
+                    JSONObject root = new JSONObject();
+                    JSONObject notification = new JSONObject();
+                    notification.put("body", body);
+                    notification.put("title", title);
+                    notification.put("icon", icon);
 
-        if (uri != null) {
-            storageReference.putFile(uri).addOnSuccessListener(taskSnapshot -> {
-                storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
-                    Post post = new Post();
-                    post.setPostImage(uri.toString());
-                    post.setRecTime(String.valueOf(timeStamp));
-                    post.setPostedBy(auth.getCurrentUser().getUid());
-                    post.setCreatedAt(new Date().toString());
-                    post.setSolved(false);
-                    post.setPostTitle(binding.postTitle.getText().toString());
-                    post.setPostDescription(binding.postDescription.getText().toString());
-                    post.setPostedAt(new Date().getTime());
+                    JSONObject data = new JSONObject();
+                    data.put("message", message);
+                    root.put("notification", notification);
+                    root.put("data", data);
+                    root.put("registration_ids", recipients);
 
-                    firebaseDatabase.getReference().child("posts").child(String.valueOf(post.getPostedAt()))
-                            .setValue(post).addOnSuccessListener(unused -> {
-                        progressDialog.dismiss();
-                        Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
-                        sendNotification();
-                        hideKeyboard(getActivity());
-                        incrementTotalPostsCount();
-                    }).addOnFailureListener(e -> progressDialog.dismiss());
-                });
-            }).addOnFailureListener(e -> {
-                progressDialog.dismiss();
-                Toast.makeText(getContext(), "Failed to Post", Toast.LENGTH_SHORT).show();
-            });
-        } else {
-            Post post = new Post();
-            post.setPostedBy(auth.getCurrentUser().getUid());
-            post.setCreatedAt(new Date().toString());
-            post.setSolved(false);
-            post.setPostTitle(binding.postTitle.getText().toString());
-            post.setPostDescription(binding.postDescription.getText().toString());
-            post.setPostedAt(new Date().getTime());
+                    String result = postToFCM(root.toString());
+                    Log.d("TAG", "Result: " + result);
+                    return result;
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                return null;
+            }
 
-            firebaseDatabase.getReference().child("posts").child(String.valueOf(post.getPostedAt()))
-                    .setValue(post).addOnSuccessListener(unused -> {
-                progressDialog.dismiss();
-                Toast.makeText(getContext(), "Posted Successfully", Toast.LENGTH_SHORT).show();
-                sendNotification();
-                hideKeyboard(getActivity());
-                incrementTotalPostsCount();
-            }).addOnFailureListener(e -> progressDialog.dismiss());
-        }
+            @SuppressLint("StaticFieldLeak")
+            @Override
+            protected void onPostExecute(String result) {
+                try {
+                    JSONObject resultJson = new JSONObject(result);
+                    int success, failure;
+                    success = resultJson.getInt("success");
+                    failure = resultJson.getInt("failure");
+                } catch (@SuppressLint("StaticFieldLeak") JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.execute();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    String postToFCM(String bodyString) throws IOException {
+        RequestBody body = RequestBody.create(JSON, bodyString);
+        Request request = new Request.Builder()
+                .url(FCM_SEND)
+                .post(body)
+                .addHeader("Authorization", "key=AAAAaGx1iT8:APA91bEa9jz6wQVGu1lble4o2DRrVhm5b0omMS1T5F5it6s9KOl2TDoXYPOQxz3I1g6P37-APfKbfGnFYvZ1u0RaYexbgGsZ_ipFoFDIx3kbpBBW1GPJCgcDQMNriXjvMAC-fuf363Ek")
+                .build();
+        Response response = mClient.newCall(request).execute();
+        return response.body().string();
     }
 
     private void resumeRecording() {
@@ -608,11 +641,11 @@ public class AddPostFragment extends Fragment {
         if (mediaRecorder != null) {
             binding.recordingStatus.setVisibility(View.INVISIBLE);
             binding.play.setVisibility(View.VISIBLE);
-            Log.d("Length", String.valueOf(length));
+            //Log.d("Length", String.valueOf(length));
             try {
                 mediaRecorder.stop();
             } catch (RuntimeException e) {
-                Log.d("CheckAudio", "check" + AudioSavePathInDevice + " " + mediaPlayer + " " + mediaRecorder);
+                //Log.d("CheckAudio", "check" + AudioSavePathInDevice + " " + mediaPlayer + " " + mediaRecorder);
                 isAudio = false;
             }
             if (isAudio) {
@@ -658,19 +691,9 @@ public class AddPostFragment extends Fragment {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            //Toast.makeText(getContext(),"Recording started",Toast.LENGTH_LONG).show();
         } else {
             requestPermission();
         }
-    }
-
-    public boolean checkPermission() {
-        int result = ContextCompat.checkSelfPermission(requireContext().getApplicationContext(),
-                WRITE_EXTERNAL_STORAGE);
-        int result1 = ContextCompat.checkSelfPermission(requireContext().getApplicationContext(),
-                RECORD_AUDIO);
-        return result == PackageManager.PERMISSION_GRANTED &&
-                result1 == PackageManager.PERMISSION_GRANTED;
     }
 
     public String CreateRandomAudioFileName(int string) {
@@ -692,6 +715,15 @@ public class AddPostFragment extends Fragment {
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         mediaRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
         mediaRecorder.setOutputFile(AudioSavePathInDevice);
+    }
+
+    public boolean checkPermission() {
+        int result = ContextCompat.checkSelfPermission(requireContext().getApplicationContext(),
+                WRITE_EXTERNAL_STORAGE);
+        int result1 = ContextCompat.checkSelfPermission(requireContext().getApplicationContext(),
+                RECORD_AUDIO);
+        return result == PackageManager.PERMISSION_GRANTED &&
+                result1 == PackageManager.PERMISSION_GRANTED;
     }
 
     private void requestPermission() {
@@ -720,74 +752,6 @@ public class AddPostFragment extends Fragment {
         }
     }
 
-    public void sendMessage(final JSONArray recipients, final String title, final String body, final String icon, final String message) {
-
-        new AsyncTask<String, String, String>() {
-            @SuppressLint("StaticFieldLeak")
-            @RequiresApi(api = Build.VERSION_CODES.Q)
-            @Override
-            protected String doInBackground(String... params) {
-                try {
-                    JSONObject root = new JSONObject();
-                    JSONObject notification = new JSONObject();
-                    notification.put("body", body);
-                    notification.put("title", title);
-                    notification.put("icon", icon);
-
-                    JSONObject data = new JSONObject();
-                    data.put("message", message);
-                    root.put("notification", notification);
-                    root.put("data", data);
-                    root.put("registration_ids", recipients);
-
-                    String result = postToFCM(root.toString());
-                    Log.d("TAG", "Result: " + result);
-                    return result;
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-                return null;
-            }
-
-            @SuppressLint("StaticFieldLeak")
-            @Override
-            protected void onPostExecute(String result) {
-                try {
-                    JSONObject resultJson = new JSONObject(result);
-                    int success, failure;
-                    success = resultJson.getInt("success");
-                    failure = resultJson.getInt("failure");
-                } catch (@SuppressLint("StaticFieldLeak") JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }.execute();
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.Q)
-    String postToFCM(String bodyString) throws IOException {
-        Log.d("Checkpointt", "here");
-        RequestBody body = RequestBody.create(JSON, bodyString);
-        Request request = new Request.Builder()
-                .url(FCM_SEND)
-                .post(body)
-                .addHeader("Authorization", "key=AAAAaGx1iT8:APA91bEa9jz6wQVGu1lble4o2DRrVhm5b0omMS1T5F5it6s9KOl2TDoXYPOQxz3I1g6P37-APfKbfGnFYvZ1u0RaYexbgGsZ_ipFoFDIx3kbpBBW1GPJCgcDQMNriXjvMAC-fuf363Ek")
-                .build();
-        Response response = mClient.newCall(request).execute();
-        return response.body().string();
-    }
-
-    private void setFireBaseNotificationId() {
-        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                String token = task.getResult().getToken();
-                HashMap<String, String> hashMap = new HashMap<>();
-                hashMap.put("notification_id", token);
-                mDatabase.child("system").child("notification").child(auth.getCurrentUser().getUid()).setValue(hashMap);
-            }
-        });
-    }
-
     private void setButtonEnabled() {
         binding.postBtn.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.follow_btn_bg));
         binding.postBtn.setTextColor(getContext().getResources().getColor(R.color.white));
@@ -800,15 +764,15 @@ public class AddPostFragment extends Fragment {
         binding.postBtn.setEnabled(false);
     }
 
-    //    @Override
-//    public void onPickResult(PickResult r) {
-//        if (r.getError() == null) {
-//            uri = r.getUri();
-//            Log.d("Uri", String.valueOf(uri));
-//            binding.postImage.setImageURI(uri);
-//            binding.postImage.setVisibility(View.VISIBLE);
-//            binding.removeImg.setVisibility(View.VISIBLE);
-//            setButtonEnabled();
-//        }
-//    }
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
 }

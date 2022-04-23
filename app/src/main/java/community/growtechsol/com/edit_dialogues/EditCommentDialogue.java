@@ -96,49 +96,11 @@ public class EditCommentDialogue extends AppCompatActivity {
         progressDialog.setCanceledOnTouchOutside(false);
 
         populateExistingDate();
+        setupEventListeners();
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private void populateExistingDate() {
-
-        //Populate user data
-        FirebaseDatabase.getInstance().getReference().child("Users")
-                .child(commentedBy)
-                .addValueEventListener(new ValueEventListener() {
-                    @SuppressLint({"SetTextI18n", "CheckResult"})
-                    @Override
-                    public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-                        User user = snapshot.getValue(User.class);
-
-                        binding.userNameEditComment.setText(user.getName() + "");
-                        binding.userProfessionEditComment.setText(user.getProfession() + "");
-                        RequestOptions requestOptions = new RequestOptions();
-                        requestOptions.placeholder(R.drawable.placeholder);
-                        if (!EditCommentDialogue.this.isFinishing()) {
-                            Glide.with(EditCommentDialogue.this)
-                                    .setDefaultRequestOptions(requestOptions)
-                                    .load(user.getProfileImage()).into(binding.profileImgEditComment);
-                        }
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull @NotNull DatabaseError error) {
-
-                    }
-                });
-
-        //Populate comment data
-
-        binding.commentDescription.setText(commentData);
-        binding.commentDescription.setSelection(commentData.length());
-
-        // setup audio if any
-
-        if (commentRecording != null) {
-            binding.audioContainer.setVisibility(View.VISIBLE);
-            binding.play.setVisibility(View.VISIBLE);
-        }
+    private void setupEventListeners() {
 
         binding.addRecording.setOnTouchListener((view, motionEvent) -> {
             switch (motionEvent.getAction()) {
@@ -239,6 +201,48 @@ public class EditCommentDialogue extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void populateExistingDate() {
+
+        //Populate user data
+        firebaseDatabase.getReference().child("Users")
+                .child(commentedBy)
+                .addValueEventListener(new ValueEventListener() {
+                    @SuppressLint({"SetTextI18n", "CheckResult"})
+                    @Override
+                    public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                        User user = snapshot.getValue(User.class);
+
+                        binding.userNameEditComment.setText(user.getName() + "");
+                        binding.userProfessionEditComment.setText(user.getProfession() + "");
+                        RequestOptions requestOptions = new RequestOptions();
+                        requestOptions.placeholder(R.drawable.placeholder);
+                        if (!EditCommentDialogue.this.isFinishing()) {
+                            Glide.with(EditCommentDialogue.this)
+                                    .setDefaultRequestOptions(requestOptions)
+                                    .load(user.getProfileImage()).into(binding.profileImgEditComment);
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+                    }
+                });
+
+        //Populate comment data
+
+        binding.commentDescription.setText(commentData);
+        binding.commentDescription.setSelection(commentData.length());
+
+        // setup audio if any
+
+        if (commentRecording != null) {
+            binding.audioContainer.setVisibility(View.VISIBLE);
+            binding.play.setVisibility(View.VISIBLE);
+        }
 
     }
 
@@ -322,7 +326,6 @@ public class EditCommentDialogue extends AppCompatActivity {
             binding.play.setVisibility(View.VISIBLE);
         });
     }
-
 
     private void stopRecording() {
 

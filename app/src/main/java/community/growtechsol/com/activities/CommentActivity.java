@@ -72,7 +72,6 @@ public class CommentActivity extends AppCompatActivity {
     ArrayList<Comment> list = new ArrayList<>();
     ProgressDialog progressDialog;
     ArrayAdapter<Mention> mentionAdapter;
-    ArrayList<String> commenterNamesList;
 
     //Recording
     String AudioSavePathInDevice = null;
@@ -83,18 +82,6 @@ public class CommentActivity extends AppCompatActivity {
     int length;
     String downloadedRecordingLocation;
 
-    public static void hideKeyboard(Activity activity) {
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        //Find the currently focused view, so we can grab the correct window token from it.
-        View view = activity.getCurrentFocus();
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
-        if (view == null) {
-            view = new View(activity);
-        }
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,11 +94,7 @@ public class CommentActivity extends AppCompatActivity {
         random = new Random();
         progressDialog = new ProgressDialog(this);
 
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setTitle("Comment Posting");
-        progressDialog.setMessage("Please Wait...");
-        progressDialog.setCancelable(false);
-        progressDialog.setCanceledOnTouchOutside(false);
+        //mentionAdapter
         mentionAdapter = new MentionArrayAdapter<>(this);
 
         // Setting up toolbar
@@ -129,74 +112,19 @@ public class CommentActivity extends AppCompatActivity {
         isSolved = intent.getBooleanExtra("isSolved", false);
         isAdmin = intent.getBooleanExtra("isAdmin", false);
 
-        firebaseDatabase.getReference()
-                .child("posts/" + postId)
-                .addValueEventListener(new ValueEventListener() {
-                    @SuppressLint({"SetTextI18n", "CheckResult"})
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        Post post = snapshot.getValue(Post.class);
-                        if (post != null) {
+        setupFunctions();
 
-                            RequestOptions requestOptions = new RequestOptions();
-                            requestOptions.placeholder(R.drawable.placeholder);
-                            if (!CommentActivity.this.isFinishing()) {
-                                Glide.with(CommentActivity.this)
-                                        .setDefaultRequestOptions(requestOptions)
-                                        .load(post.getPostImage()).into(binding.imgCommentScreen);
-                            }
+    }
 
-                            binding.headerCommentScreen.setText(Html.fromHtml("<b>" + post.getPostTitle() + "</b>"));
-                            binding.descCommentScreen.setText(post.getPostDescription());
-                            binding.like.setText(post.getPostLikes() + "");
-                            binding.comment.setText(post.getCommentCount() + "");
-                        }
-                    }
+    private void setupFunctions() {
+        setupProgressDialogue();
+        loadDataFromFirebase();
+        setupAdapters();
+        setupEventListeners();
+    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Toast.makeText(CommentActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-        firebaseDatabase.getReference()
-                .child("Users/" + postedBy)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        User user = snapshot.getValue(User.class);
-                        Picasso.get()
-                                .load(user.getProfileImage())
-                                .placeholder(R.drawable.placeholder)
-                                .into(binding.profileImgComment);
-                        binding.nameCommentScreen.setText(user.getName());
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Toast.makeText(CommentActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-        FirebaseDatabase.getInstance().getReference()
-                .child("posts/" + postId + "/likes/" + auth.getCurrentUser().getUid())
-                .addValueEventListener(new ValueEventListener() {
-                    @SuppressLint("NotifyDataSetChanged")
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.getValue() != null) {
-                            Log.d("Snapshot", String.valueOf(snapshot.getValue()));
-                            binding.like.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart_filled, 0, 0, 0);
-
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Toast.makeText(CommentActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-
+    @SuppressLint("ClickableViewAccessibility")
+    private void setupEventListeners() {
 
         binding.postCommentRecording.setOnTouchListener((view, motionEvent) -> {
             switch (motionEvent.getAction()) {
@@ -256,7 +184,7 @@ public class CommentActivity extends AppCompatActivity {
                 }
 
             for (int i = 0; i < mentionList.size(); i++) {
-                Log.d("MentionList", mentionList.get(i).replaceAll("@", "") + " " + i);
+                //Log.d("MentionList", mentionList.get(i).replaceAll("@", "") + " " + i);
                 mentionListFiltered.add(mentionList.get(i).replaceAll("@", ""));
             }
 
@@ -291,10 +219,10 @@ public class CommentActivity extends AppCompatActivity {
             }
 
         });
+    }
 
-        //CommentLikeDislikeClick listener = (CommentLikeDislikeClick) this;
+    private void setupAdapters() {
 
-        //Log.d("Checkkkk", String.valueOf(isSolved));
         CommentAdapter commentAdapter = new CommentAdapter(this, list, postId, postedBy, isSolved, isAdmin);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
         binding.commentRv.setLayoutManager(linearLayoutManager);
@@ -351,7 +279,6 @@ public class CommentActivity extends AppCompatActivity {
                                     commenterPhotoList.add(null);
                                 }
                                 mentionAdapter.clear();
-                                Log.d("CommenterNamessss", commenterPhotoList.size() + " " + commenterNamesList.size());
                                 for (int i = 0; i < commenterNamesList.size(); i++) {
                                     if (commenterPhotoList.get(i) != null) {
                                         mentionAdapter.add(new Mention(commenterNamesList.get(i).replaceAll(" ", ""), "", commenterPhotoList.get(i)));
@@ -379,6 +306,86 @@ public class CommentActivity extends AppCompatActivity {
                     }
                 });
 
+    }
+
+    private void loadDataFromFirebase() {
+
+        firebaseDatabase.getReference()
+                .child("posts/" + postId)
+                .addValueEventListener(new ValueEventListener() {
+                    @SuppressLint({"SetTextI18n", "CheckResult"})
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        Post post = snapshot.getValue(Post.class);
+                        if (post != null) {
+
+                            RequestOptions requestOptions = new RequestOptions();
+                            requestOptions.placeholder(R.drawable.placeholder);
+                            if (!CommentActivity.this.isFinishing()) {
+                                Glide.with(CommentActivity.this)
+                                        .setDefaultRequestOptions(requestOptions)
+                                        .load(post.getPostImage()).into(binding.imgCommentScreen);
+                            }
+
+                            binding.headerCommentScreen.setText(Html.fromHtml("<b>" + post.getPostTitle() + "</b>"));
+                            binding.descCommentScreen.setText(post.getPostDescription());
+                            binding.like.setText(post.getPostLikes() + "");
+                            binding.comment.setText(post.getCommentCount() + "");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(CommentActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        firebaseDatabase.getReference()
+                .child("Users/" + postedBy)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        User user = snapshot.getValue(User.class);
+                        Picasso.get()
+                                .load(user.getProfileImage())
+                                .placeholder(R.drawable.placeholder)
+                                .into(binding.profileImgComment);
+                        binding.nameCommentScreen.setText(user.getName());
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(CommentActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        firebaseDatabase.getReference()
+                .child("posts/" + postId + "/likes/" + auth.getCurrentUser().getUid())
+                .addValueEventListener(new ValueEventListener() {
+                    @SuppressLint("NotifyDataSetChanged")
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.getValue() != null) {
+                            Log.d("Snapshot", String.valueOf(snapshot.getValue()));
+                            binding.like.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart_filled, 0, 0, 0);
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(CommentActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+    }
+
+    private void setupProgressDialogue() {
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setTitle("Comment Posting");
+        progressDialog.setMessage("Please Wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.setCanceledOnTouchOutside(false);
     }
 
     private void uploadCommentWithoutRecording(Comment comment, ArrayList<String> mentionListFinal) {
@@ -432,7 +439,7 @@ public class CommentActivity extends AppCompatActivity {
                                 .child("posts/" + postId + "/commentCount")
                                 .setValue(commentCount + 1)
                                 .addOnSuccessListener(unused1 -> {
-                                    //Toast.makeText(CommentActivity.this, "Comment count incremented", Toast.LENGTH_SHORT).show();
+                                    //Log.d("CommentActivity", unused1.toString() + "");
 
                                 }).addOnFailureListener(e -> {
                             Toast.makeText(CommentActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -536,22 +543,6 @@ public class CommentActivity extends AppCompatActivity {
                             sendNotificationsToMentioned(mentionedUsersIds.get(i));
 
                         }
-
-//                        for (int i = 0; i < mentionedUsersIds.size(); i++) {
-//
-//                            Notification notification = new Notification();
-//                            notification.setNotificationBy(mentionedUsersIds.get(i));
-//                            notification.setNotificaitonAt(new Date().getTime());
-//                            notification.setPostId(postId);
-//                            notification.setPostedBy(postedBy);
-//                            notification.setNotificationType("mention");
-//
-//                            FirebaseDatabase.getInstance().getReference()
-//                                    .child("notification")
-//                                    .child(postedBy)
-//                                    .push()
-//                                    .setValue(notification);
-//                        }
                     }
 
                     @Override
@@ -638,23 +629,12 @@ public class CommentActivity extends AppCompatActivity {
             }
 
             mediaPlayer.start();
-            //Toast.makeText(getContext(),"Recording Playing",Toast.LENGTH_LONG).show();
             mediaPlayer.setOnCompletionListener(mediaPlayer -> {
                 binding.pause.setVisibility(View.GONE);
                 binding.play.setVisibility(View.VISIBLE);
             });
         } else {
 
-//            mediaPlayer = new MediaPlayer();
-//            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-//            try {
-//                mediaPlayer.setDataSource(postRecording);
-//                mediaPlayer.prepare();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//
-//            mediaPlayer.start();
             Log.d("CommentActivity", "Audio is not recorded");
         }
     }
@@ -665,11 +645,11 @@ public class CommentActivity extends AppCompatActivity {
         if (mediaRecorder != null) {
             binding.recordingStatus.setVisibility(View.INVISIBLE);
             binding.play.setVisibility(View.VISIBLE);
-            Log.d("Length", String.valueOf(length));
+            //Log.d("Length", String.valueOf(length));
             try {
                 mediaRecorder.stop();
             } catch (RuntimeException e) {
-                Log.d("CheckAudio", "check" + AudioSavePathInDevice + " " + mediaPlayer + " " + mediaRecorder);
+                //Log.d("CheckAudio", "check" + AudioSavePathInDevice + " " + mediaPlayer + " " + mediaRecorder);
                 isAudio = false;
             }
             if (isAudio) {
@@ -690,12 +670,6 @@ public class CommentActivity extends AppCompatActivity {
     }
 
     private void startRecording() {
-
-        //        if (postRecording != null) {
-//            downloadedRecordingLocation = null;
-//            binding.audioContainer.setVisibility(View.GONE);
-//            binding.removeRecording.setVisibility(View.GONE);
-//        }
 
         if (checkPermission()) {
 
@@ -721,7 +695,6 @@ public class CommentActivity extends AppCompatActivity {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            //Toast.makeText(getContext(),"Recording started",Toast.LENGTH_LONG).show();
         } else {
             requestPermission();
         }
@@ -778,8 +751,17 @@ public class CommentActivity extends AppCompatActivity {
         binding.postCommentBtn.setEnabled(false);
     }
 
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
 
-    // Function to remove duplicates from an ArrayList
     public static <T> ArrayList<T> removeDuplicates(ArrayList<T> list) {
 
         // Create a new LinkedHashSet

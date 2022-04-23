@@ -26,8 +26,10 @@ public class NotificationFragment extends Fragment {
 
     RecyclerView recyclerView;
     ArrayList<Notification> list;
-    FirebaseDatabase firebaseDatabase;
     FragmentNotificationBinding binding;
+
+    FirebaseDatabase firebaseDatabase;
+    FirebaseAuth auth;
 
     public NotificationFragment() {
         // Required empty public constructor
@@ -36,7 +38,9 @@ public class NotificationFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         firebaseDatabase = FirebaseDatabase.getInstance();
+        auth = FirebaseAuth.getInstance();
 
     }
 
@@ -46,10 +50,19 @@ public class NotificationFragment extends Fragment {
         // Inflate the layout for this fragment
         binding = FragmentNotificationBinding.inflate(inflater, container, false);
 
+        setupFunctions();
+
+        return binding.getRoot();
+    }
+
+    private void setupFunctions() {
+        setupAdapters();
+    }
+
+    private void setupAdapters() {
 
         recyclerView = binding.notificationRv;
         list = new ArrayList<>();
-
 
         NotificationAdapter adapter = new NotificationAdapter(list, getContext());
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true);
@@ -59,7 +72,7 @@ public class NotificationFragment extends Fragment {
 
         firebaseDatabase.getReference()
                 .child("notification")
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child(auth.getCurrentUser().getUid())
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -78,6 +91,5 @@ public class NotificationFragment extends Fragment {
                     }
                 });
 
-        return binding.getRoot();
     }
 }

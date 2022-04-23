@@ -27,7 +27,7 @@ import community.growtechsol.com.models.User;
 public class SearchFragment extends Fragment {
 
     FragmentSearchBinding binding;
-    ArrayList<User> list = new ArrayList<User>();
+    ArrayList<User> list = new ArrayList<>();
     FirebaseAuth auth;
     FirebaseDatabase firebaseDatabase;
     UserAdapter userAdapter;
@@ -50,6 +50,35 @@ public class SearchFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentSearchBinding.inflate(inflater, container, false);
+
+        setupFunctions();
+
+        return binding.getRoot();
+    }
+
+    private void setupFunctions() {
+        setupAdapters();
+        setupEventListeners();
+    }
+
+    private void setupEventListeners() {
+
+        binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filterList(newText);
+                return true;
+            }
+        });
+
+    }
+
+    private void setupAdapters() {
 
         userAdapter = new UserAdapter(getContext(), list);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
@@ -78,21 +107,6 @@ public class SearchFragment extends Fragment {
             }
         });
 
-        binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                filterList(newText);
-                return true;
-            }
-        });
-
-
-        return binding.getRoot();
     }
 
     private void filterList(String newText) {

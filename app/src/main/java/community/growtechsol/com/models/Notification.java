@@ -1,12 +1,9 @@
 package community.growtechsol.com.models;
 
 public class Notification {
-    private String notificationBy;
+
+    private String notificationBy,notificationType,postId,notificationId,postedBy;
     private long notificaitonAt;
-    private String notificationType;
-    private String postId;
-    private String notificationId;
-    private String postedBy;
     private boolean checkOpen;
 
     public String getNotificationId() {
