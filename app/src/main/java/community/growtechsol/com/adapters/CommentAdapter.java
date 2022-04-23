@@ -263,8 +263,6 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
             holder.binding.audioContainer.setVisibility(View.GONE);
         }
 
-
-
         FirebaseDatabase.getInstance().getReference()
                 .child("posts/" + postId + "/comments/" + comment.getCommentedAt())
                 .addValueEventListener(new ValueEventListener() {
@@ -374,7 +372,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                                 Map<String, Object> likesCount = new HashMap<>();
                                 likesCount.put("likesCount", ServerValue.increment(1));
 
-                               FirebaseDatabase.getInstance().getReference()
+                                FirebaseDatabase.getInstance().getReference()
                                         .child("posts/" + postId + "/comments")
                                         .child(comment.getCommentedAt() + "")
                                         .updateChildren(likesCount);
@@ -457,35 +455,34 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
 
     }
 
-    private void setPopularity(String vote, String userId) {
-
+    private void setPopularity(String vote, String commenterId) {
 
         FirebaseDatabase.getInstance()
                 .getReference()
-                .child("Users/" + userId).addListenerForSingleValueEvent(new ValueEventListener() {
+                .child("Users/" + commenterId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User user = snapshot.getValue(User.class);
-                if (user.isAdmin()) {
+                if (user.isAdmin() && !commenterId.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                     Map<String, Object> userPopularity = new HashMap<>();
 
                     if (vote.equals("UpVote")) {
 
                         userPopularity.put("userUpVotes", ServerValue.increment(1));
                         FirebaseDatabase.getInstance().getReference().child("Users")
-                                .child(userId)
+                                .child(commenterId)
                                 .updateChildren(userPopularity);
 
-                        setupAdminActivity(userId, "UpVote");
+                        setupAdminActivity(commenterId, "UpVote");
 
                     } else if (vote.equals("DownVote")) {
 
                         userPopularity.put("userDownVotes", ServerValue.increment(1));
                         FirebaseDatabase.getInstance().getReference().child("Users")
-                                .child(userId)
+                                .child(commenterId)
                                 .updateChildren(userPopularity);
 
-                        setupAdminActivity(userId, "DownVote");
+                        setupAdminActivity(commenterId, "DownVote");
 
                     } else {
                         Toast.makeText(context, "Some unknown Error", Toast.LENGTH_SHORT).show();
