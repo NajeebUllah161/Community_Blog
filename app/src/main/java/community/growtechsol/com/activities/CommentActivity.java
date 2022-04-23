@@ -73,6 +73,7 @@ public class CommentActivity extends AppCompatActivity {
     ArrayList<Comment> list = new ArrayList<>();
     ProgressDialog progressDialog;
     ArrayAdapter<Mention> mentionAdapter;
+    String postImage;
 
     //Recording
     String AudioSavePathInDevice = null;
@@ -126,6 +127,13 @@ public class CommentActivity extends AppCompatActivity {
 
     @SuppressLint("ClickableViewAccessibility")
     private void setupEventListeners() {
+
+        binding.imgCommentScreen.setOnClickListener(view -> {
+            Intent intent = new Intent(CommentActivity.this, PostImageZoomActivity.class);
+            intent.putExtra("postImage", postImage);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        });
 
         binding.postCommentRecording.setOnTouchListener((view, motionEvent) -> {
             switch (motionEvent.getAction()) {
@@ -224,10 +232,11 @@ public class CommentActivity extends AppCompatActivity {
 
     private void setupAdapters() {
 
+        binding.commentRv.showShimmerAdapter();
+
         CommentAdapter commentAdapter = new CommentAdapter(this, list, postId, postedBy, isSolved, isAdmin);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
         binding.commentRv.setLayoutManager(linearLayoutManager);
-        binding.commentRv.setAdapter(commentAdapter);
 
         firebaseDatabase.getReference()
                 .child("posts/" + postId + "/comments")
@@ -240,6 +249,8 @@ public class CommentActivity extends AppCompatActivity {
                             Comment comment = dataSnapshot.getValue(Comment.class);
                             list.add(comment);
                         }
+                        binding.commentRv.setAdapter(commentAdapter);
+                        binding.commentRv.hideShimmerAdapter();
                         commentAdapter.notifyDataSetChanged();
 
                         firebaseDatabase
@@ -354,6 +365,7 @@ public class CommentActivity extends AppCompatActivity {
                                         .setDefaultRequestOptions(requestOptions)
                                         .load(post.getPostImage()).into(binding.imgCommentScreen);
                             }
+                            postImage = post.getPostImage();
 
                             binding.headerCommentScreen.setText(Html.fromHtml("<b>" + post.getPostTitle() + "</b>"));
                             binding.descCommentScreen.setText(post.getPostDescription());

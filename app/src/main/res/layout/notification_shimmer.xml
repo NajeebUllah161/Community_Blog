@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/_4mdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <View
+            android:id="@+id/profile_img_notificationRv"
+            android:layout_width="@dimen/_50mdp"
+            android:layout_height="@dimen/_50mdp"
+            android:layout_marginTop="@dimen/_6mdp"
+            android:background="@drawable/grey_circle_shimmer"
+            android:backgroundTint="#EAEAEA"
+            android:padding="@dimen/_3mdp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/notificationTitle"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_16mdp"
+            android:layout_marginStart="@dimen/_6mdp"
+            android:layout_marginEnd="@dimen/_12mdp"
+            android:background="#EAEAEA"
+            app:layout_constraintBottom_toBottomOf="@+id/profile_img_notificationRv"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/profile_img_notificationRv"
+            app:layout_constraintTop_toTopOf="@+id/profile_img_notificationRv"
+            app:layout_constraintVertical_bias="0.19" />
+
+        <View
+            android:id="@+id/notificationTime"
+            android:layout_width="@dimen/_60mdp"
+            android:layout_marginTop="@dimen/_6mdp"
+            android:layout_height="@dimen/_12mdp"
+            android:background="#EAEAEA"
+            app:layout_constraintStart_toStartOf="@+id/notificationTitle"
+            app:layout_constraintTop_toBottomOf="@+id/notificationTitle" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

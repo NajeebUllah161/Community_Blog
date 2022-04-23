@@ -44,7 +44,7 @@
         app:layout_constraintTop_toTopOf="@+id/textView"
         app:queryHint="Search Here ...." />
 
-    <androidx.recyclerview.widget.RecyclerView
+    <com.cooltechworks.views.shimmer.ShimmerRecyclerView
         android:id="@+id/usersRv"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -52,6 +52,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
+        app:shimmer_demo_child_count="10"
+        app:shimmer_demo_layout="@layout/search_shimmer"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view2" />
 </androidx.constraintlayout.widget.ConstraintLayout>

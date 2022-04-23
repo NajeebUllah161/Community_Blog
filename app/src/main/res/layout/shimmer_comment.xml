@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <View
+            android:id="@+id/profileImgOfCommenter"
+            android:layout_width="@dimen/_35mdp"
+            android:layout_height="@dimen/_35mdp"
+            android:layout_marginStart="@dimen/_6mdp"
+            android:layout_marginTop="@dimen/_6mdp"
+            android:background="@drawable/grey_circle_shimmer"
+            android:backgroundTint="#EAEAEA"
+            android:padding="@dimen/_3mdp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/commentData"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_16mdp"
+            android:layout_marginHorizontal="@dimen/_6mdp"
+            android:background="#EAEAEA"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/profileImgOfCommenter"
+            app:layout_constraintTop_toTopOf="@+id/profileImgOfCommenter" />
+
+        <TextView
+            android:id="@+id/time"
+            android:layout_marginTop="@dimen/_4mdp"
+            android:layout_width="@dimen/_40mdp"
+            android:layout_height="@dimen/_12mdp"
+            android:background="#EAEAEA"
+            app:layout_constraintStart_toStartOf="@+id/commentData"
+            app:layout_constraintTop_toBottomOf="@+id/commentData" />
+
+        <TextView
+            android:id="@+id/like"
+            android:layout_width="@dimen/_24mdp"
+            android:layout_height="@dimen/_16mdp"
+            android:layout_marginStart="@dimen/_10mdp"
+            android:layout_marginTop="@dimen/_6mdp"
+            android:background="#EAEAEA"
+            app:layout_constraintEnd_toStartOf="@id/dislike"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="@id/time"
+            app:layout_constraintTop_toBottomOf="@id/time" />
+
+        <TextView
+            android:id="@+id/dislike"
+            android:layout_width="@dimen/_24mdp"
+            android:layout_height="@dimen/_16mdp"
+            android:layout_marginStart="@dimen/_6mdp"
+            android:layout_marginTop="@dimen/_6mdp"
+            android:background="#EAEAEA"
+            app:layout_constraintEnd_toEndOf="@+id/time"
+            app:layout_constraintStart_toEndOf="@id/like"
+            app:layout_constraintTop_toBottomOf="@id/time" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</RelativeLayout>

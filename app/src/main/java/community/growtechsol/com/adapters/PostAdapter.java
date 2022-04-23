@@ -123,7 +123,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         }
     };
 
-
     public PostAdapter(ArrayList<Post> list, Context context) {
         this.postModelArrayList = list;
         this.context = context;

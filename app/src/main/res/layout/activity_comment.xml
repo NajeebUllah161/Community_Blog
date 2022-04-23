@@ -156,7 +156,7 @@
                 app:layout_constraintStart_toEndOf="@id/comment"
                 app:layout_constraintTop_toTopOf="@+id/comment" />
 
-            <androidx.recyclerview.widget.RecyclerView
+            <com.cooltechworks.views.shimmer.ShimmerRecyclerView
                 android:id="@+id/commentRv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -167,7 +167,8 @@
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/like"
-                app:reverseLayout="true" />
+                app:shimmer_demo_child_count="8"
+                app:shimmer_demo_layout="@layout/shimmer_comment"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

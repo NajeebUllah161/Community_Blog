@@ -27,7 +27,7 @@ import community.growtechsol.com.models.User;
 public class SearchFragment extends Fragment {
 
     FragmentSearchBinding binding;
-    ArrayList<User> list = new ArrayList<>();
+    ArrayList<User> list;
     FirebaseAuth auth;
     FirebaseDatabase firebaseDatabase;
     UserAdapter userAdapter;
@@ -80,10 +80,13 @@ public class SearchFragment extends Fragment {
 
     private void setupAdapters() {
 
+        list = new ArrayList<>();
+
+        binding.usersRv.showShimmerAdapter();
+
         userAdapter = new UserAdapter(getContext(), list);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         binding.usersRv.setLayoutManager(linearLayoutManager);
-        binding.usersRv.setAdapter(userAdapter);
 
         firebaseDatabase.getReference().child("Users").addValueEventListener(new ValueEventListener() {
             @SuppressLint("NotifyDataSetChanged")
@@ -98,6 +101,8 @@ public class SearchFragment extends Fragment {
                     }
 
                 }
+                binding.usersRv.setAdapter(userAdapter);
+                binding.usersRv.hideShimmerAdapter();
                 userAdapter.notifyDataSetChanged();
             }
 

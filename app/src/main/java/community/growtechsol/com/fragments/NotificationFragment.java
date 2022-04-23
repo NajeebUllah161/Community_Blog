@@ -24,7 +24,6 @@ import community.growtechsol.com.models.Notification;
 
 public class NotificationFragment extends Fragment {
 
-    RecyclerView recyclerView;
     ArrayList<Notification> list;
     FragmentNotificationBinding binding;
 
@@ -61,14 +60,14 @@ public class NotificationFragment extends Fragment {
 
     private void setupAdapters() {
 
-        recyclerView = binding.notificationRv;
         list = new ArrayList<>();
+
+        binding.notificationRv.showShimmerAdapter();
 
         NotificationAdapter adapter = new NotificationAdapter(list, getContext());
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setNestedScrollingEnabled(false);
-        recyclerView.setAdapter(adapter);
+        binding.notificationRv.setLayoutManager(linearLayoutManager);
+        binding.notificationRv.setNestedScrollingEnabled(false);
 
         firebaseDatabase.getReference()
                 .child("notification")
@@ -82,6 +81,8 @@ public class NotificationFragment extends Fragment {
                             notification.setNotificationId(dataSnapshot.getKey());
                             list.add(notification);
                         }
+                        binding.notificationRv.setAdapter(adapter);
+                        binding.notificationRv.hideShimmerAdapter();
                         adapter.notifyDataSetChanged();
                     }
 
