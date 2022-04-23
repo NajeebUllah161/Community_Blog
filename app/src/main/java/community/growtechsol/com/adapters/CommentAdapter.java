@@ -667,10 +667,11 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                 .anchorView(view)
                 .text("Verified")
                 .gravity(Gravity.TOP)
-                .backgroundColor(Color.parseColor("#FF018786"))
+                .textColor(Color.parseColor("#FFFFFF"))
+                .backgroundColor(Color.parseColor("#79018786"))
                 .arrowColor(Color.parseColor("#FF018786"))
                 .animated(true)
-                .transparentOverlay(false)
+                .transparentOverlay(true)
                 .build()
                 .show());
 

@@ -277,18 +277,33 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                     holder.binding.userNameDashboard.setText(user.getName());
                     holder.binding.aboutDbTv.setText(user.getProfession());
-                    holder.binding.userPerksOnDb.setText(" (" + user.getUserPerks() + ")");
+                    int userPerks = user.getUserPerks();
+                    if (userPerks >= 10 && userPerks < 50) {
+                        holder.binding.userPerksImg.setImageResource(R.drawable.beginner_lvl);
+                        setupTooltipListener("Beginner", holder, user);
+                    } else if (userPerks >= 50 && userPerks < 100) {
+                        holder.binding.userPerksImg.setImageResource(R.drawable.intermediate_lvl);
+                        setupTooltipListener("Intermediate", holder, user);
+                    } else if (userPerks >= 100) {
+                        holder.binding.userPerksImg.setImageResource(R.drawable.expert_lvl);
+                        setupTooltipListener("Expert", holder, user);
+                    } else {
+                        holder.binding.userPerksImg.setVisibility(View.GONE);
+                        holder.binding.userPerksOnDb.setVisibility(View.VISIBLE);
+                        holder.binding.userPerksOnDb.setText(" (" + user.getUserPerks() + ")");
 
-                    holder.binding.userPerksOnDb.setOnClickListener(view -> new SimpleTooltip.Builder(context)
-                            .anchorView(view)
-                            .text("User has " + user.getUserPerks() + " correct answers")
-                            .gravity(Gravity.TOP)
-                            .backgroundColor(Color.parseColor("#FF018786"))
-                            .arrowColor(Color.parseColor("#FF018786"))
-                            .animated(true)
-                            .transparentOverlay(false)
-                            .build()
-                            .show());
+                        holder.binding.userPerksOnDb.setOnClickListener(view -> new SimpleTooltip.Builder(context)
+                                .anchorView(view)
+                                .text("User has " + user.getUserPerks() + " correct answers")
+                                .gravity(Gravity.TOP)
+                                .textColor(Color.parseColor("#FFFFFF"))
+                                .backgroundColor(Color.parseColor("#79018786"))
+                                .arrowColor(Color.parseColor("#FF018786"))
+                                .animated(true)
+                                .transparentOverlay(true)
+                                .build()
+                                .show());
+                    }
 
                 } else {
                     Toast.makeText(context, "No user exists", Toast.LENGTH_SHORT).show();
@@ -421,6 +436,20 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         handlePowerMenu(holder, model);
 
+    }
+
+    private void setupTooltipListener(String expertiseLevel, PostViewHolder holder, User user) {
+        holder.binding.userPerksImg.setOnClickListener(view -> new SimpleTooltip.Builder(context)
+                .anchorView(view)
+                .text(expertiseLevel + " level user with " + user.getUserPerks() + "+ correct answers")
+                .gravity(Gravity.TOP)
+                .textColor(Color.parseColor("#FFFFFF"))
+                .backgroundColor(Color.parseColor("#79018786"))
+                .arrowColor(Color.parseColor("#FF018786"))
+                .animated(true)
+                .transparentOverlay(true)
+                .build()
+                .show());
     }
 
     private void shareTextOnly(String header, String description) {

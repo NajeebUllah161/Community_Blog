@@ -1,11 +1,15 @@
 package community.growtechsol.com;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.andreseko.SweetAlert.SweetAlertDialog;
+import com.google.android.material.badge.BadgeDrawable;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -87,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
             fragmentTransaction.commit();
             return true;
         });
+
     }
 
     private void checkAppUpdate() {

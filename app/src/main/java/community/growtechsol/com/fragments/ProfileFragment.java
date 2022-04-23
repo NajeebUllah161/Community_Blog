@@ -74,36 +74,20 @@ public class ProfileFragment extends Fragment {
         // Inflate the layout for this fragment
         binding = FragmentProfileBinding.inflate(inflater, container, false);
 
-        list = new ArrayList<>();
+        setupFunctions();
 
-        FollowersAdapter adapter = new FollowersAdapter(list, getContext());
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),
-                LinearLayoutManager.HORIZONTAL,
-                false);
-        binding.myFriendRv.setLayoutManager(linearLayoutManager);
-        binding.myFriendRv.setAdapter(adapter);
+        return binding.getRoot();
+    }
 
-        firebaseDatabase.getReference().child("Users/" + auth.getCurrentUser().getUid() + "/followers")
-                .addValueEventListener(new ValueEventListener() {
-                    @SuppressLint("NotifyDataSetChanged")
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        list.clear();
-                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                            FollowModel followModel = dataSnapshot.getValue(FollowModel.class);
-                            list.add(followModel);
-                        }
-                        adapter.notifyDataSetChanged();
-                    }
+    private void setupFunctions() {
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-
+        setFollowers();
         setFollowing();
+        setupUserData();
 
+    }
+
+    private void setupUserData() {
         // Fetch User data from firebase database
         firebaseDatabase.getReference().child("Users/" + auth.getCurrentUser().getUid())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -143,7 +127,7 @@ public class ProfileFragment extends Fragment {
                                     binding.slash.setVisibility(View.GONE);
                                     setConstraints();
                                 }
-                                setupFunctions(getUser);
+                                setupImgClickListeners(getUser);
 
                             } else {
                                 Toast.makeText(getContext(), "No user exists", Toast.LENGTH_SHORT).show();
@@ -156,13 +140,43 @@ public class ProfileFragment extends Fragment {
 
                     }
                 });
-
-
-        return binding.getRoot();
     }
 
-    private void setupFunctions(User getUser) {
+    private void setFollowers() {
+
+        list = new ArrayList<>();
+
+        FollowersAdapter adapter = new FollowersAdapter(list, getContext());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),
+                LinearLayoutManager.HORIZONTAL,
+                false);
+        binding.myFriendRv.setLayoutManager(linearLayoutManager);
+        binding.myFriendRv.setAdapter(adapter);
+
+        firebaseDatabase.getReference().child("Users/" + auth.getCurrentUser().getUid() + "/followers")
+                .addValueEventListener(new ValueEventListener() {
+                    @SuppressLint("NotifyDataSetChanged")
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        list.clear();
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            FollowModel followModel = dataSnapshot.getValue(FollowModel.class);
+                            list.add(followModel);
+                        }
+                        adapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void setupImgClickListeners(User getUser) {
+
         binding.profileImgOfUser.setOnClickListener(v -> {
+
             final FlatDialog flatDialog = new FlatDialog(getContext());
             flatDialog.setTitle("Select from gallery/View profile picture")
                     .setFirstButtonText("Select from gallery")
@@ -175,12 +189,11 @@ public class ProfileFragment extends Fragment {
                     .setThirdButtonColor(Color.parseColor("#FF018786"))
                     .withFirstButtonListner(view -> {
 
-
                         Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
                         galleryIntent.setType("image/*");
                         startActivityForResult(Intent.createChooser(galleryIntent, "Select Picture"), PROFILE_PHOTO_REQUEST_CODE);
                         flatDialog.dismiss();
-                        //Toast.makeText(getContext(), flatDialog.getFirstTextField(), Toast.LENGTH_SHORT).show();
+
                     })
                     .withSecondButtonListner(view -> {
 
@@ -194,7 +207,6 @@ public class ProfileFragment extends Fragment {
                     .withThirdButtonListner(view -> flatDialog.dismiss())
                     .show();
         });
-
 
         binding.changeCoverPhoto.setOnClickListener(v -> {
 
@@ -215,7 +227,6 @@ public class ProfileFragment extends Fragment {
                         startActivityForResult(galleryIntent, COVER_PHOTO_REQUEST_CODE);
 
                         flatDialog.dismiss();
-                        //Toast.makeText(getContext(), flatDialog.getFirstTextField(), Toast.LENGTH_SHORT).show();
                     })
                     .withSecondButtonListner(view -> {
 
@@ -233,6 +244,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void setFollowing() {
+
         followingList = new ArrayList<>();
 
         FollowingAdapter adapter = new FollowingAdapter(followingList, getContext());
@@ -271,13 +283,17 @@ public class ProfileFragment extends Fragment {
                 .anchorView(view)
                 .text("Admin")
                 .gravity(Gravity.TOP)
-                .backgroundColor(Color.parseColor("#FF018786"))
+                .textColor(Color.parseColor("#FFFFFF"))
+                .backgroundColor(Color.parseColor("#79018786"))
                 .arrowColor(Color.parseColor("#FF018786"))
                 .animated(true)
-                .transparentOverlay(false)
+                .transparentOverlay(true)
                 .build()
                 .show());
+
     }
+
+
 
     private void setConstraints() {
         ConstraintSet constraintSet = new ConstraintSet();

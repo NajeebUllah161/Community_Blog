@@ -38,7 +38,7 @@
         android:text="Your comment"
         android:textColor="@color/black"
         android:textSize="@dimen/_14mdp"
-        app:layout_constraintEnd_toStartOf="@+id/commentCheckbox"
+        app:layout_constraintEnd_toStartOf="@+id/verifiedImgView"
         app:layout_constraintStart_toEndOf="@+id/profileImgOfCommenter"
         app:layout_constraintTop_toTopOf="@+id/profileImgOfCommenter" />
 

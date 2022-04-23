@@ -2,6 +2,7 @@ package community.growtechsol.com.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -38,7 +39,6 @@ public class SignupActivity extends AppCompatActivity {
     private void createUser() {
         auth.createUserWithEmailAndPassword(binding.emailET.getText().toString(), binding.pwdET.getText().toString())
                 .addOnCompleteListener(task -> {
-                    //Log.d("SignupActivity", "OnCompleteSignUp");
                 }).addOnSuccessListener(authResult -> {
             User user = new User(
                     binding.nameET.getText().toString(),
@@ -48,12 +48,11 @@ public class SignupActivity extends AppCompatActivity {
             );
             String userId = authResult.getUser().getUid();
             firebaseDatabase.getReference().child("Users").child(userId).setValue(user);
-            //Log.d("SignupActivity", "OnSuccessSignup");
             Intent intent = new Intent(SignupActivity.this, MainActivity.class);
             startActivity(intent);
             finish();
         }).addOnFailureListener(e -> {
-            //Log.d("SignupActivity", "Error occurred: " + e.getMessage());
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
         });
     }
 }
