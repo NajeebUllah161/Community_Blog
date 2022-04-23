@@ -53,6 +53,7 @@ import community.growtechsol.com.R;
 import community.growtechsol.com.adapters.CommentAdapter;
 import community.growtechsol.com.databinding.ActivityCommentBinding;
 import community.growtechsol.com.models.Comment;
+import community.growtechsol.com.models.Following;
 import community.growtechsol.com.models.Notification;
 import community.growtechsol.com.models.Post;
 import community.growtechsol.com.models.User;
@@ -241,7 +242,7 @@ public class CommentActivity extends AppCompatActivity {
                         }
                         commentAdapter.notifyDataSetChanged();
 
-                        FirebaseDatabase.getInstance()
+                        firebaseDatabase
                                 .getReference()
                                 .child("Users").addValueEventListener(new ValueEventListener() {
                             @Override
@@ -268,27 +269,54 @@ public class CommentActivity extends AppCompatActivity {
                                         commenterDesignation.add(user.getProfession());
                                         commenterPhoto.add(user.getProfileImage());
                                     }
+
+                                    firebaseDatabase.getReference().child("Users")
+                                            .child(auth.getCurrentUser().getUid())
+                                            .child("following")
+                                            .addValueEventListener(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+
+                                                    for(DataSnapshot dataSnapshot1: snapshot.getChildren()){
+
+                                                        Following following = dataSnapshot1.getValue(Following.class);
+                                                        if(dataSnapshot.getKey().equals(following.getFollowing())){
+                                                            commenterNames.add(user.getName());
+                                                            commenterDesignation.add(user.getProfession());
+                                                            commenterPhoto.add(user.getProfileImage());
+                                                        }
+                                                    }
+
+                                                    ArrayList<String> commenterNamesList = removeDuplicates(commenterNames);
+                                                    //ArrayList<String> commenterDesignationList = removeDuplicates(commenterDesignation);
+                                                    ArrayList<String> commenterPhotoList = removeDuplicates(commenterPhoto);
+
+                                                    int incrementedLength = commenterNamesList.size() - commenterPhotoList.size();
+                                                    for (int i = 0; i < incrementedLength; i++) {
+                                                        commenterPhotoList.add(null);
+                                                    }
+                                                    mentionAdapter.clear();
+                                                    for (int i = 0; i < commenterNamesList.size(); i++) {
+                                                        if (commenterPhotoList.get(i) != null) {
+                                                            mentionAdapter.add(new Mention(commenterNamesList.get(i).replaceAll(" ", ""), "", commenterPhotoList.get(i)));
+                                                        } else {
+                                                            mentionAdapter.add(new Mention(commenterNamesList.get(i).replaceAll(" ", ""), "", R.drawable.placeholder));
+                                                        }
+                                                    }
+
+                                                    binding.commentEt.setMentionAdapter(mentionAdapter);
+                                                    binding.commentEt.setMentionEnabled(true);
+
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+                                                }
+                                            });
+
                                 }
 
-                                ArrayList<String> commenterNamesList = removeDuplicates(commenterNames);
-                                //ArrayList<String> commenterDesignationList = removeDuplicates(commenterDesignation);
-                                ArrayList<String> commenterPhotoList = removeDuplicates(commenterPhoto);
-
-                                int incrementedLength = commenterNamesList.size() - commenterPhotoList.size();
-                                for (int i = 0; i < incrementedLength; i++) {
-                                    commenterPhotoList.add(null);
-                                }
-                                mentionAdapter.clear();
-                                for (int i = 0; i < commenterNamesList.size(); i++) {
-                                    if (commenterPhotoList.get(i) != null) {
-                                        mentionAdapter.add(new Mention(commenterNamesList.get(i).replaceAll(" ", ""), "", commenterPhotoList.get(i)));
-                                    } else {
-                                        mentionAdapter.add(new Mention(commenterNamesList.get(i).replaceAll(" ", ""), "", R.drawable.placeholder));
-                                    }
-                                }
-
-                                binding.commentEt.setMentionAdapter(mentionAdapter);
-                                binding.commentEt.setMentionEnabled(true);
                                 //binding.commentEt.setOnMentionClickListener((view, text) -> Toast.makeText(CommentActivity.this, text, Toast.LENGTH_SHORT).show());
                             }
 

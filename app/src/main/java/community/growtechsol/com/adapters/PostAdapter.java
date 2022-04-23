@@ -64,6 +64,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     Intent intent;
     String postId;
     Post post;
+    boolean isAdmin;
+    MediaPlayer player;
+    int length;
+
     private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
         @Override
         public void onItemClick(int position, PowerMenuItem item) {
@@ -118,9 +122,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             powerMenu2.dismiss();
         }
     };
-    boolean isAdmin;
-    MediaPlayer player;
-    int length;
+
 
     public PostAdapter(ArrayList<Post> list, Context context) {
         this.postModelArrayList = list;
