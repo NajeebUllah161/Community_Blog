@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 
 import community.growtechsol.com.R;
+import community.growtechsol.com.activities.UserProfileActivity;
 import community.growtechsol.com.databinding.CommentSampleBinding;
 import community.growtechsol.com.edit_dialogues.EditCommentDialogue;
 import community.growtechsol.com.models.Comment;
@@ -452,6 +453,13 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                 .transparentOverlay(true)
                 .build()
                 .show());
+
+        holder.binding.profileImgOfCommenter.setOnClickListener(view -> {
+            Intent intent = new Intent(context, UserProfileActivity.class);
+            intent.putExtra("userId", comment.getCommentedBy());
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        });
 
     }
 

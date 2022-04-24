@@ -28,6 +28,7 @@ import java.util.Map;
 
 import community.growtechsol.com.R;
 import community.growtechsol.com.activities.CommentActivity;
+import community.growtechsol.com.activities.UserProfileActivity;
 import community.growtechsol.com.databinding.NotificationRvSampleBinding;
 import community.growtechsol.com.models.Notification;
 import community.growtechsol.com.models.User;
@@ -93,18 +94,9 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                 });
 
         holder.binding.openNotification.setOnClickListener(view -> {
-            if (!type.equals("follow")) {
+            if (type.equals("like") || type.equals("comment") || type.equals("mention") || type.equals("share")) {
 
-                Map<String, Object> notificationCheck = new HashMap<>();
-                notificationCheck.put("checkOpen", true);
-
-                DatabaseReference dr = FirebaseDatabase.getInstance().getReference()
-                        .child("notification")
-                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                        .child(notification.getNotificationId());
-
-                Log.d("DatabaseReference", dr.toString());
-                dr.updateChildren(notificationCheck);
+                checkOpen(notification);
 
                 holder.binding.openNotification.setBackgroundColor(Color.parseColor("#FFFFFF"));
                 Intent intent = new Intent(context, CommentActivity.class);
@@ -112,6 +104,16 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                 intent.putExtra("postedBy", notification.getPostedBy());
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
+            }
+            else if(type.equals("follow")){
+                checkOpen(notification);
+                Intent intent = new Intent(context, UserProfileActivity.class);
+                intent.putExtra("userId", notification.getNotificationBy());
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+            }
+            else{
+                Log.d("NotificationAdapter","Not does not match");
             }
         });
         Boolean checkOpen = notification.isCheckOpen();
@@ -121,6 +123,20 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             //is not open
 
         }
+    }
+
+    private void checkOpen(Notification notification) {
+        Map<String, Object> notificationCheck = new HashMap<>();
+        notificationCheck.put("checkOpen", true);
+
+        DatabaseReference dr = FirebaseDatabase.getInstance().getReference()
+                .child("notification")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child(notification.getNotificationId());
+
+        Log.d("DatabaseReference", dr.toString());
+        dr.updateChildren(notificationCheck);
+
     }
 
     @Override

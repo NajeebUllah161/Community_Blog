@@ -54,6 +54,9 @@ public class UserProfileActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
 
+        userId = getIntent().getStringExtra("userId");
+
+
         setupFunctions();
     }
 
@@ -62,8 +65,6 @@ public class UserProfileActivity extends AppCompatActivity {
         setFollowers();
         setFollowing();
         setupUserData();
-
-        userId = getIntent().getStringExtra("userId");
 
     }
 
@@ -93,6 +94,14 @@ public class UserProfileActivity extends AppCompatActivity {
                                 binding.userPosts.setText(getUser.getTotalPosts() + "");
                                 binding.followersCount.setText(" (" + getUser.getFollowersCount() + ")");
                                 binding.followingCount.setText(" (" + getUser.getFollowingCount() + ")");
+                                if(getUser.getFollowersCount()==0){
+                                    binding.textView12.setVisibility(View.INVISIBLE);
+                                    binding.followersCount.setVisibility(View.INVISIBLE);
+                                }
+                                if(getUser.getFollowingCount()==0){
+                                    binding.textView13.setVisibility(View.INVISIBLE);
+                                    binding.followingCount.setVisibility(View.INVISIBLE);
+                                }
                                 if (getUser.isAdmin()) {
                                     setupVerificationTick();
                                     binding.adminLikes.setText(getUser.getUserUpVotes() + "");

@@ -328,24 +328,47 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.exists()) {
-                            holder.binding.like.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart_filled, 0, 0, 0);
-                            holder.binding.like.setOnClickListener(view -> {
-                                FirebaseDatabase.getInstance().getReference()
-                                        .child("posts/" + model.getPostId() + "/likes/" + FirebaseAuth.getInstance()
-                                                .getCurrentUser()
-                                                .getUid()).removeValue().addOnSuccessListener(unused -> Toast.makeText(context, "Disliked", Toast.LENGTH_SHORT).show())
-                                        .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show());
+                            boolean value = (boolean) snapshot.getValue();
+                            Log.d("Value", String.valueOf(value));
+                            if (value) {
+                                holder.binding.like.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart_filled, 0, 0, 0);
+                                holder.binding.like.setOnClickListener(view -> {
+                                    FirebaseDatabase.getInstance().getReference()
+                                            .child("posts/" + model.getPostId() + "/likes/" + FirebaseAuth.getInstance()
+                                                    .getCurrentUser()
+                                                    .getUid()).setValue(false).addOnSuccessListener(unused -> Toast.makeText(context, "Disliked", Toast.LENGTH_SHORT).show())
+                                            .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show());
 
-                                FirebaseDatabase.getInstance().getReference()
-                                        .child("posts/" + model.getPostId() + "/postLikes")
-                                        .setValue(model.getPostLikes() - 1)
-                                        .addOnSuccessListener(unused1 -> {
-                                            holder.binding.like.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_like, 0, 0, 0);
+                                    FirebaseDatabase.getInstance().getReference()
+                                            .child("posts/" + model.getPostId() + "/postLikes")
+                                            .setValue(model.getPostLikes() - 1)
+                                            .addOnSuccessListener(unused1 -> {
+                                                holder.binding.like.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_like, 0, 0, 0);
 
-                                        })
-                                        .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show());
+                                            })
+                                            .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show());
 
-                            });
+                                });
+                            } else {
+                                holder.binding.like.setOnClickListener(view -> {
+
+                                    FirebaseDatabase.getInstance().getReference()
+                                            .child("posts/" + model.getPostId() + "/likes/" + FirebaseAuth.getInstance()
+                                                    .getCurrentUser()
+                                                    .getUid()).setValue(true).addOnSuccessListener(unused -> {
+
+                                    }).addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show());
+
+                                    FirebaseDatabase.getInstance().getReference()
+                                            .child("posts/" + model.getPostId() + "/postLikes")
+                                            .setValue(model.getPostLikes() + 1)
+                                            .addOnSuccessListener(unused1 -> {
+                                                holder.binding.like.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart_filled, 0, 0, 0);
+
+                                            })
+                                            .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show());
+                                });
+                            }
                         } else {
 
                             holder.binding.like.setOnClickListener(view -> {
@@ -364,7 +387,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                                             holder.binding.like.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart_filled, 0, 0, 0);
                                             Notification notification = new Notification();
 
-                                            Log.d("CheckpointLike", "Here");
                                             notification.setNotificationBy(FirebaseAuth
                                                     .getInstance()
                                                     .getCurrentUser()
@@ -439,12 +461,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         handlePowerMenu(holder, model);
 
         holder.binding.profileImageDashboard.setOnClickListener(view -> {
-
             Intent intent = new Intent(context, UserProfileActivity.class);
             intent.putExtra("userId", model.getPostedBy());
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
+        });
 
+        holder.binding.userNameDashboard.setOnClickListener(view -> {
+            Intent intent = new Intent(context, UserProfileActivity.class);
+            intent.putExtra("userId", model.getPostedBy());
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
         });
 
     }

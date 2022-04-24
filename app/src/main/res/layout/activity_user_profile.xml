@@ -64,11 +64,11 @@
         <ImageView
             android:id="@+id/changeCoverPhoto"
             android:layout_width="wrap_content"
-            android:visibility="gone"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/_12mdp"
             android:layout_marginBottom="@dimen/_18mdp"
             android:src="@drawable/ic_img_cover_icon"
+            android:visibility="gone"
             diagonal:layout_constraintBottom_toBottomOf="@+id/linearLayout"
             diagonal:layout_constraintStart_toStartOf="@+id/linearLayout" />
 

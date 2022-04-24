@@ -1,6 +1,7 @@
 package community.growtechsol.com.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 
 import community.growtechsol.com.R;
+import community.growtechsol.com.activities.UserProfileActivity;
 import community.growtechsol.com.databinding.FriendRvSampleBinding;
 import community.growtechsol.com.models.FollowModel;
 import community.growtechsol.com.models.Following;
@@ -59,7 +61,6 @@ public class FollowingAdapter extends RecyclerView.Adapter<FollowingAdapter.view
                                     .placeholder(R.drawable.placeholder)
                                     .into(holder.binding.profileImgFriendRv);
 
-                            holder.binding.profileImgFriendRv.setOnClickListener(view -> Toast.makeText(context, user.getName(), Toast.LENGTH_LONG).show());
                         } else {
                             Toast.makeText(context, "User doesn't exit", Toast.LENGTH_SHORT).show();
                         }
@@ -70,6 +71,13 @@ public class FollowingAdapter extends RecyclerView.Adapter<FollowingAdapter.view
                         Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+
+        holder.binding.profileImgFriendRv.setOnClickListener(view -> {
+            Intent intent = new Intent(context, UserProfileActivity.class);
+            intent.putExtra("userId", followingList.getFollowing());
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        });
 
     }
 

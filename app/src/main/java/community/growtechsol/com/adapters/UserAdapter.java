@@ -2,6 +2,7 @@ package community.growtechsol.com.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import community.growtechsol.com.R;
+import community.growtechsol.com.activities.UserProfileActivity;
 import community.growtechsol.com.databinding.UserSampleBinding;
 import community.growtechsol.com.models.FollowModel;
 import community.growtechsol.com.models.Following;
@@ -132,6 +134,19 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.viewHolder> {
                     }
                 });
 
+        holder.binding.profileImgUserSample.setOnClickListener(view -> {
+            Intent intent = new Intent(context, UserProfileActivity.class);
+            intent.putExtra("userId", user.getUserId());
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        });
+
+        holder.binding.nameUserSample.setOnClickListener(view -> {
+            Intent intent = new Intent(context, UserProfileActivity.class);
+            intent.putExtra("userId", user.getUserId());
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        });
 
     }
 

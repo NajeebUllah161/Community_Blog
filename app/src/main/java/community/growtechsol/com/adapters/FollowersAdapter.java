@@ -1,6 +1,7 @@
 package community.growtechsol.com.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 import community.growtechsol.com.R;
+import community.growtechsol.com.activities.UserProfileActivity;
 import community.growtechsol.com.databinding.FriendRvSampleBinding;
 import community.growtechsol.com.models.FollowModel;
 import community.growtechsol.com.models.User;
@@ -43,6 +45,7 @@ public class FollowersAdapter extends RecyclerView.Adapter<FollowersAdapter.view
     @Override
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
         FollowModel followModel = list.get(position);
+
         FirebaseDatabase
                 .getInstance()
                 .getReference()
@@ -57,7 +60,6 @@ public class FollowersAdapter extends RecyclerView.Adapter<FollowersAdapter.view
                                     .placeholder(R.drawable.placeholder)
                                     .into(holder.binding.profileImgFriendRv);
 
-                            holder.binding.profileImgFriendRv.setOnClickListener(view -> Toast.makeText(context, user.getName(), Toast.LENGTH_LONG).show());
                         } else {
                             Toast.makeText(context, "User doesn't exit", Toast.LENGTH_SHORT).show();
                         }
@@ -69,6 +71,12 @@ public class FollowersAdapter extends RecyclerView.Adapter<FollowersAdapter.view
                     }
                 });
 
+        holder.binding.profileImgFriendRv.setOnClickListener(view -> {
+            Intent intent = new Intent(context, UserProfileActivity.class);
+            intent.putExtra("userId", followModel.getFollowedBy());
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        });
 
     }
 
