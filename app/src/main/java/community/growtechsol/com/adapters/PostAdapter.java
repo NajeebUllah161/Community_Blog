@@ -430,24 +430,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         holder.binding.share.setOnClickListener(view -> {
 
-            FirebaseDatabase.getInstance().getReference()
-                    .child("posts/" + model.getPostId() + "/postShares")
-                    .setValue(ServerValue.increment(1))
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(context, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
-
             BitmapDrawable bitmapDrawable = (BitmapDrawable) holder.binding.postImg.getDrawable();
             if (bitmapDrawable == null) {
                 //post without Image
-                shareTextOnly(header, description);
+                shareTextOnly(header, description, model);
                 Log.d("Checkpoint", "withoutImg");
             } else {
                 //post with Image
 
                 Log.d("Checkpoint", "withImage");
                 Bitmap bitmapPostImg = bitmapDrawable.getBitmap();
-                shareImageAndText(header, description, bitmapPostImg);
+                shareImageAndText(header, description, bitmapPostImg, model);
             }
         });
 
@@ -490,7 +483,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 .show());
     }
 
-    private void shareTextOnly(String header, String description) {
+    private void shareTextOnly(String header, String description, Post postModel) {
 
         String shareBody = header + "\n" + description + "\n\n" + "Visit now : https://play.google.com/store/apps/details?id=community.growtechsol.com";
 
@@ -500,9 +493,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         shareIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
         context.startActivity(Intent.createChooser(shareIntent, "Share Via"));
 
+        incrementPostId(postModel);
+
     }
 
-    private void shareImageAndText(String header, String description, Bitmap bitmapPostImg) {
+    private void shareImageAndText(String header, String description, Bitmap bitmapPostImg, Post postModel) {
 
         String shareBody = header + "\n" + description + "\n\n" + "Visit now : https://play.google.com/store/apps/details?id=community.growtechsol.com";
 
@@ -515,6 +510,39 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         shareIntent.setType("image/png");
         context.startActivity(Intent.createChooser(shareIntent, "Share Via"));
 
+        incrementPostId(postModel);
+
+
+    }
+
+    private void incrementPostId(Post postModel) {
+
+        FirebaseDatabase.getInstance().getReference()
+                .child("posts/" + postModel.getPostId() + "/postShares")
+                .setValue(ServerValue.increment(1))
+                .addOnFailureListener(e -> {
+                    Toast.makeText(context, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+
+        Notification notification = new Notification();
+
+        notification.setNotificationBy(FirebaseAuth
+                .getInstance()
+                .getCurrentUser()
+                .getUid());
+        notification.setNotificaitonAt(new Date().getTime());
+        notification.setPostId(postModel.getPostId());
+        notification.setPostedBy(postModel.getPostedBy());
+        notification.setNotificationType("share");
+
+        FirebaseDatabase.getInstance().getReference()
+                .child("notification")
+                .child(postModel.getPostedBy())
+                .push()
+                .setValue(notification).addOnSuccessListener(unused -> {
+        }).addOnFailureListener(e -> {
+            Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+        });
     }
 
     private Uri saveImageToShare(Bitmap bitmapPostImg) {
@@ -686,15 +714,15 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         return postModelArrayList.size();
     }
 
-    public static class PostViewHolder extends RecyclerView.ViewHolder {
+public static class PostViewHolder extends RecyclerView.ViewHolder {
 
-        DashboardRvSampleBinding binding;
+    DashboardRvSampleBinding binding;
 
-        public PostViewHolder(@NonNull View itemView) {
-            super(itemView);
+    public PostViewHolder(@NonNull View itemView) {
+        super(itemView);
 
-            binding = DashboardRvSampleBinding.bind(itemView);
+        binding = DashboardRvSampleBinding.bind(itemView);
 
-        }
     }
+}
 }

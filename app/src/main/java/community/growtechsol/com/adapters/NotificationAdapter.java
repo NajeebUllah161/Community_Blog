@@ -79,6 +79,9 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                             case "mention":
                                 holder.binding.notificationTitle.setText(Html.fromHtml("<b>" + user.getName() + "</b>" + " Mentioned you in a comment"));
                                 break;
+                            case "share":
+                                holder.binding.notificationTitle.setText(Html.fromHtml("<b>" + user.getName() + "</b>" + " shared your post"));
+                                break;
                             default:
                                 holder.binding.notificationTitle.setText(Html.fromHtml("<b>" + user.getName() + "</b>" + " started following you"));
                                 break;

@@ -371,6 +371,7 @@ public class CommentActivity extends AppCompatActivity {
                             binding.descCommentScreen.setText(post.getPostDescription());
                             binding.like.setText(post.getPostLikes() + "");
                             binding.comment.setText(post.getCommentCount() + "");
+                            binding.share.setText(post.getPostShares() + "");
                         }
                     }
 
