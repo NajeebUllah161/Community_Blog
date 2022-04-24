@@ -49,6 +49,7 @@ import java.util.List;
 import community.growtechsol.com.R;
 import community.growtechsol.com.activities.CommentActivity;
 import community.growtechsol.com.activities.PostImageZoomActivity;
+import community.growtechsol.com.activities.UserProfileActivity;
 import community.growtechsol.com.databinding.DashboardRvSampleBinding;
 import community.growtechsol.com.edit_dialogues.EditPostDialogue;
 import community.growtechsol.com.models.Notification;
@@ -436,6 +437,15 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         });
 
         handlePowerMenu(holder, model);
+
+        holder.binding.profileImageDashboard.setOnClickListener(view -> {
+
+            Intent intent = new Intent(context, UserProfileActivity.class);
+            intent.putExtra("userId", model.getPostedBy());
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+
+        });
 
     }
 
