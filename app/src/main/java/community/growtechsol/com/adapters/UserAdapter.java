@@ -75,10 +75,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.viewHolder> {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.exists()) {
+                            //Unfollow
                             holder.binding.followBtn.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.follow_active_btn));
                             holder.binding.followBtn.setText("UNFOLLOW");
                             holder.binding.followBtn.setTextColor(context.getResources().getColor(R.color.gray));
-                            //holder.binding.followBtn.setEnabled(false);
                             holder.binding.followBtn.setOnClickListener(v -> {
 
                                 FirebaseDatabase.getInstance().getReference()
@@ -105,12 +105,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.viewHolder> {
 
                             });
                         } else {
-                            // Handling follow button
+                            // Follow
                             holder.binding.followBtn.setOnClickListener(v -> {
                                 FollowModel followModel = new FollowModel();
                                 followModel.setFollowedBy(FirebaseAuth.getInstance().getCurrentUser().getUid());
                                 followModel.setFollowedAt(new Date().getTime());
-                                // Log.d("Checkpoint",followModel.getFollowedBy());
 
                                 FirebaseDatabase.getInstance().getReference()
                                         .child("Users/" + user.getUserId() + "/followers/" + FirebaseAuth

@@ -5,28 +5,35 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.andreseko.SweetAlert.SweetAlertDialog;
+import com.example.flatdialoglibrary.dialog.FlatDialog;
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.ramotion.circlemenu.CircleMenuView;
 
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Date;
 
 import community.growtechsol.com.activities.LoginActivity;
 import community.growtechsol.com.databinding.ActivityMainBinding;
@@ -92,7 +99,55 @@ public class MainActivity extends AppCompatActivity {
             fragmentTransaction.commit();
             return true;
         });
+        binding.feedback.setOnClickListener(view -> {
+            final FlatDialog flatDialog = new FlatDialog(MainActivity.this);
+            flatDialog.setTitle("Feedback")
+                    .setSubtitle("Write your feedback here")
+                    .setLargeTextField("")
+                    .setLargeTextFieldHint("Write here....")
+                    .isCancelable(true)
+                    .setBackgroundColor(Color.parseColor("#FF018786"))
+                    .setFirstButtonColor(Color.parseColor("#FFFFFF"))
+                    .setSecondButtonColor(Color.parseColor("#FFFFFF"))
+                    .setFirstButtonTextColor(Color.parseColor("#000000"))
+                    .setSecondButtonTextColor(Color.parseColor("#000000"))
+                    .setFirstButtonText("SUBMIT")
+                    .setSecondButtonText("CANCEL")
+                    .withFirstButtonListner(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            String feedbackText = flatDialog.getLargeTextField();
+                            if(!feedbackText.isEmpty()){
+                                submitFeedback(feedbackText);
+                            }
+                            flatDialog.dismiss();
+                            //submitFeedback();
 
+                        }
+                    })
+                    .withSecondButtonListner(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            flatDialog.dismiss();
+                        }
+                    })
+                    .show();
+        });
+
+    }
+
+    private void submitFeedback(String feedbackText) {
+        Date date = new Date();
+        String todayDate = (String) DateFormat.format("yyyy-MM-dd", date);
+        String timeNow = (String) DateFormat.format("hh:mm:ss", date);
+
+        FirebaseDatabase.getInstance().getReference()
+                .child("userFeedbacks")
+                .child(auth.getCurrentUser().getUid())
+                .child(todayDate)
+                .child(timeNow)
+                .child("feedbackText")
+                .setValue(feedbackText);
     }
 
     private void checkAppUpdate() {

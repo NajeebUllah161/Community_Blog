@@ -7,20 +7,6 @@
     android:layout_height="match_parent"
     tools:context="community.growtechsol.com.MainActivity">
 
-    <!--    <androidx.appcompat.widget.Toolbar-->
-    <!--        android:id="@+id/toolbar"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:background="@drawable/toolbar_background"-->
-    <!--        android:minHeight="?attr/actionBarSize"-->
-    <!--        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        android:forceHasOverlappingRendering="true"-->
-    <!--        app:layout_constraintHorizontal_bias="0.5"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toTopOf="parent"-->
-    <!--        app:popupTheme="@style/Theme.AppCompat.Light" />-->
-
     <FrameLayout
         android:id="@+id/container_framelayout"
         android:layout_width="match_parent"
@@ -46,6 +32,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/Theme.AppCompat.Light" />
+
+    <ImageView
+        android:id="@+id/feedback"
+        android:layout_width="wrap_content"
+        android:layout_marginEnd="@dimen/_8mdp"
+        android:layout_marginBottom="@dimen/_48mdp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_feedback"
+        app:layout_constraintBottom_toBottomOf="@+id/container_framelayout"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_bar"
