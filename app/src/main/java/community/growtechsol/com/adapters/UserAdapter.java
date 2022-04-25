@@ -76,9 +76,34 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.viewHolder> {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.exists()) {
                             holder.binding.followBtn.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.follow_active_btn));
-                            holder.binding.followBtn.setText("Following");
+                            holder.binding.followBtn.setText("UNFOLLOW");
                             holder.binding.followBtn.setTextColor(context.getResources().getColor(R.color.gray));
-                            holder.binding.followBtn.setEnabled(false);
+                            //holder.binding.followBtn.setEnabled(false);
+                            holder.binding.followBtn.setOnClickListener(v -> {
+
+                                FirebaseDatabase.getInstance().getReference()
+                                        .child("Users/" + user.getUserId() + "/followers/" + FirebaseAuth
+                                                .getInstance()
+                                                .getCurrentUser()
+                                                .getUid())
+                                        .removeValue()
+                                        .addOnSuccessListener(unused -> FirebaseDatabase.getInstance().getReference()
+                                                .child("Users/" + user.getUserId() + "/followersCount")
+                                                .setValue(user.getFollowersCount() - 1)
+                                                .addOnSuccessListener(unused1 -> {
+                                                    holder.binding.followBtn.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.follow_active_btn));
+                                                    holder.binding.followBtn.setText("FOLLOW");
+                                                    holder.binding.followBtn.setTextColor(context.getResources().getColor(R.color.teal_700));
+                                                    //holder.binding.followBtn.setEnabled(false);
+                                                    Toast.makeText(context, "You UnFollowed: " + user.getName(), Toast.LENGTH_SHORT).show();
+
+                                                })
+                                                .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show()))
+                                        .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show());
+
+                                setFollowing(user, "removeFollowing");
+
+                            });
                         } else {
                             // Handling follow button
                             holder.binding.followBtn.setOnClickListener(v -> {
@@ -120,7 +145,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.viewHolder> {
                                         .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show());
 
 
-                                setFollowing(user);
+                                setFollowing(user, "addFollowing");
 
                             });
 
@@ -150,29 +175,51 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.viewHolder> {
 
     }
 
-    private void setFollowing(User user) {
+    private void setFollowing(User user, String type) {
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         Following following = new Following();
         following.setFollowing(user.getUserId());
         following.setFollowedAt(new Date().getTime());
 
-        FirebaseDatabase.getInstance().getReference()
-                .child("Users/" + auth.getCurrentUser().getUid() + "/following/" + user.getUserId())
-                .setValue(following)
-                .addOnSuccessListener(unused -> {
-                    Log.d("UserAdapter","You started following : " + user.getName());
-                    FirebaseDatabase.getInstance().getReference()
-                            .child("Users/" + auth.getCurrentUser().getUid() + "/followingCount")
-                            .setValue(ServerValue.increment(1))
-                            .addOnSuccessListener(unused1 -> {
-                                Log.d("UserAdapter","Your following count is incremented by +1");
-                            })
-                            .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show());
+        if (type.equals("addFollowing")) {
 
-                })
-                .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show());
+            FirebaseDatabase.getInstance().getReference()
+                    .child("Users/" + auth.getCurrentUser().getUid() + "/following/" + user.getUserId())
+                    .setValue(following)
+                    .addOnSuccessListener(unused -> {
+                        Log.d("UserAdapter", "You started following : " + user.getName());
+                        FirebaseDatabase.getInstance().getReference()
+                                .child("Users/" + auth.getCurrentUser().getUid() + "/followingCount")
+                                .setValue(ServerValue.increment(1))
+                                .addOnSuccessListener(unused1 -> {
+                                    Log.d("UserAdapter", "Your following count is incremented by +1");
+                                })
+                                .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show());
 
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show());
+
+        } else if (type.equals("removeFollowing")) {
+            FirebaseDatabase.getInstance().getReference()
+                    .child("Users/" + auth.getCurrentUser().getUid() + "/following/" + user.getUserId())
+                    .removeValue()
+                    .addOnSuccessListener(unused -> {
+                        Log.d("UserAdapter", "You un-followed : " + user.getName());
+                        FirebaseDatabase.getInstance().getReference()
+                                .child("Users/" + auth.getCurrentUser().getUid() + "/followingCount")
+                                .setValue(ServerValue.increment(-1))
+                                .addOnSuccessListener(unused1 -> {
+                                    Log.d("UserAdapter", "Your following count is decremented by -1");
+                                })
+                                .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show());
+
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show());
+
+        } else {
+            Log.d("UserAdapter", "type not identified");
+        }
     }
 
     @Override
