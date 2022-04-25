@@ -240,7 +240,7 @@
                     android:layout_height="wrap_content"
                     android:text="0"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/_15ssp"
+                    android:textSize="@dimen/_12font_mdp"
                     diagonal:layout_constraintEnd_toEndOf="@+id/textView5"
                     diagonal:layout_constraintStart_toStartOf="@+id/textView5"
                     diagonal:layout_constraintTop_toBottomOf="@+id/textView5" />
@@ -277,7 +277,7 @@
                     android:layout_height="wrap_content"
                     android:text="0"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/_15ssp"
+                    android:textSize="@dimen/_12font_mdp"
                     diagonal:layout_constraintEnd_toEndOf="@+id/textView6"
                     diagonal:layout_constraintStart_toStartOf="@+id/textView6"
                     diagonal:layout_constraintTop_toBottomOf="@+id/textView6" />
@@ -314,7 +314,7 @@
                     android:layout_height="wrap_content"
                     android:text="0"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/_15ssp"
+                    android:textSize="@dimen/_12font_mdp"
                     diagonal:layout_constraintEnd_toEndOf="@+id/textView7"
                     diagonal:layout_constraintStart_toStartOf="@+id/textView7"
                     diagonal:layout_constraintTop_toBottomOf="@+id/textView7" />
@@ -353,7 +353,7 @@
                     android:drawablePadding="@dimen/_4mdp"
                     android:text="0"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/_15ssp"
+                    android:textSize="@dimen/_12font_mdp"
                     diagonal:layout_constraintEnd_toStartOf="@+id/slash"
                     diagonal:layout_constraintHorizontal_chainStyle="packed"
                     diagonal:layout_constraintStart_toEndOf="@+id/view10"
@@ -382,7 +382,7 @@
                     android:drawablePadding="@dimen/_4mdp"
                     android:text="0"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/_15ssp"
+                    android:textSize="@dimen/_12font_mdp"
                     diagonal:layout_constraintEnd_toEndOf="@+id/textView8"
                     diagonal:layout_constraintHorizontal_bias="0.5"
                     diagonal:layout_constraintStart_toEndOf="@+id/slash"
@@ -458,6 +458,17 @@
             diagonal:layout_constraintStart_toEndOf="@id/textView13"
             diagonal:layout_constraintTop_toTopOf="@+id/textView13" />
 
+        <TextView
+            android:id="@+id/placeholderTxt"
+            android:layout_width="wrap_content"
+            android:visibility="gone"
+            android:layout_marginTop="@dimen/_16mdp"
+            android:text="No followers or following yet"
+            android:layout_height="wrap_content"
+            diagonal:layout_constraintEnd_toEndOf="parent"
+            diagonal:layout_constraintStart_toStartOf="parent"
+            diagonal:layout_constraintTop_toBottomOf="@+id/cardView" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/followingRv"
             android:layout_width="match_parent"
@@ -467,6 +478,135 @@
             diagonal:layout_constraintHorizontal_bias="0.5"
             diagonal:layout_constraintStart_toStartOf="parent"
             diagonal:layout_constraintTop_toBottomOf="@+id/textView13" />
+
+        <TextView
+            android:id="@+id/adminActivityText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_16mdp"
+            android:fontFamily="@font/acme"
+            android:text="AdminActivity"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14font_mdp"
+            android:visibility="gone"
+            diagonal:layout_constraintStart_toStartOf="@+id/cardView"
+            diagonal:layout_constraintTop_toBottomOf="@+id/cardView" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/activityContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_12mdp"
+            android:layout_marginTop="@dimen/_16mdp"
+            android:layout_marginBottom="@dimen/_24mdp"
+            android:background="@drawable/rounded_img"
+            android:paddingVertical="@dimen/_16mdp"
+            android:visibility="gone"
+            diagonal:layout_constraintBottom_toBottomOf="parent"
+            diagonal:layout_constraintEnd_toEndOf="parent"
+            diagonal:layout_constraintStart_toStartOf="parent"
+            diagonal:layout_constraintTop_toBottomOf="@id/adminActivityText">
+
+
+            <TextView
+                android:id="@+id/setDateTxt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_12mdp"
+                android:layout_marginEnd="@dimen/_3mdp"
+                android:text="Given Date"
+                diagonal:layout_constraintBottom_toTopOf="@+id/setDate"
+                diagonal:layout_constraintEnd_toStartOf="@id/activityPerDayTxt"
+                diagonal:layout_constraintHorizontal_bias="0.5"
+                diagonal:layout_constraintStart_toStartOf="parent"
+                diagonal:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/setDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_8mdp"
+                android:background="@drawable/rounded_img"
+                android:drawableEnd="@drawable/ic_down_arrow"
+                android:padding="@dimen/_4mdp"
+                android:text="Add Date Here"
+                diagonal:layout_constraintEnd_toEndOf="@+id/setDateTxt"
+                diagonal:layout_constraintStart_toStartOf="@+id/setDateTxt"
+                diagonal:layout_constraintTop_toBottomOf="@+id/setDateTxt" />
+
+            <TextView
+                android:id="@+id/activityPerDayTxt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_3mdp"
+                android:layout_marginEnd="@dimen/_12mdp"
+                android:text="Activity"
+                diagonal:layout_constraintBottom_toBottomOf="@id/setDateTxt"
+                diagonal:layout_constraintEnd_toEndOf="parent"
+                diagonal:layout_constraintHorizontal_bias="0.5"
+                diagonal:layout_constraintStart_toEndOf="@id/setDateTxt"
+                diagonal:layout_constraintTop_toTopOf="@+id/setDateTxt" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/activityPerDay"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_img"
+                android:text="Activity"
+                diagonal:layout_constraintBottom_toBottomOf="@id/setDate"
+                diagonal:layout_constraintEnd_toEndOf="@+id/activityPerDayTxt"
+                diagonal:layout_constraintStart_toStartOf="@+id/activityPerDayTxt"
+                diagonal:layout_constraintTop_toTopOf="@+id/setDate">
+
+                <TextView
+                    android:id="@+id/likes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_4mdp"
+                    android:drawableStart="@drawable/ic_comment_like_filled"
+                    android:drawablePadding="@dimen/_4mdp"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_15ssp"
+                    diagonal:layout_constraintBottom_toBottomOf="parent"
+                    diagonal:layout_constraintEnd_toStartOf="@id/dislikes"
+                    diagonal:layout_constraintHorizontal_bias="0.5"
+                    diagonal:layout_constraintStart_toStartOf="parent"
+                    diagonal:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/slashh"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/_4mdp"
+                    android:text="/"
+                    android:textStyle="bold"
+                    diagonal:layout_constraintBottom_toBottomOf="parent"
+                    diagonal:layout_constraintEnd_toStartOf="@id/dislikes"
+                    diagonal:layout_constraintHorizontal_bias="0.5"
+                    diagonal:layout_constraintStart_toEndOf="@id/likes"
+                    diagonal:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/dislikes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/dislike_red_filled"
+                    android:drawablePadding="@dimen/_4mdp"
+                    android:text="0"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_15ssp"
+                    diagonal:layout_constraintBottom_toBottomOf="parent"
+                    diagonal:layout_constraintEnd_toEndOf="parent"
+                    diagonal:layout_constraintHorizontal_bias="0.5"
+                    diagonal:layout_constraintStart_toEndOf="@id/likes"
+                    diagonal:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

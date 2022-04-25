@@ -111,8 +111,23 @@ public class ProfileFragment extends Fragment {
                                 binding.followersTv.setText(getUser.getFollowersCount() + "");
                                 binding.userPerks.setText(getUser.getUserPerks() + "");
                                 binding.userPosts.setText(getUser.getTotalPosts() + "");
-                                binding.followersCount.setText(" (" + getUser.getFollowersCount() + ")");
-                                binding.followingCount.setText(" (" + getUser.getFollowingCount() + ")");
+                                if (getUser.getFollowersCount() == 0) {
+                                    binding.textView12.setVisibility(View.INVISIBLE);
+                                    binding.followersCount.setVisibility(View.GONE);
+                                    binding.myFriendRv.setVisibility(View.GONE);
+                                } else {
+                                    binding.followersCount.setText(" (" + getUser.getFollowersCount() + ")");
+                                }
+                                if (getUser.getFollowingCount() == 0) {
+                                    binding.textView13.setVisibility(View.GONE);
+                                    binding.followingCount.setVisibility(View.GONE);
+                                    binding.followingRv.setVisibility(View.GONE);
+                                } else {
+                                    binding.followingCount.setText(" (" + getUser.getFollowingCount() + ")");
+                                }
+                                if(getUser.getFollowersCount() == 0 && getUser.getFollowingCount() == 0){
+                                 binding.placeholderTxt.setVisibility(View.VISIBLE);
+                                }
                                 if (getUser.isAdmin()) {
                                     setupVerificationTick();
                                     binding.adminLikes.setText(getUser.getUserUpVotes() + "");

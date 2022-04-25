@@ -47,6 +47,7 @@ public class FollowingAdapter extends RecyclerView.Adapter<FollowingAdapter.view
     @Override
     public void onBindViewHolder(@NotNull FollowingAdapter.viewHolder holder, int position) {
         Following followingList = list.get(position);
+
         FirebaseDatabase
                 .getInstance()
                 .getReference()

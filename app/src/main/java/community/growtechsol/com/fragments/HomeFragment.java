@@ -125,7 +125,6 @@ public class HomeFragment extends Fragment {
 
         setupFunctions();
 
-
         return binding.getRoot();
     }
 

@@ -21,6 +21,16 @@ public class User {
     private int totalPosts;
     private boolean isAdmin;
 
+    public boolean isSuperAdmin() {
+        return isSuperAdmin;
+    }
+
+    public void setSuperAdmin(boolean superAdmin) {
+        isSuperAdmin = superAdmin;
+    }
+
+    private boolean isSuperAdmin;
+
     public User() {
     }
 
