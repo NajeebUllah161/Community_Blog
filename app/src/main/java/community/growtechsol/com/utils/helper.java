@@ -7,6 +7,7 @@ import android.net.NetworkInfo;
 
 public class helper {
 
+    public static  Boolean shared = false;
     public static Boolean isInternetAvailable(Activity activity) {
         ConnectivityManager cm =
                 (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);

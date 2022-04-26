@@ -25,6 +25,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
@@ -45,10 +46,13 @@ import community.growtechsol.com.R;
 import community.growtechsol.com.adapters.PostAdapter;
 import community.growtechsol.com.adapters.StoryAdapter;
 import community.growtechsol.com.databinding.FragmentHomeBinding;
+import community.growtechsol.com.models.Notification;
 import community.growtechsol.com.models.Post;
 import community.growtechsol.com.models.Story;
 import community.growtechsol.com.models.User;
 import community.growtechsol.com.models.UserStories;
+
+import static community.growtechsol.com.utils.helper.shared;
 
 public class HomeFragment extends Fragment {
 
@@ -65,6 +69,8 @@ public class HomeFragment extends Fragment {
     PowerMenu powerMenu;
     PostAdapter postAdapter;
     String postFilterType = "all";
+    private DatabaseReference mDatabase;
+    Post postModel;
 
     private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
         @Override
@@ -95,7 +101,6 @@ public class HomeFragment extends Fragment {
             powerMenu.dismiss();
         }
     };
-    private DatabaseReference mDatabase;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -122,22 +127,48 @@ public class HomeFragment extends Fragment {
 
         // Inflate the layout for this fragment
         binding = FragmentHomeBinding.inflate(inflater, container, false);
-
         setupFunctions();
 
         return binding.getRoot();
     }
 
-    private void setupFunctions() {
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (shared) {
+            shared = false;
+            FirebaseDatabase.getInstance().getReference()
+                    .child("posts/" + postModel.getPostId() + "/postShares")
+                    .setValue(ServerValue.increment(1))
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(getContext(), "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
 
-        setupAdapters();
-        setupEventListeners();
-        setupFloatingMenu();
+            Notification notification = new Notification();
 
+            notification.setNotificationBy(FirebaseAuth
+                    .getInstance()
+                    .getCurrentUser()
+                    .getUid());
+            notification.setNotificaitonAt(new Date().getTime());
+            notification.setPostId(postModel.getPostId());
+            notification.setPostedBy(postModel.getPostedBy());
+            notification.setNotificationType("share");
+
+            FirebaseDatabase.getInstance().getReference()
+                    .child("notification")
+                    .child(postModel.getPostedBy())
+                    .push()
+                    .setValue(notification).addOnSuccessListener(unused -> {
+            }).addOnFailureListener(e -> {
+                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            });
+        }
     }
 
-    private void setupFloatingMenu() {
-
+    private void setupFunctions() {
+        setupAdapters();
+        setupEventListeners();
     }
 
     private void setupEventListeners() {
@@ -292,6 +323,11 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        postAdapter.setOnItemClickListner((isOpen, postModel) -> {
+            Toast.makeText(getContext(), "Clicked", Toast.LENGTH_LONG).show();
+                this.postModel = postModel;
+
+        });
     }
 
     private void filterList(String newText) {
@@ -389,4 +425,5 @@ public class HomeFragment extends Fragment {
         storyArrayList.clear();
         postList.clear();
     }
+
 }

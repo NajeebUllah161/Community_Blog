@@ -1,8 +1,10 @@
 package community.growtechsol.com.adapters;
 
 import android.annotation.SuppressLint;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -10,6 +12,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
@@ -50,12 +53,16 @@ import community.growtechsol.com.R;
 import community.growtechsol.com.activities.CommentActivity;
 import community.growtechsol.com.activities.PostImageZoomActivity;
 import community.growtechsol.com.activities.UserProfileActivity;
+import community.growtechsol.com.broadcast.MyReceiver;
 import community.growtechsol.com.databinding.DashboardRvSampleBinding;
 import community.growtechsol.com.edit_dialogues.EditPostDialogue;
 import community.growtechsol.com.models.Notification;
 import community.growtechsol.com.models.Post;
 import community.growtechsol.com.models.User;
 import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip;
+
+import static community.growtechsol.com.utils.helper.shared;
+
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
 
@@ -65,6 +72,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     Intent intent;
     String postId;
     Post post;
+    boolean isAdmin;
+    MediaPlayer player;
+    int length;
+
     private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
         @Override
         public void onItemClick(int position, PowerMenuItem item) {
@@ -92,6 +103,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             powerMenu.dismiss();
         }
     };
+
     private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener2 = new OnMenuItemClickListener<PowerMenuItem>() {
         @Override
         public void onItemClick(int position, PowerMenuItem item) {
@@ -119,26 +131,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             powerMenu2.dismiss();
         }
     };
-    boolean isAdmin;
-    MediaPlayer player;
-    int length;
 
     public PostAdapter(ArrayList<Post> list, Context context) {
         this.postModelArrayList = list;
         this.context = context;
-    }
-
-    private void saveDeletedPost(Post post) {
-        FirebaseDatabase.getInstance().getReference()
-                .child("DeletedPosts")
-                .child(post.getPostedBy())
-                .child(new Date() + "")
-                .setValue(post);
-    }
-
-    public void setFilteredList(ArrayList<Post> filteredList) {
-        this.postModelArrayList = filteredList;
-        notifyDataSetChanged();
     }
 
     @NonNull
@@ -147,6 +143,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         View view = LayoutInflater.from(context).inflate(R.layout.dashboard_rv_sample, parent, false);
         return new PostViewHolder(view);
+    }
+
+    onItemClickListner onItemClickListner;
+
+    public void setOnItemClickListner(PostAdapter.onItemClickListner onItemClickListner) {
+        this.onItemClickListner = onItemClickListner;
+    }
+
+    public interface onItemClickListner{
+        void onClick(Boolean isOpened,Post postModel);//pass your object types.
     }
 
     @SuppressLint({"SetTextI18n", "CheckResult"})
@@ -431,13 +437,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
             BitmapDrawable bitmapDrawable = (BitmapDrawable) holder.binding.postImg.getDrawable();
             if (bitmapDrawable == null) {
-                //post without Image
                 shareTextOnly(header, description, model);
-                Log.d("Checkpoint", "withoutImg");
             } else {
-                //post with Image
-
-                Log.d("Checkpoint", "withImage");
                 Bitmap bitmapPostImg = bitmapDrawable.getBitmap();
                 shareImageAndText(header, description, bitmapPostImg, model);
             }
@@ -507,41 +508,35 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         shareIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Community Feed GrowPak");
         shareIntent.setType("image/png");
-        context.startActivity(Intent.createChooser(shareIntent, "Share Via"));
+
+        Intent receiver = new Intent(context, MyReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, receiver, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            context.startActivity(Intent.createChooser(shareIntent, "Share Via", pendingIntent.getIntentSender()));
+        }
 
         incrementPostId(postModel);
-
 
     }
 
     private void incrementPostId(Post postModel) {
 
+        onItemClickListner.onClick(true,postModel);
+
+    }
+
+    private void saveDeletedPost(Post post) {
         FirebaseDatabase.getInstance().getReference()
-                .child("posts/" + postModel.getPostId() + "/postShares")
-                .setValue(ServerValue.increment(1))
-                .addOnFailureListener(e -> {
-                    Toast.makeText(context, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+                .child("DeletedPosts")
+                .child(post.getPostedBy())
+                .child(new Date() + "")
+                .setValue(post);
+    }
 
-        Notification notification = new Notification();
-
-        notification.setNotificationBy(FirebaseAuth
-                .getInstance()
-                .getCurrentUser()
-                .getUid());
-        notification.setNotificaitonAt(new Date().getTime());
-        notification.setPostId(postModel.getPostId());
-        notification.setPostedBy(postModel.getPostedBy());
-        notification.setNotificationType("share");
-
-        FirebaseDatabase.getInstance().getReference()
-                .child("notification")
-                .child(postModel.getPostedBy())
-                .push()
-                .setValue(notification).addOnSuccessListener(unused -> {
-        }).addOnFailureListener(e -> {
-            Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
-        });
+    public void setFilteredList(ArrayList<Post> filteredList) {
+        this.postModelArrayList = filteredList;
+        notifyDataSetChanged();
     }
 
     private Uri saveImageToShare(Bitmap bitmapPostImg) {
