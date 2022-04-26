@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@color/white"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".edit_dialogues.EditCommentDialogue">
 
     <TextView
@@ -82,9 +82,9 @@
     <TextView
         android:id="@+id/userProfessionEditComment"
         android:layout_width="wrap_content"
-        android:textColor="@color/gray"
         android:layout_height="wrap_content"
         android:text="Designation"
+        android:textColor="@color/gray"
         app:layout_constraintBottom_toBottomOf="@+id/profileImgEditComment"
         app:layout_constraintStart_toStartOf="@+id/userNameEditComment"
         app:layout_constraintTop_toBottomOf="@+id/userNameEditComment" />
@@ -93,8 +93,6 @@
         android:id="@+id/commentDescription"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:textColor="@color/black"
-        android:textColorHint="@color/gray"
         android:layout_marginHorizontal="@dimen/_8mdp"
         android:layout_marginTop="@dimen/_16mdp"
         android:layout_marginBottom="@dimen/_32mdp"
@@ -106,6 +104,8 @@
         android:maxLength="250"
         android:maxLines="4"
         android:paddingTop="@dimen/_8mdp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/gray"
         android:textSize="@dimen/_18font_mdp"
         app:layout_constraintBottom_toTopOf="@+id/view11"
         app:layout_constraintEnd_toEndOf="parent"

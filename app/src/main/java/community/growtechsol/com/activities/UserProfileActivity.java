@@ -194,19 +194,22 @@ public class UserProfileActivity extends AppCompatActivity implements DatePicker
                                 binding.followersTv.setText(getUser.getFollowersCount() + "");
                                 binding.userPerks.setText(getUser.getUserPerks() + "");
                                 binding.userPosts.setText(getUser.getTotalPosts() + "");
-                                binding.followersCount.setText(" (" + getUser.getFollowersCount() + ")");
-                                binding.followingCount.setText(" (" + getUser.getFollowingCount() + ")");
                                 if (getUser.getFollowersCount() == 0) {
                                     binding.textView12.setVisibility(View.INVISIBLE);
                                     binding.followersCount.setVisibility(View.GONE);
                                     binding.myFriendRv.setVisibility(View.GONE);
+                                }else{
+                                    binding.followersCount.setText(" (" + getUser.getFollowersCount() + ")");
                                 }
                                 if (getUser.getFollowingCount() == 0) {
                                     binding.textView13.setVisibility(View.GONE);
                                     binding.followingCount.setVisibility(View.GONE);
                                     binding.followingRv.setVisibility(View.GONE);
+                                }else{
+                                    checkFollowers(getUser.getFollowersCount());
+                                    binding.followingCount.setText(" (" + getUser.getFollowingCount() + ")");
                                 }
-                                if(getUser.getFollowersCount() == 0 && getUser.getFollowingCount() == 0){
+                                if (getUser.getFollowersCount() == 0 && getUser.getFollowingCount() == 0) {
                                     binding.placeholderTxt.setVisibility(View.VISIBLE);
                                 }
                                 checkForSuperAdmin(getUser.isAdmin());
@@ -237,6 +240,16 @@ public class UserProfileActivity extends AppCompatActivity implements DatePicker
 
                     }
                 });
+    }
+
+    private void checkFollowers(int followersCount) {
+        if(followersCount == 0){
+            binding.marginStabilizerUp.setVisibility(View.INVISIBLE);
+            ConstraintSet constraintSet = new ConstraintSet();
+            constraintSet.clone(binding.parentOfUserProfile);
+            constraintSet.connect(R.id.textView13, ConstraintSet.TOP, R.id.marginStabilizerUp, ConstraintSet.BOTTOM, 0);
+            constraintSet.applyTo(binding.parentOfUserProfile);
+        }
     }
 
     private void setFollowers() {
@@ -322,10 +335,10 @@ public class UserProfileActivity extends AppCompatActivity implements DatePicker
 
     private void setConstraints() {
         ConstraintSet constraintSet = new ConstraintSet();
-        constraintSet.clone(binding.parentOfProfileFragment);
-        constraintSet.connect(R.id.textView7, ConstraintSet.END, R.id.parentOfProfileFragment, ConstraintSet.END, 0);
-        constraintSet.connect(R.id.callView, ConstraintSet.END, R.id.parentOfProfileFragment, ConstraintSet.END, 0);
-        constraintSet.applyTo(binding.parentOfProfileFragment);
+        constraintSet.clone(binding.parentOfUserProfile);
+        constraintSet.connect(R.id.textView7, ConstraintSet.END, R.id.parentOfUserProfile, ConstraintSet.END, 0);
+        constraintSet.connect(R.id.callView, ConstraintSet.END, R.id.parentOfUserProfile, ConstraintSet.END, 0);
+        constraintSet.applyTo(binding.parentOfUserProfile);
     }
 
     private void setupImgClickListeners(User getUser) {

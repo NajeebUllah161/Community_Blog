@@ -2,8 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:background="@color/white"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white">
 
     <TextView
         android:id="@+id/textView3"
@@ -81,8 +81,8 @@
         android:id="@+id/userProfessionEditPost"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/gray"
         android:text="Designation"
+        android:textColor="@color/gray"
         app:layout_constraintBottom_toBottomOf="@+id/profileImgEditPost"
         app:layout_constraintStart_toStartOf="@+id/userNameEditPost"
         app:layout_constraintTop_toBottomOf="@+id/userNameEditPost" />
@@ -90,8 +90,6 @@
     <EditText
         android:id="@+id/postTitle"
         android:layout_width="0dp"
-        android:textColor="@color/black"
-        android:textColorHint="@color/gray"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/_12mdp"
         android:background="@android:color/transparent"
@@ -102,6 +100,8 @@
         android:maxLength="80"
         android:maxLines="4"
         android:paddingTop="@dimen/_8mdp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/gray"
         android:textSize="@dimen/_18font_mdp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/postDescription"
@@ -112,9 +112,7 @@
     <EditText
         android:id="@+id/postDescription"
         android:layout_width="0dp"
-        android:textColor="@color/black"
         android:layout_height="0dp"
-        android:textColorHint="@color/gray"
         android:layout_marginEnd="@dimen/_12mdp"
         android:background="@android:color/transparent"
         android:ems="10"
@@ -124,6 +122,8 @@
         android:maxLength="150"
         android:maxLines="4"
         android:paddingTop="@dimen/_8mdp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/gray"
         android:textSize="@dimen/_18font_mdp"
         app:layout_constraintBottom_toTopOf="@+id/postImage"
         app:layout_constraintEnd_toEndOf="parent"

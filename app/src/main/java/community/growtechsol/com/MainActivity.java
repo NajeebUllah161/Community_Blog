@@ -1,21 +1,16 @@
 package community.growtechsol.com;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.format.DateFormat;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,13 +18,11 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.andreseko.SweetAlert.SweetAlertDialog;
 import com.example.flatdialoglibrary.dialog.FlatDialog;
-import com.google.android.material.badge.BadgeDrawable;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.ramotion.circlemenu.CircleMenuView;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -117,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View view) {
                             String feedbackText = flatDialog.getLargeTextField();
-                            if(!feedbackText.isEmpty()){
+                            if (!feedbackText.isEmpty()) {
                                 submitFeedback(feedbackText);
                             }
                             flatDialog.dismiss();

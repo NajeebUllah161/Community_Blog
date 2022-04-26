@@ -65,10 +65,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     Intent intent;
     String postId;
     Post post;
-    boolean isAdmin;
-    MediaPlayer player;
-    int length;
-
     private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
         @Override
         public void onItemClick(int position, PowerMenuItem item) {
@@ -123,6 +119,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             powerMenu2.dismiss();
         }
     };
+    boolean isAdmin;
+    MediaPlayer player;
+    int length;
 
     public PostAdapter(ArrayList<Post> list, Context context) {
         this.postModelArrayList = list;
@@ -714,15 +713,15 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         return postModelArrayList.size();
     }
 
-public static class PostViewHolder extends RecyclerView.ViewHolder {
+    public static class PostViewHolder extends RecyclerView.ViewHolder {
 
-    DashboardRvSampleBinding binding;
+        DashboardRvSampleBinding binding;
 
-    public PostViewHolder(@NonNull View itemView) {
-        super(itemView);
+        public PostViewHolder(@NonNull View itemView) {
+            super(itemView);
 
-        binding = DashboardRvSampleBinding.bind(itemView);
+            binding = DashboardRvSampleBinding.bind(itemView);
 
+        }
     }
-}
 }

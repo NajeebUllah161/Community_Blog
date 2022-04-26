@@ -2,10 +2,10 @@ package community.growtechsol.com.models;
 
 public class Post {
 
-    private String postId,postImage,postRecording,recTime,postedBy,postTitle,postDescription,createdAt;
+    private String postId, postImage, postRecording, recTime, postedBy, postTitle, postDescription, createdAt;
     private long postedAt;
-    private boolean solved,isAllowed;
-    private int postLikes,postShares,commentCount;
+    private boolean solved, isAllowed;
+    private int postLikes, postShares, commentCount;
 
     public Post() {
     }

@@ -168,7 +168,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/like"
                 app:shimmer_demo_child_count="8"
-                app:shimmer_demo_layout="@layout/shimmer_comment"/>
+                app:shimmer_demo_layout="@layout/shimmer_comment" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
@@ -189,10 +189,6 @@
         android:id="@+id/commentEt"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:socialFlags="hyperlink"
-        app:hyperlinkColor="@color/black"
-        android:textColor="@color/black"
-        android:textColorHint="@color/gray"
         android:layout_marginStart="@dimen/_6mdp"
         android:layout_marginBottom="@dimen/_6mdp"
         android:background="@android:color/transparent"
@@ -204,9 +200,13 @@
         android:paddingLeft="@dimen/_3mdp"
         android:paddingTop="@dimen/_6mdp"
         android:paddingBottom="@dimen/_6mdp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/gray"
+        app:hyperlinkColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/postCommentRecording"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:socialFlags="hyperlink" />
 
     <ImageView
         android:id="@+id/postCommentBtn"

@@ -2,8 +2,25 @@ package community.growtechsol.com.models;
 
 public class User {
 
-    private String name, profession, email, password,coverPhoto,userId;
+    private String name, profession, email, password, coverPhoto, userId;
     private int followersCount;
+    private int followingCount;
+    private String profileImage;
+    private int userPerks;
+    private int userUpVotes;
+    private int userDownVotes;
+    private int totalPosts;
+    private boolean isAdmin;
+    private boolean isSuperAdmin;
+    public User() {
+    }
+
+    public User(String name, String profession, String email, String password) {
+        this.name = name;
+        this.profession = profession;
+        this.email = email;
+        this.password = password;
+    }
 
     public int getFollowingCount() {
         return followingCount;
@@ -13,32 +30,12 @@ public class User {
         this.followingCount = followingCount;
     }
 
-    private int followingCount;
-    private String profileImage;
-    private int userPerks;
-    private int userUpVotes;
-    private int userDownVotes;
-    private int totalPosts;
-    private boolean isAdmin;
-
     public boolean isSuperAdmin() {
         return isSuperAdmin;
     }
 
     public void setSuperAdmin(boolean superAdmin) {
         isSuperAdmin = superAdmin;
-    }
-
-    private boolean isSuperAdmin;
-
-    public User() {
-    }
-
-    public User(String name, String profession, String email, String password) {
-        this.name = name;
-        this.profession = profession;
-        this.email = email;
-        this.password = password;
     }
 
     public boolean isAdmin() {

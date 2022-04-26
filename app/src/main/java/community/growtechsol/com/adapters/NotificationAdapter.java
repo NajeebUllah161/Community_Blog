@@ -107,16 +107,14 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                 intent.putExtra("postedBy", notification.getPostedBy());
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
-            }
-            else if(type.equals("follow")){
+            } else if (type.equals("follow")) {
                 checkOpen(notification);
                 Intent intent = new Intent(context, UserProfileActivity.class);
                 intent.putExtra("userId", notification.getNotificationBy());
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
-            }
-            else{
-                Log.d("NotificationAdapter","Not does not match");
+            } else {
+                Log.d("NotificationAdapter", "Not does not match");
             }
         });
         Boolean checkOpen = notification.isCheckOpen();

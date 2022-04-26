@@ -2,7 +2,7 @@ package community.growtechsol.com.models;
 
 public class Notification {
 
-    private String notificationBy,notificationType,postId,notificationId,postedBy;
+    private String notificationBy, notificationType, postId, notificationId, postedBy;
     private long notificaitonAt;
     private boolean checkOpen;
 

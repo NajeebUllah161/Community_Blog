@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@color/white"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context="community.growtechsol.com.MainActivity">
 
     <FrameLayout
@@ -36,9 +36,9 @@
     <ImageView
         android:id="@+id/feedback"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/_8mdp"
         android:layout_marginBottom="@dimen/_48mdp"
-        android:layout_height="wrap_content"
         android:src="@drawable/ic_feedback"
         app:layout_constraintBottom_toBottomOf="@+id/container_framelayout"
         app:layout_constraintEnd_toEndOf="parent" />

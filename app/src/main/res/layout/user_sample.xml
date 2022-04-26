@@ -44,8 +44,8 @@
         android:id="@+id/professionUserSample"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/gray"
         android:text="Designation"
+        android:textColor="@color/gray"
         diagonal:layout_constraintBottom_toBottomOf="@+id/profileImgUserSample"
         diagonal:layout_constraintStart_toStartOf="@+id/nameUserSample"
         diagonal:layout_constraintTop_toBottomOf="@+id/nameUserSample" />

@@ -2,6 +2,9 @@ package community.growtechsol.com.models;
 
 public class Following {
 
+    private String following;
+    private Long followedAt;
+
     public Following() {
     }
 
@@ -20,7 +23,4 @@ public class Following {
     public void setFollowedAt(Long followedAt) {
         this.followedAt = followedAt;
     }
-
-    private String following;
-    private Long followedAt;
 }

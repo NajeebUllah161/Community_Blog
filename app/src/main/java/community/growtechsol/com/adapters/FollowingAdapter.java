@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import community.growtechsol.com.R;
 import community.growtechsol.com.activities.UserProfileActivity;
 import community.growtechsol.com.databinding.FriendRvSampleBinding;
-import community.growtechsol.com.models.FollowModel;
 import community.growtechsol.com.models.Following;
 import community.growtechsol.com.models.User;
 

@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@color/white"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context="community.growtechsol.com.activities.SignupActivity">
 
 
@@ -42,8 +42,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_3mdp"
-        android:textColor="@color/gray"
         android:text="Keep Connected with friends"
+        android:textColor="@color/gray"
         app:layout_constraintBottom_toTopOf="@+id/inputName"
         app:layout_constraintEnd_toEndOf="@+id/textView14"
         app:layout_constraintHorizontal_bias="0.5"
@@ -55,13 +55,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_13mdp"
-        app:hintTextColor="@color/gray"
-        android:textColorHint="@color/gray"
         android:layout_marginTop="@dimen/_18mdp"
         android:layout_marginEnd="@dimen/_12mdp"
         android:background="@drawable/input_text_bg"
         android:paddingVertical="@dimen/_4mdp"
         android:paddingStart="@dimen/_12mdp"
+        android:textColorHint="@color/gray"
+        app:hintTextColor="@color/gray"
         app:layout_constraintBottom_toTopOf="@+id/inputProfession"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -72,12 +72,12 @@
             android:id="@+id/nameET"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:textColorHint="@color/gray"
             android:background="@android:color/transparent"
             android:hint="Name"
             android:inputType="textPersonName"
-            android:paddingBottom="@dimen/_4mdp" />
+            android:paddingBottom="@dimen/_4mdp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/gray" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -86,13 +86,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_12mdp"
-        app:hintTextColor="@color/gray"
-        android:textColorHint="@color/gray"
         android:layout_marginTop="@dimen/_6mdp"
         android:layout_marginEnd="@dimen/_12mdp"
         android:background="@drawable/input_text_bg"
         android:paddingVertical="@dimen/_4mdp"
         android:paddingStart="@dimen/_12mdp"
+        android:textColorHint="@color/gray"
+        app:hintTextColor="@color/gray"
         app:layout_constraintBottom_toTopOf="@+id/inputEmail"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -102,13 +102,13 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/professionET"
             android:layout_width="match_parent"
-            android:textColor="@color/black"
-            android:textColorHint="@color/gray"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:hint="Profession"
             android:inputType="textPersonName"
-            android:paddingBottom="@dimen/_4mdp" />
+            android:paddingBottom="@dimen/_4mdp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/gray" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -117,13 +117,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_12mdp"
-        app:hintTextColor="@color/gray"
-        android:textColorHint="@color/gray"
         android:layout_marginTop="@dimen/_6mdp"
         android:layout_marginEnd="@dimen/_12mdp"
         android:background="@drawable/input_text_bg"
         android:paddingVertical="@dimen/_4mdp"
         android:paddingStart="@dimen/_12mdp"
+        android:textColorHint="@color/gray"
+        app:hintTextColor="@color/gray"
         app:layout_constraintBottom_toTopOf="@+id/inputPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -136,10 +136,10 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:hint="Email"
-            android:textColorHint="@color/gray"
-            android:textColor="@color/black"
             android:inputType="textWebEmailAddress"
-            android:paddingBottom="@dimen/_4mdp" />
+            android:paddingBottom="@dimen/_4mdp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/gray" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -150,11 +150,11 @@
         android:layout_marginStart="@dimen/_12mdp"
         android:layout_marginTop="@dimen/_6mdp"
         android:layout_marginEnd="@dimen/_12mdp"
-        app:hintTextColor="@color/gray"
-        android:textColorHint="@color/gray"
         android:background="@drawable/input_text_bg"
         android:paddingVertical="@dimen/_4mdp"
         android:paddingStart="@dimen/_12mdp"
+        android:textColorHint="@color/gray"
+        app:hintTextColor="@color/gray"
         app:layout_constraintBottom_toTopOf="@+id/signUpBtn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -167,10 +167,10 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:hint="Password"
-            android:textColorHint="@color/gray"
-            android:textColor="@color/black"
             android:inputType="textWebPassword"
-            android:paddingBottom="@dimen/_4mdp" />
+            android:paddingBottom="@dimen/_4mdp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/gray" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
@@ -195,8 +195,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:includeFontPadding="false"
-        android:textColor="@color/gray"
         android:text="Already have an Account?"
+        android:textColor="@color/gray"
         app:layout_constraintBottom_toBottomOf="@+id/goToLogin"
         app:layout_constraintEnd_toStartOf="@+id/goToLogin"
         app:layout_constraintHorizontal_bias="0.5"

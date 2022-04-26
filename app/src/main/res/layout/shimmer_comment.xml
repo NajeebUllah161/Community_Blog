@@ -37,9 +37,9 @@
 
         <TextView
             android:id="@+id/time"
-            android:layout_marginTop="@dimen/_4mdp"
             android:layout_width="@dimen/_40mdp"
             android:layout_height="@dimen/_12mdp"
+            android:layout_marginTop="@dimen/_4mdp"
             android:background="#EAEAEA"
             app:layout_constraintStart_toStartOf="@+id/commentData"
             app:layout_constraintTop_toBottomOf="@+id/commentData" />

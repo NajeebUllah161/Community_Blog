@@ -123,10 +123,11 @@ public class ProfileFragment extends Fragment {
                                     binding.followingCount.setVisibility(View.GONE);
                                     binding.followingRv.setVisibility(View.GONE);
                                 } else {
+                                    checkFollowers(getUser.getFollowersCount());
                                     binding.followingCount.setText(" (" + getUser.getFollowingCount() + ")");
                                 }
-                                if(getUser.getFollowersCount() == 0 && getUser.getFollowingCount() == 0){
-                                 binding.placeholderTxt.setVisibility(View.VISIBLE);
+                                if (getUser.getFollowersCount() == 0 && getUser.getFollowingCount() == 0) {
+                                    binding.placeholderTxt.setVisibility(View.VISIBLE);
                                 }
                                 if (getUser.isAdmin()) {
                                     setupVerificationTick();
@@ -155,6 +156,16 @@ public class ProfileFragment extends Fragment {
 
                     }
                 });
+    }
+
+    private void checkFollowers(int followersCount) {
+        if(followersCount == 0){
+            binding.marginStabilizer.setVisibility(View.INVISIBLE);
+            ConstraintSet constraintSet = new ConstraintSet();
+            constraintSet.clone(binding.parentOfProfileFragment);
+            constraintSet.connect(R.id.textView13, ConstraintSet.TOP, R.id.marginStabilizer, ConstraintSet.BOTTOM, 0);
+            constraintSet.applyTo(binding.parentOfProfileFragment);
+        }
     }
 
     private void setFollowers() {

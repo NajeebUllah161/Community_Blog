@@ -8,7 +8,7 @@
     tools:context="community.growtechsol.com.fragments.ProfileFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/parentOfProfileFragment"
+        android:id="@+id/parentOfUserProfile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white">
@@ -418,6 +418,14 @@
             diagonal:layout_constraintStart_toStartOf="@+id/cardView"
             diagonal:layout_constraintTop_toBottomOf="@+id/cardView" />
 
+        <View
+            android:id="@+id/marginStabilizerUp"
+            android:layout_width="@dimen/_1mdp"
+            android:layout_height="@dimen/_6mdp"
+            android:visibility="gone"
+            diagonal:layout_constraintStart_toStartOf="@+id/cardView"
+            diagonal:layout_constraintTop_toBottomOf="@+id/cardView" />
+
         <TextView
             android:id="@+id/followersCount"
             android:layout_width="wrap_content"
@@ -461,10 +469,10 @@
         <TextView
             android:id="@+id/placeholderTxt"
             android:layout_width="wrap_content"
-            android:visibility="gone"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_16mdp"
             android:text="No followers or following yet"
-            android:layout_height="wrap_content"
+            android:visibility="gone"
             diagonal:layout_constraintEnd_toEndOf="parent"
             diagonal:layout_constraintStart_toStartOf="parent"
             diagonal:layout_constraintTop_toBottomOf="@+id/cardView" />

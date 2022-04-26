@@ -59,12 +59,12 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/_12mdp"
             android:layout_marginTop="@dimen/_18mdp"
-            android:textColorHint="@color/gray"
-            app:hintTextColor="@color/gray"
             android:layout_marginEnd="@dimen/_12mdp"
             android:background="@drawable/input_text_bg"
             android:paddingVertical="@dimen/_4mdp"
             android:paddingStart="@dimen/_12mdp"
+            android:textColorHint="@color/gray"
+            app:hintTextColor="@color/gray"
             app:layout_constraintBottom_toTopOf="@+id/inputPassword"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -75,25 +75,25 @@
                 android:id="@+id/emailET"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:textColorHint="@color/gray"
                 android:background="@android:color/transparent"
                 android:hint="Email"
-                android:paddingBottom="@dimen/_4mdp" />
+                android:paddingBottom="@dimen/_4mdp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/gray" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/inputPassword"
             android:layout_width="match_parent"
-            app:hintTextColor="@color/gray"
-            android:textColorHint="@color/gray"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/_12mdp"
             android:layout_marginTop="@dimen/_6mdp"
             android:background="@drawable/input_text_bg"
             android:paddingVertical="@dimen/_4mdp"
             android:paddingStart="@dimen/_12mdp"
+            android:textColorHint="@color/gray"
+            app:hintTextColor="@color/gray"
             app:layout_constraintBottom_toTopOf="@+id/loginBtn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -104,11 +104,11 @@
                 android:id="@+id/pwdET"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:textColorHint="@color/gray"
                 android:background="@android:color/transparent"
                 android:hint="Password"
-                android:paddingBottom="@dimen/_4mdp" />
+                android:paddingBottom="@dimen/_4mdp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/gray" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
@@ -132,8 +132,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:includeFontPadding="false"
-            android:textColor="@color/gray"
             android:text="Don't have an account?"
+            android:textColor="@color/gray"
             app:layout_constraintBottom_toBottomOf="@+id/goToSignup"
             app:layout_constraintEnd_toStartOf="@+id/goToSignup"
             app:layout_constraintHorizontal_bias="0.5"

@@ -84,6 +84,36 @@ public class CommentActivity extends AppCompatActivity {
     int length;
     String downloadedRecordingLocation;
 
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    public static <T> ArrayList<T> removeDuplicates(ArrayList<T> list) {
+
+        // Create a new LinkedHashSet
+        Set<T> set = new LinkedHashSet<>();
+
+        // Add the elements to set
+        set.addAll(list);
+
+        // Clear the list
+        list.clear();
+
+        // add the elements of set
+        // with no duplicates to the list
+        list.addAll(set);
+
+        // return the list
+        return list;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -288,10 +318,10 @@ public class CommentActivity extends AppCompatActivity {
                                                 @Override
                                                 public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
 
-                                                    for(DataSnapshot dataSnapshot1: snapshot.getChildren()){
+                                                    for (DataSnapshot dataSnapshot1 : snapshot.getChildren()) {
 
                                                         Following following = dataSnapshot1.getValue(Following.class);
-                                                        if(dataSnapshot.getKey().equals(following.getFollowing())){
+                                                        if (dataSnapshot.getKey().equals(following.getFollowing())) {
                                                             commenterNames.add(user.getName());
                                                             commenterDesignation.add(user.getProfession());
                                                             commenterPhoto.add(user.getProfileImage());
@@ -790,35 +820,5 @@ public class CommentActivity extends AppCompatActivity {
     private void setButtonDisabled() {
         binding.postCommentBtn.setImageResource(R.drawable.ic_comment_send_disabled);
         binding.postCommentBtn.setEnabled(false);
-    }
-
-    public static void hideKeyboard(Activity activity) {
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        //Find the currently focused view, so we can grab the correct window token from it.
-        View view = activity.getCurrentFocus();
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
-        if (view == null) {
-            view = new View(activity);
-        }
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
-
-    public static <T> ArrayList<T> removeDuplicates(ArrayList<T> list) {
-
-        // Create a new LinkedHashSet
-        Set<T> set = new LinkedHashSet<>();
-
-        // Add the elements to set
-        set.addAll(list);
-
-        // Clear the list
-        list.clear();
-
-        // add the elements of set
-        // with no duplicates to the list
-        list.addAll(set);
-
-        // return the list
-        return list;
     }
 }

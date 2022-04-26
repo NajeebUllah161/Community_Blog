@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -349,8 +348,7 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
                 progressDialog.dismiss();
                 Toast.makeText(this, "Failed to Post", Toast.LENGTH_SHORT).show();
             });
-        }
-        else {
+        } else {
             Post post = new Post();
             post.setPostImage(postImg);
             post.setPostRecording(audioUri.toString());
@@ -401,8 +399,7 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
                 progressDialog.dismiss();
                 Toast.makeText(this, "Failed to Edit Post", Toast.LENGTH_SHORT).show();
             });
-        }
-        else {
+        } else {
 
             Map<String, Object> post = new HashMap<>();
             post.put("postImage", postImg);

@@ -2,10 +2,10 @@ package community.growtechsol.com.models;
 
 public class Comment {
 
-    private String commentBody,commentRecording,commentedBy;
+    private String commentBody, commentRecording, commentedBy;
     private long commentedAt;
     private boolean isVerified;
-    private int likesCount,dislikesCount;
+    private int likesCount, dislikesCount;
 
     public Comment() {
     }
