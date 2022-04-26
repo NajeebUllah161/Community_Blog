@@ -346,7 +346,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                                     FirebaseDatabase.getInstance().getReference()
                                             .child("posts/" + model.getPostId() + "/postLikes")
-                                            .setValue(model.getPostLikes() - 1)
+                                            .setValue(ServerValue.increment(-1))
                                             .addOnSuccessListener(unused1 -> {
                                                 holder.binding.like.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_like, 0, 0, 0);
 
@@ -366,7 +366,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                                     FirebaseDatabase.getInstance().getReference()
                                             .child("posts/" + model.getPostId() + "/postLikes")
-                                            .setValue(model.getPostLikes() + 1)
+                                            .setValue(ServerValue.increment(1))
                                             .addOnSuccessListener(unused1 -> {
                                                 holder.binding.like.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart_filled, 0, 0, 0);
 
@@ -387,7 +387,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                                 FirebaseDatabase.getInstance().getReference()
                                         .child("posts/" + model.getPostId() + "/postLikes")
-                                        .setValue(model.getPostLikes() + 1)
+                                        .setValue(ServerValue.increment(1))
                                         .addOnSuccessListener(unused1 -> {
                                             holder.binding.like.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart_filled, 0, 0, 0);
                                             Notification notification = new Notification();

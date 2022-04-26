@@ -48,28 +48,50 @@ public class LoginActivity extends AppCompatActivity {
     private void setupEventListeners() {
 
         binding.loginBtn.setOnClickListener(v -> {
-            progressDialog.show();
-            auth.signInWithEmailAndPassword(binding.emailET.getText().toString(), binding.pwdET.getText().toString())
-                    .addOnCompleteListener(task -> {
-                        //Log.d("LoginActivity", "OnCompleteLogin");
-                    })
-                    .addOnSuccessListener(authResult -> {
-                        //Log.d("LoginActivity", "OnSuccessLogin");
-                        progressDialog.dismiss();
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        startActivity(intent);
-                        finish();
-                    })
-                    .addOnFailureListener(e -> {
-                        progressDialog.dismiss();
-                        Toast.makeText(LoginActivity.this, "Error : " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
+            if (validateEmail() && validatePassword()) {
+                progressDialog.show();
+                auth.signInWithEmailAndPassword(binding.emailET.getText().toString(), binding.pwdET.getText().toString())
+                        .addOnCompleteListener(task -> {
+                            //Log.d("LoginActivity", "OnCompleteLogin");
+                        })
+                        .addOnSuccessListener(authResult -> {
+                            //Log.d("LoginActivity", "OnSuccessLogin");
+                            progressDialog.dismiss();
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        })
+                        .addOnFailureListener(e -> {
+                            progressDialog.dismiss();
+                            Toast.makeText(LoginActivity.this, "Error : " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
+            }
         });
 
         binding.goToSignup.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
             startActivity(intent);
         });
+    }
+
+
+    private Boolean validateEmail() {
+        if (binding.emailET.getText().toString().isEmpty()) {
+            binding.emailET.setError("Required!");
+            return false;
+        }
+        return true;
+    }
+
+    private Boolean validatePassword() {
+        if (binding.pwdET.getText().toString().isEmpty()) {
+            binding.pwdET.setError("Required!");
+            return false;
+        } else if (binding.pwdET.getText().toString().length() < 6) {
+            binding.pwdET.setError("Minimum Length 6!");
+            return false;
+        } else
+            return true;
     }
 
     private void setupProgressDialogue() {
