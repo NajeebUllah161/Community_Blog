@@ -130,7 +130,7 @@ public class ProfileFragment extends Fragment {
                                     binding.placeholderTxt.setVisibility(View.VISIBLE);
                                 }
                                 if (getUser.isAdmin()) {
-                                    setupVerificationTick();
+                                    setupVerificationTick(getUser);
                                     binding.adminLikes.setText(getUser.getUserUpVotes() + "");
                                     binding.adminDislikes.setText(getUser.getUserDownVotes() + "");
                                 } else {
@@ -159,7 +159,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void checkFollowers(int followersCount) {
-        if(followersCount == 0){
+        if (followersCount == 0) {
             binding.marginStabilizer.setVisibility(View.INVISIBLE);
             ConstraintSet constraintSet = new ConstraintSet();
             constraintSet.clone(binding.parentOfProfileFragment);
@@ -301,21 +301,39 @@ public class ProfileFragment extends Fragment {
                 });
     }
 
-    private void setupVerificationTick() {
+    private void setupVerificationTick(User getUser) {
 
-        binding.verifiedAccountIcon.setVisibility(View.VISIBLE);
+        if (getUser.isAdmin() && !getUser.isSuperAdmin()) {
+            binding.verifiedAccountIcon.setVisibility(View.VISIBLE);
+            binding.verifiedAccountIcon.setOnClickListener(view -> new SimpleTooltip.Builder(getContext())
+                    .anchorView(view)
+                    .text("Admin")
+                    .gravity(Gravity.TOP)
+                    .textColor(Color.parseColor("#FFFFFF"))
+                    .backgroundColor(Color.parseColor("#79018786"))
+                    .arrowColor(Color.parseColor("#FF018786"))
+                    .animated(true)
+                    .transparentOverlay(true)
+                    .build()
+                    .show());
+        } else if (getUser.isSuperAdmin()) {
+            binding.verifiedAccountIcon.setImageResource(R.drawable.is_checked_super);
+            binding.verifiedAccountIcon.setVisibility(View.VISIBLE);
+            binding.verifiedAccountIcon.setOnClickListener(view -> new SimpleTooltip.Builder(getContext())
+                    .anchorView(view)
+                    .text("Super Admin")
+                    .gravity(Gravity.TOP)
+                    .textColor(Color.parseColor("#FFFFFF"))
+                    .backgroundColor(Color.parseColor("#79018786"))
+                    .arrowColor(Color.parseColor("#FF018786"))
+                    .animated(true)
+                    .transparentOverlay(false)
+                    .build()
+                    .show());
+        } else {
+            Log.d("ProfileFragment", "Not admin or superAdmin");
+        }
 
-        binding.verifiedAccountIcon.setOnClickListener(view -> new SimpleTooltip.Builder(getContext())
-                .anchorView(view)
-                .text("Admin")
-                .gravity(Gravity.TOP)
-                .textColor(Color.parseColor("#FFFFFF"))
-                .backgroundColor(Color.parseColor("#79018786"))
-                .arrowColor(Color.parseColor("#FF018786"))
-                .animated(true)
-                .transparentOverlay(true)
-                .build()
-                .show());
 
     }
 
