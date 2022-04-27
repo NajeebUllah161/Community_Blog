@@ -9,6 +9,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -19,6 +20,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.chivorn.smartmaterialspinner.SmartMaterialSpinner;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -37,6 +39,7 @@ import com.skydoves.powermenu.PowerMenuItem;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +47,6 @@ import java.util.Objects;
 
 import community.growtechsol.com.R;
 import community.growtechsol.com.adapters.PostAdapter;
-import community.growtechsol.com.adapters.StoryAdapter;
 import community.growtechsol.com.databinding.FragmentHomeBinding;
 import community.growtechsol.com.models.Notification;
 import community.growtechsol.com.models.Post;
@@ -71,6 +73,8 @@ public class HomeFragment extends Fragment {
     String postFilterType = "all";
     private DatabaseReference mDatabase;
     Post postModel;
+    List<String> cropList = new ArrayList<>();
+    private String cropName = "";
 
     private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
         @Override
@@ -169,6 +173,65 @@ public class HomeFragment extends Fragment {
     private void setupFunctions() {
         setupAdapters();
         setupEventListeners();
+        setupCropList();
+    }
+
+    private void setupCropList() {
+
+        String[] your_array = getResources().getStringArray(R.array.crop_list);
+
+        cropList.addAll(Arrays.asList(your_array));
+        SmartMaterialSpinner<String> crop = binding.cropHome;
+        crop.setItem(cropList);
+
+        crop.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                cropName = cropList.get(position);
+                postAdapter = new PostAdapter(postList, getContext());
+                LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true);
+                binding.dashboardRv.setLayoutManager(layoutManager);
+                binding.dashboardRv.setNestedScrollingEnabled(false);
+
+                firebaseDatabase.getReference().child("posts").addValueEventListener(new ValueEventListener() {
+                    @SuppressLint("NotifyDataSetChanged")
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        postList.clear();
+                        postListSolved.clear();
+                        postListUnSolved.clear();
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            Post post = dataSnapshot.getValue(Post.class);
+                            post.setPostId(dataSnapshot.getKey());
+                            if (post.getCropName().equals(cropName)) {
+                                postList.add(post);
+                                if (post.isSolved()) {
+                                    //Log.d("Solved", "solved");
+                                    postListSolved.add(post);
+                                } else {
+                                    postListUnSolved.add(post);
+                                    //Log.d("Solved", "not");
+                                }
+                            }
+                        }
+                        binding.dashboardRv.setAdapter(postAdapter);
+                        binding.dashboardRv.hideShimmerAdapter();
+                        loadProfileImg();
+                        postAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
     }
 
     private void setupEventListeners() {
@@ -246,42 +309,42 @@ public class HomeFragment extends Fragment {
 
         // Setting up Story RecyclerView
 
-        StoryAdapter adapter = new StoryAdapter(storyArrayList, getContext());
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, true);
-        binding.storyRv.setLayoutManager(linearLayoutManager);
-        binding.storyRv.setNestedScrollingEnabled(false);
-        binding.storyRv.setAdapter(adapter);
-
-        firebaseDatabase.getReference()
-                .child("stories")
-                .addValueEventListener(new ValueEventListener() {
-                    @SuppressLint("NotifyDataSetChanged")
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            storyArrayList.clear();
-                            for (DataSnapshot storySnapshot : snapshot.getChildren()) {
-                                Story story = new Story();
-                                story.setStoryBy(storySnapshot.getKey());
-                                story.setStoryAt(storySnapshot.child("postedBy").getValue(Long.class));
-
-                                ArrayList<UserStories> stories = new ArrayList<>();
-                                for (DataSnapshot snapshot1 : storySnapshot.child("userStories").getChildren()) {
-                                    UserStories userStories = snapshot1.getValue(UserStories.class);
-                                    stories.add(userStories);
-                                }
-                                story.setStories(stories);
-                                storyArrayList.add(story);
-                            }
-                            adapter.notifyDataSetChanged();
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+//        StoryAdapter adapter = new StoryAdapter(storyArrayList, getContext());
+//        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, true);
+//        binding.storyRv.setLayoutManager(linearLayoutManager);
+//        binding.storyRv.setNestedScrollingEnabled(false);
+//        binding.storyRv.setAdapter(adapter);
+//
+//        firebaseDatabase.getReference()
+//                .child("stories")
+//                .addValueEventListener(new ValueEventListener() {
+//                    @SuppressLint("NotifyDataSetChanged")
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                        if (snapshot.exists()) {
+//                            storyArrayList.clear();
+//                            for (DataSnapshot storySnapshot : snapshot.getChildren()) {
+//                                Story story = new Story();
+//                                story.setStoryBy(storySnapshot.getKey());
+//                                story.setStoryAt(storySnapshot.child("postedBy").getValue(Long.class));
+//
+//                                ArrayList<UserStories> stories = new ArrayList<>();
+//                                for (DataSnapshot snapshot1 : storySnapshot.child("userStories").getChildren()) {
+//                                    UserStories userStories = snapshot1.getValue(UserStories.class);
+//                                    stories.add(userStories);
+//                                }
+//                                story.setStories(stories);
+//                                storyArrayList.add(story);
+//                            }
+//                            adapter.notifyDataSetChanged();
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError error) {
+//                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+//                    }
+//                });
 
         // Setting up Dashboard RecyclerView
 
@@ -325,7 +388,7 @@ public class HomeFragment extends Fragment {
 
         postAdapter.setOnItemClickListner((isOpen, postModel) -> {
             Toast.makeText(getContext(), "Clicked", Toast.LENGTH_LONG).show();
-                this.postModel = postModel;
+            this.postModel = postModel;
 
         });
     }

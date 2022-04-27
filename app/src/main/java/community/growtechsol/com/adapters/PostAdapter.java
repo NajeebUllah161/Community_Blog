@@ -605,6 +605,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                                     intent.putExtra("postDesc", model.getPostDescription());
                                     intent.putExtra("postRecording", model.getPostRecording());
                                     intent.putExtra("recTime", model.getRecTime());
+                                    intent.putExtra("cropNameSent",model.getCropName());
 
                                     //Log.d("PostIdTimeStamp", String.valueOf(model.getPostedAt()));
                                     postId = model.getPostId();
@@ -642,6 +643,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                                     intent.putExtra("postDesc", model.getPostDescription());
                                     intent.putExtra("postRecording", model.getPostRecording());
                                     intent.putExtra("recTime", model.getRecTime());
+                                    intent.putExtra("cropNameSent",model.getCropName());
 
                                     //Log.d("PostIdTimeStamp", String.valueOf(model.getPostedAt()));
                                     postId = model.getPostId();
@@ -682,6 +684,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                                 intent.putExtra("postDesc", model.getPostDescription());
                                 intent.putExtra("postRecording", model.getPostRecording());
                                 intent.putExtra("recTime", model.getRecTime());
+                                intent.putExtra("cropNameSent",model.getCropName());
 
                                 //Log.d("PostIdTimeStamp", String.valueOf(model.getPostedAt()));
                                 postId = model.getPostId();

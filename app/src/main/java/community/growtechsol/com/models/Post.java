@@ -2,7 +2,24 @@ package community.growtechsol.com.models;
 
 public class Post {
 
-    private String postId, postImage, postRecording, recTime, postedBy, postTitle, postDescription, createdAt;
+    private String postId;
+    private String postImage;
+    private String postRecording;
+    private String recTime;
+    private String postedBy;
+    private String postTitle;
+    private String postDescription;
+    private String createdAt;
+
+    public String getCropName() {
+        return cropName;
+    }
+
+    public void setCropName(String cropName) {
+        this.cropName = cropName;
+    }
+
+    private String cropName;
     private long postedAt;
     private boolean solved, isAllowed;
     private int postLikes, postShares, commentCount;

@@ -20,6 +20,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -30,6 +31,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.chivorn.smartmaterialspinner.SmartMaterialSpinner;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -52,6 +54,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -92,7 +95,10 @@ public class AddPostFragment extends Fragment {
     MediaPlayer mediaPlayer;
     int length;
     long timeStamp;
-    //Broadcast Notification
+    List<String> cropList = new ArrayList<>();
+    private String cropName = "";
+
+    //FCM
     OkHttpClient mClient;
     private DatabaseReference mDatabase;
 
@@ -140,6 +146,29 @@ public class AddPostFragment extends Fragment {
         setupProgressDialogue();
         loadUserData();
         setupEventListeners();
+        setupCropList();
+    }
+
+    private void setupCropList() {
+
+        String[] your_array = getResources().getStringArray(R.array.crop_list);
+
+        cropList.addAll(Arrays.asList(your_array));
+        SmartMaterialSpinner<String> crop = binding.crop;
+        crop.setItem(cropList);
+
+        crop.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                cropName = cropList.get(position);
+                Toast.makeText(getContext(), cropName, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -193,7 +222,9 @@ public class AddPostFragment extends Fragment {
 
         binding.addImg.setOnClickListener(view -> setPickImage());
 
-        binding.addRecording.setOnTouchListener((view, motionEvent) -> {
+        binding.addRecording.setOnTouchListener((view, motionEvent) ->
+
+        {
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     startRecording();
@@ -206,21 +237,33 @@ public class AddPostFragment extends Fragment {
             return true;
         });
 
-        binding.play.setOnClickListener(view -> {
+        binding.play.setOnClickListener(view ->
+
+        {
             playRecording();
             binding.play.setVisibility(View.GONE);
             binding.pause.setVisibility(View.VISIBLE);
         });
 
-        binding.pause.setOnClickListener(view -> pauseRecording());
+        binding.pause.setOnClickListener(view ->
 
-        binding.resume.setOnClickListener(view -> resumeRecording());
+                pauseRecording());
 
-        binding.removeRecording.setOnClickListener(view -> removeRecording());
+        binding.resume.setOnClickListener(view ->
 
-        binding.removeImg.setOnClickListener(view -> removeImgFromPost());
+                resumeRecording());
 
-        binding.postBtn.setOnClickListener(view -> {
+        binding.removeRecording.setOnClickListener(view ->
+
+                removeRecording());
+
+        binding.removeImg.setOnClickListener(view ->
+
+                removeImgFromPost());
+
+        binding.postBtn.setOnClickListener(view ->
+
+        {
 
             progressDialog.show();
 
@@ -428,6 +471,7 @@ public class AddPostFragment extends Fragment {
                     post.setSolved(false);
                     post.setPostTitle(binding.postTitle.getText().toString());
                     post.setPostDescription(binding.postDescription.getText().toString());
+                    post.setCropName(cropName);
                     post.setPostedAt(new Date().getTime());
 
                     firebaseDatabase.getReference().child("posts").child(String.valueOf(post.getPostedAt()))
@@ -450,6 +494,7 @@ public class AddPostFragment extends Fragment {
             post.setSolved(false);
             post.setPostTitle(binding.postTitle.getText().toString());
             post.setPostDescription(binding.postDescription.getText().toString());
+            post.setCropName(cropName);
             post.setPostedAt(new Date().getTime());
 
             firebaseDatabase.getReference().child("posts").child(String.valueOf(post.getPostedAt()))
@@ -481,6 +526,7 @@ public class AddPostFragment extends Fragment {
                     post.setSolved(false);
                     post.setPostTitle(binding.postTitle.getText().toString());
                     post.setPostDescription(binding.postDescription.getText().toString());
+                    post.setCropName(cropName);
                     post.setPostedAt(new Date().getTime());
 
                     firebaseDatabase.getReference().child("posts").child(String.valueOf(post.getPostedAt()))
@@ -505,6 +551,7 @@ public class AddPostFragment extends Fragment {
             post.setSolved(false);
             post.setPostTitle(binding.postTitle.getText().toString());
             post.setPostDescription(binding.postDescription.getText().toString());
+            post.setCropName(cropName);
             post.setPostedAt(new Date().getTime());
 
             firebaseDatabase.getReference().child("posts").child(String.valueOf(post.getPostedAt()))

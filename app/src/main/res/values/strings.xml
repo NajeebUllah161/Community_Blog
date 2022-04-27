@@ -7,4 +7,56 @@
     <string name="notification">Notifications</string>
     <string name="profile">Profile</string>
 
+    <string-array name="crop_list">
+        <item>Wheat</item>
+        <item>Maize</item>
+        <item>Sugarcane</item>
+        <item>Cotton</item>
+        <item>Rice</item>
+        <item>Sorghum/Jawar</item>
+        <item>Millet/Bajra</item>
+        <item>Berseem</item>
+        <item>Luserne/Alfalfa</item>
+        <item>Sesame</item>
+        <item>Sunflower</item>
+        <item>Oil Seeds Crop</item>
+        <item>Soybean</item>
+        <item>Linseed</item>
+        <item>Chickpea/Grams</item>
+        <item>Groundnut</item>
+        <item>Mung Bean</item>
+        <item>Mash Bean</item>
+        <item>Lentil</item>
+        <item>Peas</item>
+        <item>Spinach</item>
+        <item>Lettuce</item>
+        <item>Garlic</item>
+        <item>Cabbage</item>
+        <item>Carrot</item>
+        <item>Onion</item>
+        <item>Chillies</item>
+        <item>Cucumber</item>
+        <item>Melon</item>
+        <item>Watermelon</item>
+        <item>Tomato</item>
+        <!--        <item>Turnip</item>-->
+        <!--        <item>Dates</item>-->
+        <!--        <item>Pomegranate</item>-->
+        <!--        <item>Papaya</item>-->
+        <!--        <item>Grapes</item>-->
+        <!--        <item>Fodder</item>-->
+        <!--        <item>Beans</item>-->
+        <!--        <item>Guava</item>-->
+        <!--        <item>Citrus</item>-->
+        <!--        <item>Mango</item>-->
+        <!--        <item>Banana</item>-->
+        <!--        <item>Sweet Potato</item>-->
+        <!--        <item>Peanuts</item>-->
+        <!--        <item>Strawberry</item>-->
+        <!--        <item>Blueberry</item>-->
+        <!--        <item>Blackberry</item>-->
+        <!--        <item>Raspberry</item>-->
+        <!--        <item>Tobacco</item>-->
+    </string-array>
+
 </resources>

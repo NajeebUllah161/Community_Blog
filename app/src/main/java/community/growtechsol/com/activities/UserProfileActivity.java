@@ -19,8 +19,6 @@ import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -38,7 +36,6 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +46,6 @@ import community.growtechsol.com.adapters.FollowingAdapter;
 import community.growtechsol.com.databinding.ActivityUserProfileBinding;
 import community.growtechsol.com.models.FollowModel;
 import community.growtechsol.com.models.Following;
-import community.growtechsol.com.models.Notification;
 import community.growtechsol.com.models.Popularity;
 import community.growtechsol.com.models.User;
 import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip;

@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -27,6 +28,7 @@ import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.chivorn.smartmaterialspinner.SmartMaterialSpinner;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -44,8 +46,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -66,9 +71,11 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
     FirebaseDatabase firebaseDatabase;
     FirebaseStorage firebaseStorage;
     ProgressDialog progressDialog;
-    String postImg, postTitle, postDescription, postRecording, downloadedRecordingLocation, recTime;
+    String postImg, postTitle, postDescription, postRecording, downloadedRecordingLocation, recTime,cropNameSent;
     long timeStamp;
     boolean hasImage = false;
+    List<String> cropList = new ArrayList<>();
+    private String cropName = "";
 
     //Recording
     String AudioSavePathInDevice = null;
@@ -103,9 +110,34 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
         postDescription = intent.getStringExtra("postDesc");
         postRecording = intent.getStringExtra("postRecording");
         recTime = intent.getStringExtra("recTime");
+        cropNameSent = intent.getStringExtra("cropNameSent");
 
         setupFunctions();
         populateData();
+        setupCropList();
+
+    }
+
+    private void setupCropList() {
+
+        String[] your_array = getResources().getStringArray(R.array.crop_list);
+
+        cropList.addAll(Arrays.asList(your_array));
+        SmartMaterialSpinner<String> crop = binding.crop;
+        crop.setItem(cropList);
+
+        crop.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                cropName = cropList.get(position);
+                Toast.makeText(EditPostDialogue.this, cropName, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+
     }
 
     @SuppressLint("CheckResult")
@@ -334,6 +366,11 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
                     post.setPostedBy(auth.getCurrentUser().getUid());
                     post.setCreatedAt(new Date().toString());
                     post.setPostTitle(binding.postTitle.getText().toString());
+                    if((cropName.equals(""))) {
+                        post.setCropName(cropNameSent);
+                    }else{
+                        post.setCropName(cropName);
+                    }
                     post.setPostDescription(binding.postDescription.getText().toString());
                     post.setPostedAt(timeStamp);
 
@@ -355,6 +392,11 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
             post.setRecTime(recTime);
             post.setPostedBy(auth.getCurrentUser().getUid());
             post.setCreatedAt(new Date().toString());
+            if((cropName.equals(""))) {
+                post.setCropName(cropNameSent);
+            }else{
+                post.setCropName(cropName);
+            }
             post.setPostTitle(binding.postTitle.getText().toString());
             post.setPostDescription(binding.postDescription.getText().toString());
             post.setPostedAt(timeStamp);
@@ -378,6 +420,7 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
             Log.d("Checkpoint", "if");
             storageReference.putFile(uri).addOnSuccessListener(taskSnapshot -> {
                 storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+
                     Post post = new Post();
                     post.setPostImage(uri.toString());
                     post.setPostRecording(postRecording);
@@ -385,6 +428,11 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
                     post.setPostedBy(auth.getCurrentUser().getUid());
                     post.setCreatedAt(new Date().toString());
                     post.setPostTitle(binding.postTitle.getText().toString());
+                    if((cropName.equals(""))) {
+                        post.setCropName(cropNameSent);
+                    }else{
+                        post.setCropName(cropName);
+                    }
                     post.setPostDescription(binding.postDescription.getText().toString());
                     post.setPostedAt(timeStamp);
 
@@ -408,6 +456,11 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
             post.put("postedBy", auth.getCurrentUser().getUid());
             post.put("createdAt", new Date().toString());
             post.put("postTitle", binding.postTitle.getText().toString());
+            if((cropName.equals(""))) {
+                post.put("cropName",cropNameSent);
+            }else{
+                post.put("cropName",cropName);
+            }
             post.put("postDescription", binding.postDescription.getText().toString());
             post.put("postedAt", timeStamp);
 
