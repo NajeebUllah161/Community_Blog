@@ -103,6 +103,8 @@ dependencies {
     //floating menu
     implementation 'com.ramotion.circlemenu:circle-menu:0.3.2'
     implementation 'com.wdullaer:materialdatetimepicker:4.2.3'
+    implementation 'com.github.dmytrodanylyk:circular-progress-button:1.2'
+
 
 }
 apply plugin: 'com.google.gms.google-services'

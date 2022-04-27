@@ -3,6 +3,7 @@ package community.growtechsol.com.activities;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.icu.util.Calendar;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,8 +16,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,12 +28,20 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.skydoves.powermenu.MenuAnimation;
+import com.skydoves.powermenu.OnMenuItemClickListener;
+import com.skydoves.powermenu.PowerMenu;
+import com.skydoves.powermenu.PowerMenuItem;
 import com.squareup.picasso.Picasso;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import community.growtechsol.com.R;
 import community.growtechsol.com.adapters.FollowersAdapter;
@@ -37,9 +49,11 @@ import community.growtechsol.com.adapters.FollowingAdapter;
 import community.growtechsol.com.databinding.ActivityUserProfileBinding;
 import community.growtechsol.com.models.FollowModel;
 import community.growtechsol.com.models.Following;
+import community.growtechsol.com.models.Notification;
 import community.growtechsol.com.models.Popularity;
 import community.growtechsol.com.models.User;
 import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip;
+import okhttp3.OkHttpClient;
 
 public class UserProfileActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
@@ -50,6 +64,46 @@ public class UserProfileActivity extends AppCompatActivity implements DatePicker
     FirebaseStorage firebaseStorage;
     FirebaseAuth auth;
     String userId;
+    PowerMenu powerMenu;
+    boolean isAdmin;
+    OkHttpClient mClient;
+
+    private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
+        @Override
+        public void onItemClick(int position, PowerMenuItem item) {
+            powerMenu.setSelectedPosition(position);
+            if (item.getTitle().equals("Promote to Admin")) {
+
+                Map<String, Object> makeAdmin = new HashMap<>();
+
+                makeAdmin.put("admin", true);
+                firebaseDatabase.getReference().child("Users")
+                        .child(userId)
+                        .updateChildren(makeAdmin)
+                        .addOnSuccessListener(unused -> {
+                            Toast.makeText(getApplicationContext(), binding.userName.getText().toString() + " is an admin now", Toast.LENGTH_LONG).show();
+                            sendNotification();
+                        });
+            } else if (item.getTitle().equals("Demote from Admin")) {
+                Map<String, Object> makeAdmin = new HashMap<>();
+
+                makeAdmin.put("admin", false);
+                firebaseDatabase.getReference().child("Users")
+                        .child(userId)
+                        .updateChildren(makeAdmin)
+                        .addOnSuccessListener(unused -> {
+                            Toast.makeText(getApplicationContext(), binding.userName.getText().toString() + " has been demoted from admin role", Toast.LENGTH_LONG).show();
+                            sendNotification();
+                        });
+            }
+            powerMenu.dismiss();
+        }
+    };
+
+    private void sendNotification() {
+        finish();
+        startActivity(getIntent());
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -122,6 +176,60 @@ public class UserProfileActivity extends AppCompatActivity implements DatePicker
         setFollowing();
         setupUserData();
         setupCalender();
+        setupMakeAdmin();
+    }
+
+    private void setupMakeAdmin() {
+
+        firebaseDatabase.getReference().child("Users")
+                .child(userId)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                        User user = snapshot.getValue(User.class);
+                        if (user.isAdmin()) {
+                            setupPowerMenu("demote");
+
+                        } else {
+                            setupPowerMenu("promote");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+                    }
+                });
+
+
+    }
+
+    private void setupPowerMenu(String userPromotionStatus) {
+        List<PowerMenuItem> list = new ArrayList<>();
+
+        if (userPromotionStatus.equals("promote")) {
+            list.add(new PowerMenuItem("Promote to Admin"));
+        } else if (userPromotionStatus.equals("demote")) {
+            list.add(new PowerMenuItem("Demote from Admin"));
+        }
+
+        powerMenu = new PowerMenu.Builder(this)
+                .addItemList(list)
+                .setAnimation(MenuAnimation.SHOWUP_BOTTOM_RIGHT) // Animation start point (TOP | LEFT).
+                .setMenuRadius(10f) // sets the corner radius.
+                .setMenuShadow(10f) // sets the shadow.
+                .setTextColor(ContextCompat.getColor(this, R.color.teal_700))
+                .setTextGravity(Gravity.LEFT)
+                .setTextTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD))
+                .setSelectedTextColor(Color.WHITE)
+                .setMenuColor(Color.WHITE)
+                .setSelectedMenuColor(ContextCompat.getColor(this, R.color.black))
+                .setOnMenuItemClickListener(onMenuItemClickListener)
+                .build();
+
+        binding.makeAdmin.setOnClickListener(view -> {
+            powerMenu.showAsDropDown(view);
+        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -139,35 +247,50 @@ public class UserProfileActivity extends AppCompatActivity implements DatePicker
         });
     }
 
-    private void checkForSuperAdmin(boolean otherUserIsAdmin) {
-        if (otherUserIsAdmin) {
-            firebaseDatabase.getReference().child("Users")
-                    .child(auth.getCurrentUser().getUid())
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-                            User user = snapshot.getValue(User.class);
-                            // If is SuperAdmin
-                            if (user.isSuperAdmin()) {
-                                binding.textView12.setVisibility(View.INVISIBLE);
-                                binding.followersCount.setVisibility(View.GONE);
-                                binding.textView13.setVisibility(View.GONE);
-                                binding.followingCount.setVisibility(View.GONE);
-                                binding.myFriendRv.setVisibility(View.GONE);
-                                binding.followingRv.setVisibility(View.GONE);
+    private void checkForSuperAdmin(User getUser) {
+        firebaseDatabase.getReference().child("Users")
+                .child(auth.getCurrentUser().getUid())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                        User user = snapshot.getValue(User.class);
+                        // If is SuperAdmin
+                        if (user.isSuperAdmin() && getUser.isAdmin()) {
 
-                                binding.activityContainer.setVisibility(View.VISIBLE);
-                                binding.adminActivityText.setVisibility(View.VISIBLE);
-
+                            ConstraintSet constraintSet = new ConstraintSet();
+                            constraintSet.clone(binding.parentOfUserProfile);
+                            if (getUser.getFollowersCount() == 0) {
+                                constraintSet.clear(R.id.activityContainer, ConstraintSet.BOTTOM);
+                                constraintSet.connect(R.id.textView13, ConstraintSet.TOP, R.id.activityContainer, ConstraintSet.BOTTOM, 8);
+                                constraintSet.applyTo(binding.parentOfUserProfile);
+                            } else {
+                                constraintSet.clear(R.id.activityContainer, ConstraintSet.BOTTOM);
+                                constraintSet.connect(R.id.textView12, ConstraintSet.TOP, R.id.activityContainer, ConstraintSet.BOTTOM, 8);
+                                constraintSet.applyTo(binding.parentOfUserProfile);
                             }
-                        }
 
-                        @Override
-                        public void onCancelled(@NonNull @NotNull DatabaseError error) {
-                            Toast.makeText(UserProfileActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+//                                binding.textView12.setVisibility(View.INVISIBLE);
+//                                binding.followersCount.setVisibility(View.GONE);
+//                                binding.textView13.setVisibility(View.GONE);
+//                                binding.followingCount.setVisibility(View.GONE);
+//                                binding.myFriendRv.setVisibility(View.GONE);
+//                                binding.followingRv.setVisibility(View.GONE);
+
+                            binding.activityContainer.setVisibility(View.VISIBLE);
+                            binding.adminActivityText.setVisibility(View.VISIBLE);
+
                         }
-                    });
-        }
+                        if (user.isSuperAdmin() && !getUser.isSuperAdmin()) {
+                            binding.makeAdmin.setVisibility(View.VISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull @NotNull DatabaseError error) {
+                        Toast.makeText(UserProfileActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
     }
 
     private void setupUserData() {
@@ -198,21 +321,30 @@ public class UserProfileActivity extends AppCompatActivity implements DatePicker
                                     binding.textView12.setVisibility(View.INVISIBLE);
                                     binding.followersCount.setVisibility(View.GONE);
                                     binding.myFriendRv.setVisibility(View.GONE);
-                                }else{
+                                } else {
                                     binding.followersCount.setText(" (" + getUser.getFollowersCount() + ")");
                                 }
                                 if (getUser.getFollowingCount() == 0) {
                                     binding.textView13.setVisibility(View.GONE);
                                     binding.followingCount.setVisibility(View.GONE);
                                     binding.followingRv.setVisibility(View.GONE);
-                                }else{
+                                } else {
                                     checkFollowers(getUser.getFollowersCount());
                                     binding.followingCount.setText(" (" + getUser.getFollowingCount() + ")");
                                 }
                                 if (getUser.getFollowersCount() == 0 && getUser.getFollowingCount() == 0) {
                                     binding.placeholderTxt.setVisibility(View.VISIBLE);
+
+                                    if (getUser.isAdmin()) {
+
+                                        ConstraintSet constraintSet = new ConstraintSet();
+                                        constraintSet.clone(binding.parentOfUserProfile);
+                                        constraintSet.connect(R.id.placeholderTxt, ConstraintSet.TOP, R.id.activityContainer, ConstraintSet.BOTTOM, 22);
+                                        constraintSet.applyTo(binding.parentOfUserProfile);
+
+                                    }
                                 }
-                                checkForSuperAdmin(getUser.isAdmin());
+                                checkForSuperAdmin(getUser);
                                 if (getUser.isAdmin()) {
                                     setupVerificationTick(getUser);
                                     binding.adminLikes.setText(getUser.getUserUpVotes() + "");
@@ -243,7 +375,7 @@ public class UserProfileActivity extends AppCompatActivity implements DatePicker
     }
 
     private void checkFollowers(int followersCount) {
-        if(followersCount == 0){
+        if (followersCount == 0) {
             binding.marginStabilizerUp.setVisibility(View.INVISIBLE);
             ConstraintSet constraintSet = new ConstraintSet();
             constraintSet.clone(binding.parentOfUserProfile);
