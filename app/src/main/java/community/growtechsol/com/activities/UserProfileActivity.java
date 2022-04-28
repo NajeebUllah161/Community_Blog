@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.icu.util.Calendar;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,7 +35,11 @@ import com.squareup.picasso.Picasso;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +55,12 @@ import community.growtechsol.com.models.Popularity;
 import community.growtechsol.com.models.User;
 import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+import static community.growtechsol.com.fragments.AddPostFragment.FCM_SEND;
+import static community.growtechsol.com.fragments.AddPostFragment.JSON;
 
 public class UserProfileActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
@@ -89,17 +100,13 @@ public class UserProfileActivity extends AppCompatActivity implements DatePicker
                         .updateChildren(makeAdmin)
                         .addOnSuccessListener(unused -> {
                             Toast.makeText(getApplicationContext(), binding.userName.getText().toString() + " has been demoted from admin role", Toast.LENGTH_LONG).show();
-                            sendNotification();
+                            finish();
+                            startActivity(getIntent());
                         });
             }
             powerMenu.dismiss();
         }
     };
-
-    private void sendNotification() {
-        finish();
-        startActivity(getIntent());
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -264,13 +271,6 @@ public class UserProfileActivity extends AppCompatActivity implements DatePicker
                                 constraintSet.connect(R.id.textView12, ConstraintSet.TOP, R.id.activityContainer, ConstraintSet.BOTTOM, 8);
                                 constraintSet.applyTo(binding.parentOfUserProfile);
                             }
-
-//                                binding.textView12.setVisibility(View.INVISIBLE);
-//                                binding.followersCount.setVisibility(View.GONE);
-//                                binding.textView13.setVisibility(View.GONE);
-//                                binding.followingCount.setVisibility(View.GONE);
-//                                binding.myFriendRv.setVisibility(View.GONE);
-//                                binding.followingRv.setVisibility(View.GONE);
 
                             binding.activityContainer.setVisibility(View.VISIBLE);
                             binding.adminActivityText.setVisibility(View.VISIBLE);
@@ -506,6 +506,91 @@ public class UserProfileActivity extends AppCompatActivity implements DatePicker
 
         });
 
+    }
+
+    private void sendNotification() {
+        mClient = new OkHttpClient();
+        ArrayList<String> notification_id = new ArrayList<>();
+
+        DatabaseReference databaseReference = firebaseDatabase.getReference().child("system")
+                .child("notification")
+                .child(userId)
+                .child("notification_id");
+
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                notification_id.add(String.valueOf(snapshot.getValue()));
+
+                JSONArray regArray = new JSONArray(notification_id);
+                sendMessage(regArray, "Congratulations", "You have been promoted to an Admin", "icon", "message");
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+                Toast.makeText(UserProfileActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        finish();
+        startActivity(getIntent());
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    public void sendMessage(final JSONArray recipients, final String title, final String body, final String icon, final String message) {
+
+        new AsyncTask<String, String, String>() {
+            @RequiresApi(api = Build.VERSION_CODES.Q)
+            @Override
+            protected String doInBackground(String... params) {
+                try {
+                    JSONObject root = new JSONObject();
+                    JSONObject notification = new JSONObject();
+                    notification.put("body", body);
+                    notification.put("title", title);
+                    notification.put("icon", icon);
+
+                    JSONObject data = new JSONObject();
+                    data.put("message", message);
+                    root.put("notification", notification);
+                    root.put("data", data);
+                    root.put("registration_ids", recipients);
+
+                    String result = postToFCM(root.toString());
+                    Log.d("TAG", "Result: " + result);
+                    return result;
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                return null;
+            }
+
+            @SuppressLint("StaticFieldLeak")
+            @Override
+            protected void onPostExecute(String result) {
+                try {
+                    JSONObject resultJson = new JSONObject(result);
+                    int success, failure;
+                    success = resultJson.getInt("success");
+                    failure = resultJson.getInt("failure");
+                } catch (@SuppressLint("StaticFieldLeak") JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.execute();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    String postToFCM(String bodyString) throws IOException {
+        RequestBody body = RequestBody.create(JSON, bodyString);
+        Request request = new Request.Builder()
+                .url(FCM_SEND)
+                .post(body)
+                .addHeader("Authorization", "key=AAAAaGx1iT8:APA91bEa9jz6wQVGu1lble4o2DRrVhm5b0omMS1T5F5it6s9KOl2TDoXYPOQxz3I1g6P37-APfKbfGnFYvZ1u0RaYexbgGsZ_ipFoFDIx3kbpBBW1GPJCgcDQMNriXjvMAC-fuf363Ek")
+                .build();
+        Response response = mClient.newCall(request).execute();
+        return response.body().string();
     }
 
 }

@@ -75,7 +75,7 @@
             android:id="@+id/verifiedAccountIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/is_checked_super"
+            android:src="@drawable/ic_checked"
             android:visibility="gone"
             diagonal:layout_constraintBottom_toBottomOf="@+id/profileImgOfUser"
             diagonal:layout_constraintEnd_toEndOf="@+id/profileImgOfUser"

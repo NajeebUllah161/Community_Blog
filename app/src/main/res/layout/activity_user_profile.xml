@@ -212,9 +212,6 @@
             diagonal:layout_constraintStart_toStartOf="@+id/popularityView"
             diagonal:layout_constraintTop_toTopOf="@+id/popularityView" />
 
-
-
-
         <androidx.cardview.widget.CardView
             android:id="@+id/cardView"
             android:layout_width="match_parent"
