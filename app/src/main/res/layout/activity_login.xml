@@ -15,7 +15,7 @@
             android:id="@+id/imageView5"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/_160mdp"
-            android:layout_marginTop="@dimen/_6mdp"
+            android:layout_marginTop="@dimen/_20mdp"
             android:adjustViewBounds="true"
             app:layout_constraintBottom_toTopOf="@+id/textView14"
             app:layout_constraintEnd_toEndOf="parent"
@@ -131,29 +131,31 @@
             android:id="@+id/textView16"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_50mdp"
             android:includeFontPadding="false"
             android:text="Don't have an account?"
             android:textColor="@color/gray"
-            app:layout_constraintBottom_toBottomOf="@+id/goToSignup"
+            android:textSize="@dimen/_12font_mdp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/goToSignup"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/goToSignup" />
+            app:layout_constraintTop_toBottomOf="@+id/loginBtn" />
 
         <TextView
             android:id="@+id/goToSignup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_3mdp"
-            android:layout_marginBottom="@dimen/_6mdp"
+            android:layout_marginStart="@dimen/_10mdp"
+            android:layout_marginTop="@dimen/_50mdp"
             android:includeFontPadding="false"
             android:text="Register"
             android:textColor="@color/teal_700"
             android:textSize="@dimen/_12font_mdp"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/textView16" />
+            app:layout_constraintStart_toEndOf="@+id/textView16"
+            app:layout_constraintTop_toBottomOf="@+id/loginBtn" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

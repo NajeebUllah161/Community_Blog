@@ -37,9 +37,9 @@ public class SignupActivity extends AppCompatActivity {
 
     private void setupEventListeners() {
 
-        binding.signUpBtn.setOnClickListener(v ->{
-            if(validateName() && validateProfession() && validateEmail() && validatePassword())
-            createUser();
+        binding.signUpBtn.setOnClickListener(v -> {
+            if (validateName() && validateProfession() && validateEmail() && validatePassword())
+                createUser();
         });
 
         binding.goToLogin.setOnClickListener(v -> {
@@ -48,26 +48,7 @@ public class SignupActivity extends AppCompatActivity {
         });
     }
 
-    private Boolean validatePassword() {
-        if (binding.pwdET.getText().toString().isEmpty()) {
-            binding.pwdET.setError("Required!");
-            return false;
-        } else if (binding.pwdET.getText().toString().length() < 6) {
-            binding.pwdET.setError("Minimum Length 6!");
-            return false;
-        } else
-            return true;
-    }
-
-    private Boolean validateEmail() {
-        if (binding.emailET.getText().toString().isEmpty()) {
-            binding.emailET.setError("Required!");
-            return false;
-        }
-        return true;
-    }
-
-    private Boolean validateProfession() {
+    private boolean validateProfession() {
         if (binding.professionET.getText().toString().isEmpty()) {
             binding.professionET.setError("Required!");
             return false;
@@ -75,7 +56,7 @@ public class SignupActivity extends AppCompatActivity {
         return true;
     }
 
-    private Boolean validateName() {
+    private boolean validateName() {
         if (binding.nameET.getText().toString().isEmpty()) {
             binding.nameET.setError("Required!");
             return false;
@@ -102,4 +83,24 @@ public class SignupActivity extends AppCompatActivity {
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
         });
     }
+
+    private Boolean validateEmail() {
+        if (binding.emailET.getText().toString().isEmpty()) {
+            binding.emailET.setError("Required!");
+            return false;
+        }
+        return true;
+    }
+
+    private Boolean validatePassword() {
+        if (binding.pwdET.getText().toString().isEmpty()) {
+            binding.pwdET.setError("Required!");
+            return false;
+        } else if (binding.pwdET.getText().toString().length() < 6) {
+            binding.pwdET.setError("Minimum Length 6!");
+            return false;
+        } else
+            return true;
+    }
+
 }

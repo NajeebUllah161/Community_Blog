@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -106,24 +107,16 @@ public class MainActivity extends AppCompatActivity {
                     .setSecondButtonTextColor(Color.parseColor("#000000"))
                     .setFirstButtonText("SUBMIT")
                     .setSecondButtonText("CANCEL")
-                    .withFirstButtonListner(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            String feedbackText = flatDialog.getLargeTextField();
-                            if (!feedbackText.isEmpty()) {
-                                submitFeedback(feedbackText);
-                            }
-                            flatDialog.dismiss();
-                            //submitFeedback();
+                    .withFirstButtonListner(view1 -> {
+                        String feedbackText = flatDialog.getLargeTextField();
+                        if (!feedbackText.isEmpty()) {
+                            submitFeedback(feedbackText);
+                        }
+                        flatDialog.dismiss();
+                        //submitFeedback();
 
-                        }
                     })
-                    .withSecondButtonListner(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            flatDialog.dismiss();
-                        }
-                    })
+                    .withSecondButtonListner(view12 -> flatDialog.dismiss())
                     .show();
         });
 
@@ -140,7 +133,9 @@ public class MainActivity extends AppCompatActivity {
                 .child(todayDate)
                 .child(timeNow)
                 .child("feedbackText")
-                .setValue(feedbackText);
+                .setValue(feedbackText)
+                .addOnSuccessListener(unused -> Toast.makeText(MainActivity.this, "Feedback submitted!", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(MainActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show());
     }
 
     private void checkAppUpdate() {
@@ -159,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
                                     new SweetAlertDialog(MainActivity.this, SweetAlertDialog.CUSTOM_IMAGE_TYPE)
                                             .setTitleText("Update Available")
                                             .setCustomImage(getDrawable(R.drawable.ic_update))
-                                            .setContentText("Current Verison: " + currentVersion + "\nLatest Version: " + versionModel.getVersion() + "\nPriority: " + versionModel.getSeverity())
+                                            .setContentText("Current Version: " + currentVersion + "\nLatest Version: " + versionModel.getVersion() + "\nPriority: " + versionModel.getSeverity())
                                             .setConfirmText("Update Now")
                                             .setCancelText("Later")
                                             .setConfirmClickListener(sDialog -> {
@@ -172,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
                                     SweetAlertDialog dialog = new SweetAlertDialog(MainActivity.this, SweetAlertDialog.CUSTOM_IMAGE_TYPE)
                                             .setTitleText("Update Available")
                                             .setCustomImage(getDrawable(R.drawable.ic_update))
-                                            .setContentText("Current Verison: " + currentVersion + "\nLatest Version: " + versionModel.getVersion() + "\nPriority: " + versionModel.getSeverity())
+                                            .setContentText("Current Version: " + currentVersion + "\nLatest Version: " + versionModel.getVersion() + "\nPriority: " + versionModel.getSeverity())
                                             .setConfirmText("Update")
                                             .setConfirmClickListener(sDialog -> {
                                                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=community.growtechsol.com")));
@@ -187,7 +182,6 @@ public class MainActivity extends AppCompatActivity {
                         } catch (PackageManager.NameNotFoundException e) {
                             e.printStackTrace();
                         }
-
 
                     }
                 }
