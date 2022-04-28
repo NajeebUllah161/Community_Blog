@@ -37,12 +37,50 @@ public class SignupActivity extends AppCompatActivity {
 
     private void setupEventListeners() {
 
-        binding.signUpBtn.setOnClickListener(v -> createUser());
+        binding.signUpBtn.setOnClickListener(v ->{
+            if(validateName() && validateProfession() && validateEmail() && validatePassword())
+            createUser();
+        });
 
         binding.goToLogin.setOnClickListener(v -> {
             Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
             startActivity(intent);
         });
+    }
+
+    private Boolean validatePassword() {
+        if (binding.pwdET.getText().toString().isEmpty()) {
+            binding.pwdET.setError("Required!");
+            return false;
+        } else if (binding.pwdET.getText().toString().length() < 6) {
+            binding.pwdET.setError("Minimum Length 6!");
+            return false;
+        } else
+            return true;
+    }
+
+    private Boolean validateEmail() {
+        if (binding.emailET.getText().toString().isEmpty()) {
+            binding.emailET.setError("Required!");
+            return false;
+        }
+        return true;
+    }
+
+    private Boolean validateProfession() {
+        if (binding.professionET.getText().toString().isEmpty()) {
+            binding.professionET.setError("Required!");
+            return false;
+        }
+        return true;
+    }
+
+    private Boolean validateName() {
+        if (binding.nameET.getText().toString().isEmpty()) {
+            binding.nameET.setError("Required!");
+            return false;
+        }
+        return true;
     }
 
     private void createUser() {
