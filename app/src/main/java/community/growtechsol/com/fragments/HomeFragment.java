@@ -71,11 +71,6 @@ public class HomeFragment extends Fragment {
     PowerMenu powerMenu;
     PostAdapter postAdapter;
     String postFilterType = "all";
-    private DatabaseReference mDatabase;
-    Post postModel;
-    List<String> cropList = new ArrayList<>();
-    private String cropName = "";
-
     private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
         @Override
         public void onItemClick(int position, PowerMenuItem item) {
@@ -105,6 +100,10 @@ public class HomeFragment extends Fragment {
             powerMenu.dismiss();
         }
     };
+    Post postModel;
+    List<String> cropList = new ArrayList<>();
+    private DatabaseReference mDatabase;
+    private String cropName = "";
 
     public HomeFragment() {
         // Required empty public constructor
@@ -444,12 +443,12 @@ public class HomeFragment extends Fragment {
         list.add(new PowerMenuItem("UnSolved"));
 
         powerMenu = new PowerMenu.Builder(getContext())
-                .addItemList(list) // list has "Novel", "Poetry", "Art"
-                .setAnimation(MenuAnimation.SHOWUP_BOTTOM_RIGHT) // Animation start point (TOP | LEFT).
-                .setMenuRadius(10f) // sets the corner radius.
-                .setMenuShadow(10f) // sets the shadow.
+                .addItemList(list)
+                .setAnimation(MenuAnimation.SHOWUP_BOTTOM_RIGHT)
+                .setMenuRadius(10f)
+                .setMenuShadow(10f)
                 .setTextColor(ContextCompat.getColor(getContext(), R.color.teal_700))
-                .setTextGravity(Gravity.LEFT)
+                .setTextGravity(Gravity.START)
                 .setTextTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD))
                 .setSelectedTextColor(Color.WHITE)
                 .setMenuColor(Color.WHITE)

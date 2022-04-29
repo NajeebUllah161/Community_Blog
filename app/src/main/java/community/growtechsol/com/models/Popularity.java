@@ -1,8 +1,7 @@
 package community.growtechsol.com.models;
 
 public class Popularity {
-    private int userUpVotes;
-    private int userDownVotes;
+    private int userUpVotes, userDownVotes;
 
     public int getUserUpVotes() {
         return userUpVotes;

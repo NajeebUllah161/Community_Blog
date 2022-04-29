@@ -71,12 +71,10 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
     FirebaseDatabase firebaseDatabase;
     FirebaseStorage firebaseStorage;
     ProgressDialog progressDialog;
-    String postImg, postTitle, postDescription, postRecording, downloadedRecordingLocation, recTime,cropNameSent;
+    String postImg, postTitle, postDescription, postRecording, downloadedRecordingLocation, recTime, cropNameSent;
     long timeStamp;
     boolean hasImage = false;
     List<String> cropList = new ArrayList<>();
-    private String cropName = "";
-
     //Recording
     String AudioSavePathInDevice = null;
     MediaRecorder mediaRecorder;
@@ -84,6 +82,7 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
     String RandomAudioFileName = "ABCDEFGHIJKLMNOP";
     MediaPlayer mediaPlayer;
     int length;
+    private String cropName = "";
 
     public EditPostDialogue() {
         // Required empty public constructor
@@ -216,7 +215,7 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-
+                        Toast.makeText(EditPostDialogue.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -316,7 +315,6 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
                     Toast.makeText(this, "Failed to Upload Audio", Toast.LENGTH_SHORT).show();
                 });
             } else {
-                Log.d("Checkpoint", "mediaPlayer and Path ARE NULL");
                 uploadPostImgAndData();
             }
         });
@@ -366,9 +364,9 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
                     post.setPostedBy(auth.getCurrentUser().getUid());
                     post.setCreatedAt(new Date().toString());
                     post.setPostTitle(binding.postTitle.getText().toString());
-                    if((cropName.equals(""))) {
+                    if ((cropName.equals(""))) {
                         post.setCropName(cropNameSent);
-                    }else{
+                    } else {
                         post.setCropName(cropName);
                     }
                     post.setPostDescription(binding.postDescription.getText().toString());
@@ -378,7 +376,6 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
                             .setValue(post).addOnSuccessListener(unused -> {
                         progressDialog.dismiss();
                         Toast.makeText(this, "Post Edited Successfully", Toast.LENGTH_SHORT).show();
-                        //switchFragment();
                     }).addOnFailureListener(e -> progressDialog.dismiss());
                 });
             }).addOnFailureListener(e -> {
@@ -392,9 +389,9 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
             post.setRecTime(recTime);
             post.setPostedBy(auth.getCurrentUser().getUid());
             post.setCreatedAt(new Date().toString());
-            if((cropName.equals(""))) {
+            if ((cropName.equals(""))) {
                 post.setCropName(cropNameSent);
-            }else{
+            } else {
                 post.setCropName(cropName);
             }
             post.setPostTitle(binding.postTitle.getText().toString());
@@ -405,7 +402,6 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
                     .setValue(post).addOnSuccessListener(unused -> {
                 progressDialog.dismiss();
                 Toast.makeText(this, "Posted Successfully", Toast.LENGTH_SHORT).show();
-                //switchFragment();
             }).addOnFailureListener(e -> progressDialog.dismiss());
         }
     }
@@ -428,9 +424,9 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
                     post.setPostedBy(auth.getCurrentUser().getUid());
                     post.setCreatedAt(new Date().toString());
                     post.setPostTitle(binding.postTitle.getText().toString());
-                    if((cropName.equals(""))) {
+                    if ((cropName.equals(""))) {
                         post.setCropName(cropNameSent);
-                    }else{
+                    } else {
                         post.setCropName(cropName);
                     }
                     post.setPostDescription(binding.postDescription.getText().toString());
@@ -456,10 +452,10 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
             post.put("postedBy", auth.getCurrentUser().getUid());
             post.put("createdAt", new Date().toString());
             post.put("postTitle", binding.postTitle.getText().toString());
-            if((cropName.equals(""))) {
-                post.put("cropName",cropNameSent);
-            }else{
-                post.put("cropName",cropName);
+            if ((cropName.equals(""))) {
+                post.put("cropName", cropNameSent);
+            } else {
+                post.put("cropName", cropName);
             }
             post.put("postDescription", binding.postDescription.getText().toString());
             post.put("postedAt", timeStamp);
@@ -498,7 +494,7 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
                 binding.pause.setVisibility(View.GONE);
             });
         } else {
-            Log.d("AddPostFragment", "Audio is not recorded");
+            Log.d("EditCommentDialogue", "Audio is not recorded");
         }
     }
 
@@ -513,7 +509,7 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
                 binding.resume.setVisibility(View.GONE);
             });
         } else {
-            Log.d("AddPostFragment", "Audio is not recorded");
+            Log.d("EditCommentDialogue", "Audio is not recorded");
         }
     }
 
@@ -545,7 +541,6 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
             }
 
             mediaPlayer.start();
-            Log.d("AddPostFragment", "Audio is not recorded");
         }
 
         mediaPlayer.setOnCompletionListener(mediaPlayer -> {
@@ -560,11 +555,9 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
         if (mediaRecorder != null) {
             binding.recordingStatus.setVisibility(View.INVISIBLE);
             binding.play.setVisibility(View.VISIBLE);
-            Log.d("Length", String.valueOf(length));
             try {
                 mediaRecorder.stop();
             } catch (RuntimeException e) {
-                Log.d("CheckAudio", "check" + AudioSavePathInDevice + " " + mediaPlayer + " " + mediaRecorder);
                 isAudio = false;
             }
             if (isAudio) {
@@ -578,7 +571,7 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
                 binding.removeRecording.setVisibility(View.GONE);
             }
         } else {
-            Log.d("AddPostFragment", "Audio is not recorded");
+            Log.d("EditCommentDialogue", "Audio is not recorded");
             binding.audioContainer.setVisibility(View.GONE);
             binding.removeRecording.setVisibility(View.GONE);
         }

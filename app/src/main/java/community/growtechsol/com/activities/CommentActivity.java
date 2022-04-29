@@ -122,14 +122,11 @@ public class CommentActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         intent = getIntent();
 
-        //audio recording
         random = new Random();
         progressDialog = new ProgressDialog(this);
 
-        //mentionAdapter
         mentionAdapter = new MentionArrayAdapter<>(this);
 
-        // Setting up toolbar
         setSupportActionBar(binding.toolbarCommentActivity);
         CommentActivity.this.setTitle("Comments");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -223,7 +220,6 @@ public class CommentActivity extends AppCompatActivity {
                 }
 
             for (int i = 0; i < mentionList.size(); i++) {
-                //Log.d("MentionList", mentionList.get(i).replaceAll("@", "") + " " + i);
                 mentionListFiltered.add(mentionList.get(i).replaceAll("@", ""));
             }
 
@@ -289,7 +285,6 @@ public class CommentActivity extends AppCompatActivity {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 ArrayList<String> commenterNames = new ArrayList<>();
-                                ArrayList<String> commenterDesignation = new ArrayList<>();
                                 ArrayList<String> commenterPhoto = new ArrayList<>();
                                 int size = list.size();
 
@@ -300,14 +295,12 @@ public class CommentActivity extends AppCompatActivity {
                                         Comment comment = list.get(i);
                                         if (dataSnapshot.getKey().equals(comment.getCommentedBy())) {
                                             commenterNames.add(user.getName());
-                                            commenterDesignation.add(user.getProfession());
                                             commenterPhoto.add(user.getProfileImage());
                                         }
                                     }
 
                                     if (dataSnapshot.getKey().equals(postedBy)) {
                                         commenterNames.add(user.getName());
-                                        commenterDesignation.add(user.getProfession());
                                         commenterPhoto.add(user.getProfileImage());
                                     }
 
@@ -323,13 +316,11 @@ public class CommentActivity extends AppCompatActivity {
                                                         Following following = dataSnapshot1.getValue(Following.class);
                                                         if (dataSnapshot.getKey().equals(following.getFollowing())) {
                                                             commenterNames.add(user.getName());
-                                                            commenterDesignation.add(user.getProfession());
                                                             commenterPhoto.add(user.getProfileImage());
                                                         }
                                                     }
 
                                                     ArrayList<String> commenterNamesList = removeDuplicates(commenterNames);
-                                                    //ArrayList<String> commenterDesignationList = removeDuplicates(commenterDesignation);
                                                     ArrayList<String> commenterPhotoList = removeDuplicates(commenterPhoto);
 
                                                     int incrementedLength = commenterNamesList.size() - commenterPhotoList.size();
@@ -358,7 +349,6 @@ public class CommentActivity extends AppCompatActivity {
 
                                 }
 
-                                //binding.commentEt.setOnMentionClickListener((view, text) -> Toast.makeText(CommentActivity.this, text, Toast.LENGTH_SHORT).show());
                             }
 
                             @Override
@@ -437,9 +427,7 @@ public class CommentActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.getValue() != null) {
-                            Log.d("Snapshot", String.valueOf(snapshot.getValue()));
                             binding.like.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_heart_filled, 0, 0, 0);
-
                         }
                     }
 
@@ -509,13 +497,7 @@ public class CommentActivity extends AppCompatActivity {
                         firebaseDatabase.getReference()
                                 .child("posts/" + postId + "/commentCount")
                                 .setValue(commentCount + 1)
-                                .addOnSuccessListener(unused1 -> {
-                                    //Log.d("CommentActivity", unused1.toString() + "");
-
-                                }).addOnFailureListener(e -> {
-                            Toast.makeText(CommentActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-
-                        });
+                                .addOnSuccessListener(unused1 -> Log.d("CommentActivity", unused1.toString() + "")).addOnFailureListener(e -> Toast.makeText(CommentActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show());
                     }
 
                     @Override
@@ -610,9 +592,7 @@ public class CommentActivity extends AppCompatActivity {
                         }
 
                         for (int i = 0; i < mentionedUsersIds.size(); i++) {
-                            Log.d("UsersID's", mentionedUsersIds.get(i));
                             sendNotificationsToMentioned(mentionedUsersIds.get(i));
-
                         }
                     }
 
@@ -666,7 +646,7 @@ public class CommentActivity extends AppCompatActivity {
                 binding.pause.setVisibility(View.GONE);
             });
         } else {
-            Log.d("AddPostFragment", "Audio is not recorded");
+            Log.d("CommentActivity", "Audio is not recorded");
         }
     }
 
@@ -681,7 +661,7 @@ public class CommentActivity extends AppCompatActivity {
                 binding.resume.setVisibility(View.GONE);
             });
         } else {
-            Log.d("AddPostFragment", "Audio is not recorded");
+            Log.d("CommentActivity", "Audio is not recorded");
         }
     }
 
@@ -716,11 +696,9 @@ public class CommentActivity extends AppCompatActivity {
         if (mediaRecorder != null) {
             binding.recordingStatus.setVisibility(View.INVISIBLE);
             binding.play.setVisibility(View.VISIBLE);
-            //Log.d("Length", String.valueOf(length));
             try {
                 mediaRecorder.stop();
             } catch (RuntimeException e) {
-                //Log.d("CheckAudio", "check" + AudioSavePathInDevice + " " + mediaPlayer + " " + mediaRecorder);
                 isAudio = false;
             }
             if (isAudio) {
@@ -734,7 +712,7 @@ public class CommentActivity extends AppCompatActivity {
                 binding.removeRecording.setVisibility(View.GONE);
             }
         } else {
-            Log.d("AddPostFragment", "Audio is not recorded");
+            Log.d("CommentActivity", "Audio is not recorded");
             binding.audioContainer.setVisibility(View.GONE);
             binding.removeRecording.setVisibility(View.GONE);
         }

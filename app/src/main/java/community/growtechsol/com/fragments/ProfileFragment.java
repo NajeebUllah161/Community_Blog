@@ -88,7 +88,6 @@ public class ProfileFragment extends Fragment {
     }
 
     private void setupUserData() {
-        // Fetch User data from firebase database
         firebaseDatabase.getReference().child("Users/" + auth.getCurrentUser().getUid())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @SuppressLint("SetTextI18n")
@@ -153,7 +152,7 @@ public class ProfileFragment extends Fragment {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-
+                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -358,7 +357,6 @@ public class ProfileFragment extends Fragment {
                     final StorageReference storageReference = firebaseStorage
                             .getReference()
                             .child("cover_photos/" + auth.getCurrentUser().getUid() + "/cover_photo");
-                    // Log.d("CurrentUser",auth.getCurrentUser().getUid());
 
                     storageReference.putFile(uri)
                             .addOnSuccessListener(taskSnapshot -> {

@@ -143,7 +143,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.viewHolder> {
                                                 .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show()))
                                         .addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show());
 
-
                                 setFollowing(user, "addFollowing");
 
                             });
@@ -182,7 +181,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.viewHolder> {
         following.setFollowedAt(new Date().getTime());
 
         if (type.equals("addFollowing")) {
-
             FirebaseDatabase.getInstance().getReference()
                     .child("Users/" + auth.getCurrentUser().getUid() + "/following/" + user.getUserId())
                     .setValue(following)

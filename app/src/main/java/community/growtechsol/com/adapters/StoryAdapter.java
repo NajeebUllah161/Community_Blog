@@ -66,39 +66,35 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.StoryViewHol
                                     .placeholder(R.drawable.placeholder)
                                     .into(holder.binding.storyProfileImg);
                             holder.binding.storyNameTxt.setText(user.getName());
-                            holder.binding.storyImg.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    //StoryView Implementation
-                                    ArrayList<MyStory> myStories = new ArrayList<>();
+                            holder.binding.storyImg.setOnClickListener(view -> {
+                                ArrayList<MyStory> myStories = new ArrayList<>();
 
-                                    for (UserStories stories : story.getStories()) {
-                                        myStories.add(new MyStory(
-                                                stories.getImage()
-                                        ));
-                                    }
-
-                                    new StoryView.Builder(((AppCompatActivity) context).getSupportFragmentManager())
-                                            .setStoriesList(myStories) // Required
-                                            .setStoryDuration(5000) // Default is 2000 Millis (2 Seconds)
-                                            .setTitleText(user.getName()) // Default is Hidden
-                                            .setSubtitleText("") // Default is Hidden
-                                            .setTitleLogoUrl(user.getProfileImage()) // Default is Hidden
-                                            .setStoryClickListeners(new StoryClickListeners() {
-                                                @Override
-                                                public void onDescriptionClickListener(int position) {
-                                                    //your action
-                                                }
-
-                                                @Override
-                                                public void onTitleIconClickListener(int position) {
-                                                    //your action
-                                                }
-                                            }) // Optional Listeners
-                                            .build() // Must be called before calling show method
-                                            .show();
-
+                                for (UserStories stories : story.getStories()) {
+                                    myStories.add(new MyStory(
+                                            stories.getImage()
+                                    ));
                                 }
+
+                                new StoryView.Builder(((AppCompatActivity) context).getSupportFragmentManager())
+                                        .setStoriesList(myStories)
+                                        .setStoryDuration(5000)
+                                        .setTitleText(user.getName())
+                                        .setSubtitleText("")
+                                        .setTitleLogoUrl(user.getProfileImage())
+                                        .setStoryClickListeners(new StoryClickListeners() {
+                                            @Override
+                                            public void onDescriptionClickListener(int position1) {
+                                                //your action
+                                            }
+
+                                            @Override
+                                            public void onTitleIconClickListener(int position1) {
+                                                //your action
+                                            }
+                                        }) // Optional Listeners
+                                        .build() // Must be called before calling show method
+                                        .show();
+
                             });
                         }
 
@@ -114,7 +110,6 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.StoryViewHol
     @Override
     public int getItemCount() {
 
-        //Log.d("Count Story", String.valueOf(storyArrayList.size()));
         return storyArrayList.size();
     }
 

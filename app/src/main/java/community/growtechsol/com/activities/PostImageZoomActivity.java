@@ -47,14 +47,10 @@ public class PostImageZoomActivity extends AppCompatActivity {
                 | View.SYSTEM_UI_FLAG_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
-        // This work only for android 4.4+
         if (currentApiVersion >= Build.VERSION_CODES.KITKAT) {
 
             getWindow().getDecorView().setSystemUiVisibility(flags);
 
-            // Code below is to handle presses of Volume up or Volume down.
-            // Without this, after pressing volume buttons, the navigation bar will
-            // show up and won't hide
             final View decorView = getWindow().getDecorView();
             decorView
                     .setOnSystemUiVisibilityChangeListener(visibility -> {

@@ -162,12 +162,11 @@ public class UserProfileActivity extends AppCompatActivity implements DatePicker
                     binding.likes.setText("0");
                     binding.dislikes.setText("0");
                 }
-
             }
 
             @Override
             public void onCancelled(@NonNull @NotNull DatabaseError error) {
-
+                Toast.makeText(UserProfileActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -182,7 +181,6 @@ public class UserProfileActivity extends AppCompatActivity implements DatePicker
     }
 
     private void setupMakeAdmin() {
-
         firebaseDatabase.getReference().child("Users")
                 .child(userId)
                 .addValueEventListener(new ValueEventListener() {
@@ -199,7 +197,7 @@ public class UserProfileActivity extends AppCompatActivity implements DatePicker
 
                     @Override
                     public void onCancelled(@NonNull @NotNull DatabaseError error) {
-
+                        Toast.makeText(UserProfileActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -217,11 +215,11 @@ public class UserProfileActivity extends AppCompatActivity implements DatePicker
 
         powerMenu = new PowerMenu.Builder(this)
                 .addItemList(list)
-                .setAnimation(MenuAnimation.SHOWUP_BOTTOM_RIGHT) // Animation start point (TOP | LEFT).
-                .setMenuRadius(10f) // sets the corner radius.
-                .setMenuShadow(10f) // sets the shadow.
+                .setAnimation(MenuAnimation.SHOWUP_BOTTOM_RIGHT)
+                .setMenuRadius(10f)
+                .setMenuShadow(10f)
                 .setTextColor(ContextCompat.getColor(this, R.color.teal_700))
-                .setTextGravity(Gravity.LEFT)
+                .setTextGravity(Gravity.START)
                 .setTextTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD))
                 .setSelectedTextColor(Color.WHITE)
                 .setMenuColor(Color.WHITE)
@@ -240,12 +238,11 @@ public class UserProfileActivity extends AppCompatActivity implements DatePicker
             Calendar now = Calendar.getInstance();
             DatePickerDialog dpd = DatePickerDialog.newInstance(
                     UserProfileActivity.this,
-                    now.get(Calendar.YEAR), // Initial year selection
-                    now.get(Calendar.MONTH), // Initial month selection
-                    now.get(Calendar.DAY_OF_MONTH) // Inital day selection
+                    now.get(Calendar.YEAR),
+                    now.get(Calendar.MONTH),
+                    now.get(Calendar.DAY_OF_MONTH)
             );
             dpd.show(getSupportFragmentManager(), "Datepickerdialog");
-
         });
     }
 
@@ -289,7 +286,6 @@ public class UserProfileActivity extends AppCompatActivity implements DatePicker
     }
 
     private void setupUserData() {
-        // Fetch User data from firebase database
         firebaseDatabase.getReference().child("Users/" + userId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @SuppressLint("SetTextI18n")
@@ -364,7 +360,7 @@ public class UserProfileActivity extends AppCompatActivity implements DatePicker
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-
+                        Toast.makeText(UserProfileActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -488,21 +484,17 @@ public class UserProfileActivity extends AppCompatActivity implements DatePicker
     private void setupImgClickListeners(User getUser) {
 
         binding.profileImgOfUser.setOnClickListener(v -> {
-
             Intent intent = new Intent(this, PostImageZoomActivity.class);
             intent.putExtra("postImage", getUser.getProfileImage());
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
-
         });
 
         binding.coverPhoto.setOnClickListener(v -> {
-
             Intent intent = new Intent(this, PostImageZoomActivity.class);
             intent.putExtra("postImage", getUser.getCoverPhoto());
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
-
         });
 
     }

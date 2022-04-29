@@ -31,7 +31,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        //Log.d("CheckingErr", "onCreateLoginActivity");
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
         progressDialog = new ProgressDialog(LoginActivity.this);
@@ -52,10 +51,9 @@ public class LoginActivity extends AppCompatActivity {
                 progressDialog.show();
                 auth.signInWithEmailAndPassword(binding.emailET.getText().toString(), binding.pwdET.getText().toString())
                         .addOnCompleteListener(task -> {
-                            //Log.d("LoginActivity", "OnCompleteLogin");
+                            Log.d("LoginActivity", "OnCompleteLogin");
                         })
                         .addOnSuccessListener(authResult -> {
-                            //Log.d("LoginActivity", "OnSuccessLogin");
                             progressDialog.dismiss();
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(intent);
@@ -95,13 +93,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void setupProgressDialogue() {
-
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setTitle("Logging In");
         progressDialog.setMessage("Please Wait...");
         progressDialog.setCancelable(false);
         progressDialog.setCanceledOnTouchOutside(false);
-
     }
 
     @Override
@@ -112,12 +108,5 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
-        Log.d("CheckingErr", "onStartLoginActivity");
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d("CheckingErr", "onResumeLoginActivity");
     }
 }

@@ -121,8 +121,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         if (checkOpen) {
             holder.binding.openNotification.setBackgroundColor(Color.parseColor("#FFFFFF"));
         } else {
-            //is not open
-
+            Log.d("NotificationAdapter", "It is opened");
         }
     }
 

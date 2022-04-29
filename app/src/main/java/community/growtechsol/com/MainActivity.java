@@ -55,9 +55,7 @@ public class MainActivity extends AppCompatActivity {
         MainActivity.this.setTitle("My Profile");
         checkAppUpdate();
 
-        // When we open the application first
-        // time the fragment should be shown to the user
-        // in this case it is home fragment
+
         FragmentTransaction defaultFragmentTransaction = getSupportFragmentManager().beginTransaction();
         binding.toolbar.setVisibility(View.GONE);
         defaultFragmentTransaction.replace(R.id.container_framelayout, new HomeFragment());
@@ -113,7 +111,6 @@ public class MainActivity extends AppCompatActivity {
                             submitFeedback(feedbackText);
                         }
                         flatDialog.dismiss();
-                        //submitFeedback();
 
                     })
                     .withSecondButtonListner(view12 -> flatDialog.dismiss())
@@ -188,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onCancelled(@NonNull @NotNull DatabaseError error) {
+                    Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
 
                 }
             });

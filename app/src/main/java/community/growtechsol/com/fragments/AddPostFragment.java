@@ -87,6 +87,7 @@ public class AddPostFragment extends Fragment {
     FirebaseDatabase firebaseDatabase;
     FirebaseStorage firebaseStorage;
     ProgressDialog progressDialog;
+
     //Recording
     String AudioSavePathInDevice = null;
     MediaRecorder mediaRecorder;
@@ -96,10 +97,9 @@ public class AddPostFragment extends Fragment {
     int length;
     long timeStamp;
     List<String> cropList = new ArrayList<>();
-    private String cropName = "";
-
     //FCM
     OkHttpClient mClient;
+    private String cropName = "";
     private DatabaseReference mDatabase;
 
     public AddPostFragment() {
@@ -261,9 +261,7 @@ public class AddPostFragment extends Fragment {
 
                 removeImgFromPost());
 
-        binding.postBtn.setOnClickListener(view ->
-
-        {
+        binding.postBtn.setOnClickListener(view -> {
 
             progressDialog.show();
 
@@ -272,9 +270,7 @@ public class AddPostFragment extends Fragment {
                     .child(auth.getCurrentUser().getUid())
                     .child(new Date().getTime() + "");
 
-            //Log.d("CheckNull", AudioSavePathInDevice + " " + mediaRecorder);
             if (mediaRecorder != null && AudioSavePathInDevice != null) {
-                //Log.d("Checkpoint", "mediaPlayer and Path NOT NULL");
                 Uri recordingUri = Uri.fromFile(new File(AudioSavePathInDevice));
                 storageReference.putFile(recordingUri).addOnSuccessListener(taskSnapshot -> {
                     storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
@@ -289,7 +285,6 @@ public class AddPostFragment extends Fragment {
                     Toast.makeText(getContext(), "Failed to Upload Audio", Toast.LENGTH_SHORT).show();
                 });
             } else {
-                //Log.d("Checkpoint", "mediaPlayer and Path ARE NULL");
                 uploadPostImgAndData();
             }
         });
@@ -364,10 +359,9 @@ public class AddPostFragment extends Fragment {
 
     }
 
-    private ArrayList<String> getFireBaseNotificationId() {
+    private void getFireBaseNotificationId() {
         mClient = new OkHttpClient();
         ArrayList<String> myArrayList = new ArrayList<>();
-        ArrayList<String> mKeysArraylist = new ArrayList<>();
         Map<String, Object> notificationsKV = new HashMap<>();
         firebaseDatabase.getReference().child("system").child("notification").addValueEventListener(new ValueEventListener() {
             @SuppressLint("NotifyDataSetChanged")
@@ -377,9 +371,7 @@ public class AddPostFragment extends Fragment {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         String key = dataSnapshot.getKey();
                         String description = dataSnapshot.child("notification_id").getValue(String.class);
-                        //Log.d("KeyDesc", key + " " + description);
-                        //myArrayList.add(description);
-                        //mKeysArraylist.add(key);
+
                         notificationsKV.put(key, description);
 
                     }
@@ -401,7 +393,6 @@ public class AddPostFragment extends Fragment {
                                 }
                             }
 
-                            //Log.d("NotificationId", String.valueOf(myArrayList));
 
                             JSONArray regArray = new JSONArray(myArrayList);
                             sendMessage(regArray, "New Post", binding.userNameAddPost.getText().toString() + " has added a new Post, click to see details", "icon", "message");
@@ -414,10 +405,6 @@ public class AddPostFragment extends Fragment {
                         }
                     });
 
-                    //JSONArray regArray = new JSONArray(myArrayList);
-                    //Log.d("UserName", binding.userNameAddPost.getText().toString());
-                    //Log.d("Checkpoint", myArrayList + "");
-                    //sendMessage(regArray, "New Post", binding.userNameAddPost.getText().toString() + " has added a new Post, click to see details", "icon", "message");
                 }
 
             }
@@ -428,7 +415,6 @@ public class AddPostFragment extends Fragment {
             }
         });
 
-        return myArrayList;
 
     }
 
@@ -583,10 +569,10 @@ public class AddPostFragment extends Fragment {
         getFireBaseNotificationId();
     }
 
+    @SuppressLint("StaticFieldLeak")
     public void sendMessage(final JSONArray recipients, final String title, final String body, final String icon, final String message) {
 
         new AsyncTask<String, String, String>() {
-            @SuppressLint("StaticFieldLeak")
             @RequiresApi(api = Build.VERSION_CODES.Q)
             @Override
             protected String doInBackground(String... params) {
@@ -682,7 +668,6 @@ public class AddPostFragment extends Fragment {
             }
 
             mediaPlayer.start();
-            //Toast.makeText(getContext(),"Recording Playing",Toast.LENGTH_LONG).show();
             mediaPlayer.setOnCompletionListener(mediaPlayer -> {
                 binding.pause.setVisibility(View.GONE);
                 binding.play.setVisibility(View.VISIBLE);
@@ -698,11 +683,9 @@ public class AddPostFragment extends Fragment {
         if (mediaRecorder != null) {
             binding.recordingStatus.setVisibility(View.INVISIBLE);
             binding.play.setVisibility(View.VISIBLE);
-            //Log.d("Length", String.valueOf(length));
             try {
                 mediaRecorder.stop();
             } catch (RuntimeException e) {
-                //Log.d("CheckAudio", "check" + AudioSavePathInDevice + " " + mediaPlayer + " " + mediaRecorder);
                 isAudio = false;
             }
             if (isAudio) {
@@ -741,10 +724,7 @@ public class AddPostFragment extends Fragment {
             try {
                 mediaRecorder.prepare();
                 mediaRecorder.start();
-            } catch (IllegalStateException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
+            } catch (IllegalStateException | IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }

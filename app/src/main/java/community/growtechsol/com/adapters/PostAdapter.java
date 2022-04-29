@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -61,8 +60,6 @@ import community.growtechsol.com.models.Post;
 import community.growtechsol.com.models.User;
 import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip;
 
-import static community.growtechsol.com.utils.helper.shared;
-
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
 
@@ -72,15 +69,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     Intent intent;
     String postId;
     Post post;
-    boolean isAdmin;
-    MediaPlayer player;
-    int length;
-
     private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
         @Override
         public void onItemClick(int position, PowerMenuItem item) {
-            //Toast.makeText(context, item.getTitle(), Toast.LENGTH_SHORT).show();
-            powerMenu.setSelectedPosition(position); // change selected item
+            powerMenu.setSelectedPosition(position);
             if (item.getTitle().equals("Edit post")) {
                 context.startActivity(intent);
             } else {
@@ -103,12 +95,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             powerMenu.dismiss();
         }
     };
-
     private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener2 = new OnMenuItemClickListener<PowerMenuItem>() {
         @Override
         public void onItemClick(int position, PowerMenuItem item) {
-            //Toast.makeText(context, item.getTitle(), Toast.LENGTH_SHORT).show();
-            powerMenu2.setSelectedPosition(position); // change selected item
+            powerMenu2.setSelectedPosition(position);
             if (item.getTitle().equals("Edit post")) {
                 context.startActivity(intent);
             } else {
@@ -131,6 +121,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             powerMenu2.dismiss();
         }
     };
+    boolean isAdmin;
+    MediaPlayer player;
+    int length;
+    onItemClickListner onItemClickListner;
 
     public PostAdapter(ArrayList<Post> list, Context context) {
         this.postModelArrayList = list;
@@ -145,14 +139,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         return new PostViewHolder(view);
     }
 
-    onItemClickListner onItemClickListner;
-
     public void setOnItemClickListner(PostAdapter.onItemClickListner onItemClickListner) {
         this.onItemClickListner = onItemClickListner;
-    }
-
-    public interface onItemClickListner{
-        void onClick(Boolean isOpened,Post postModel);//pass your object types.
     }
 
     @SuppressLint({"SetTextI18n", "CheckResult"})
@@ -522,7 +510,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     private void incrementPostId(Post postModel) {
 
-        onItemClickListner.onClick(true,postModel);
+        onItemClickListner.onClick(true, postModel);
 
     }
 
@@ -605,7 +593,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                                     intent.putExtra("postDesc", model.getPostDescription());
                                     intent.putExtra("postRecording", model.getPostRecording());
                                     intent.putExtra("recTime", model.getRecTime());
-                                    intent.putExtra("cropNameSent",model.getCropName());
+                                    intent.putExtra("cropNameSent", model.getCropName());
 
                                     //Log.d("PostIdTimeStamp", String.valueOf(model.getPostedAt()));
                                     postId = model.getPostId();
@@ -643,7 +631,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                                     intent.putExtra("postDesc", model.getPostDescription());
                                     intent.putExtra("postRecording", model.getPostRecording());
                                     intent.putExtra("recTime", model.getRecTime());
-                                    intent.putExtra("cropNameSent",model.getCropName());
+                                    intent.putExtra("cropNameSent", model.getCropName());
 
                                     //Log.d("PostIdTimeStamp", String.valueOf(model.getPostedAt()));
                                     postId = model.getPostId();
@@ -684,7 +672,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                                 intent.putExtra("postDesc", model.getPostDescription());
                                 intent.putExtra("postRecording", model.getPostRecording());
                                 intent.putExtra("recTime", model.getRecTime());
-                                intent.putExtra("cropNameSent",model.getCropName());
+                                intent.putExtra("cropNameSent", model.getCropName());
 
                                 //Log.d("PostIdTimeStamp", String.valueOf(model.getPostedAt()));
                                 postId = model.getPostId();
@@ -709,6 +697,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public int getItemCount() {
         // Log.d("Count Dashboard", String.valueOf(postModelArrayList.size()));
         return postModelArrayList.size();
+    }
+
+    public interface onItemClickListner {
+        void onClick(Boolean isOpened, Post postModel);
     }
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {

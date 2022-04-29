@@ -154,7 +154,6 @@ public class EditCommentDialogue extends AppCompatActivity {
                     .child(auth.getCurrentUser().getUid());
 
             if (mediaRecorder != null && AudioSavePathInDevice != null) {
-                Log.d("Checkpoint", "mediaPlayer and Path NOT NULL");
                 Uri recordingUri = Uri.fromFile(new File(AudioSavePathInDevice));
                 storageReference.putFile(recordingUri).addOnSuccessListener(taskSnapshot -> {
                     storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
@@ -170,7 +169,6 @@ public class EditCommentDialogue extends AppCompatActivity {
                                     progressDialog.dismiss();
                                     Toast.makeText(this, "Comment Edited Successfully", Toast.LENGTH_SHORT).show();
                                     finish();
-                                    //switchFragment();
                                 }).addOnFailureListener(e -> progressDialog.dismiss());
 
                     }).addOnFailureListener(e -> {
@@ -183,7 +181,6 @@ public class EditCommentDialogue extends AppCompatActivity {
                     Toast.makeText(this, "Failed to Upload Audio", Toast.LENGTH_SHORT).show();
                 });
             } else {
-                Log.d("Checkpoint", "mediaPlayer and Path ARE NULL");
                 Map<String, Object> comment = new HashMap<>();
                 comment.put("commentBody", binding.commentDescription.getText().toString());
 
@@ -195,7 +192,6 @@ public class EditCommentDialogue extends AppCompatActivity {
                             progressDialog.dismiss();
                             Toast.makeText(this, "Comment Edited Successfully", Toast.LENGTH_SHORT).show();
                             finish();
-                            //switchFragment();
                         }).addOnFailureListener(e -> progressDialog.dismiss());
 
             }
@@ -271,7 +267,7 @@ public class EditCommentDialogue extends AppCompatActivity {
                 binding.pause.setVisibility(View.GONE);
             });
         } else {
-            Log.d("AddPostFragment", "Audio is not recorded");
+            Log.d("EditCommentDialogue", "Audio is not recorded");
         }
     }
 
@@ -286,7 +282,7 @@ public class EditCommentDialogue extends AppCompatActivity {
                 binding.resume.setVisibility(View.GONE);
             });
         } else {
-            Log.d("AddPostFragment", "Audio is not recorded");
+            Log.d("EditCommentDialogue", "Audio is not recorded");
         }
     }
 
@@ -319,7 +315,7 @@ public class EditCommentDialogue extends AppCompatActivity {
             }
 
             mediaPlayer.start();
-            Log.d("AddPostFragment", "Audio is not recorded");
+            Log.d("EditCommentDialogue", "Audio is not recorded");
         }
         mediaPlayer.setOnCompletionListener(mediaPlayer -> {
             binding.pause.setVisibility(View.GONE);
@@ -333,11 +329,9 @@ public class EditCommentDialogue extends AppCompatActivity {
         if (mediaRecorder != null) {
             binding.recordingStatus.setVisibility(View.INVISIBLE);
             binding.play.setVisibility(View.VISIBLE);
-            Log.d("Length", String.valueOf(length));
             try {
                 mediaRecorder.stop();
             } catch (RuntimeException e) {
-                Log.d("CheckAudio", "check" + AudioSavePathInDevice + " " + mediaPlayer + " " + mediaRecorder);
                 isAudio = false;
             }
             if (isAudio) {
@@ -351,7 +345,6 @@ public class EditCommentDialogue extends AppCompatActivity {
                 binding.removeRecording.setVisibility(View.GONE);
             }
         } else {
-            Log.d("AddPostFragment", "Audio is not recorded");
             binding.audioContainer.setVisibility(View.GONE);
             binding.removeRecording.setVisibility(View.GONE);
         }

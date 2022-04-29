@@ -15,11 +15,15 @@
         android:roundIcon="@mipmap/ic_launcher_icon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CommunityFeedApp">
-        <activity android:name=".activities.UserProfileActivity"/>
+        <activity android:name=".activities.UserProfileActivity" />
         <activity android:name=".edit_dialogues.EditCommentDialogue" />
         <activity android:name=".activities.PostImageZoomActivity" />
         <activity android:name=".edit_dialogues.EditPostDialogue" />
-        <receiver android:name=".broadcast.MyReceiver" android:exported="false"/>
+
+        <receiver
+            android:name=".broadcast.MyReceiver"
+            android:exported="false" />
+
         <activity
             android:name=".activities.CommentActivity"
             android:exported="false" />
