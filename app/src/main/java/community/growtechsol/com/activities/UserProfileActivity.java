@@ -72,7 +72,6 @@ public class UserProfileActivity extends AppCompatActivity implements DatePicker
     FirebaseAuth auth;
     String userId;
     PowerMenu powerMenu;
-    boolean isAdmin;
     OkHttpClient mClient;
 
     private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
