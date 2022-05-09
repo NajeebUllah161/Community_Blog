@@ -15,6 +15,7 @@
         android:roundIcon="@mipmap/ic_launcher_icon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CommunityFeedApp">
+        <activity android:name=".activities.UserPostsActivity"></activity>
         <activity android:name=".activities.UserProfileActivity" />
         <activity android:name=".edit_dialogues.EditCommentDialogue" />
         <activity android:name=".activities.PostImageZoomActivity" />

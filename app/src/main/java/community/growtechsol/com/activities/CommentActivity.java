@@ -497,7 +497,9 @@ public class CommentActivity extends AppCompatActivity {
                         firebaseDatabase.getReference()
                                 .child("posts/" + postId + "/commentCount")
                                 .setValue(commentCount + 1)
-                                .addOnSuccessListener(unused1 -> Log.d("CommentActivity", unused1.toString() + "")).addOnFailureListener(e -> Toast.makeText(CommentActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show());
+                                .addOnSuccessListener(unused1 ->{
+                                    Log.d("CommentActivity", "");
+                                }).addOnFailureListener(e -> Toast.makeText(CommentActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show());
                     }
 
                     @Override
