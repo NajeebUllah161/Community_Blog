@@ -35,6 +35,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.hendraanggrian.appcompat.widget.Hashtag;
+import com.hendraanggrian.appcompat.widget.HashtagArrayAdapter;
 import com.hendraanggrian.appcompat.widget.Mention;
 import com.hendraanggrian.appcompat.widget.MentionArrayAdapter;
 import com.squareup.picasso.Picasso;
@@ -61,6 +63,7 @@ import community.growtechsol.com.models.User;
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static community.growtechsol.com.fragments.AddPostFragment.RequestPermissionCode;
+import static community.growtechsol.com.utils.helper.hideKeyboard;
 
 public class CommentActivity extends AppCompatActivity {
 
@@ -73,6 +76,7 @@ public class CommentActivity extends AppCompatActivity {
     ArrayList<Comment> list = new ArrayList<>();
     ProgressDialog progressDialog;
     ArrayAdapter<Mention> mentionAdapter;
+    ArrayAdapter<Hashtag> hashtagAdapter;
     String postImage;
 
     //Recording
@@ -83,17 +87,6 @@ public class CommentActivity extends AppCompatActivity {
     MediaPlayer mediaPlayer;
     int length;
     String downloadedRecordingLocation;
-
-    public static void hideKeyboard(Activity activity) {
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        //Find the currently focused view, so we can grab the correct window token from it.
-        View view = activity.getCurrentFocus();
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
-        if (view == null) {
-            view = new View(activity);
-        }
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
 
     public static <T> ArrayList<T> removeDuplicates(ArrayList<T> list) {
 
@@ -126,6 +119,7 @@ public class CommentActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
 
         mentionAdapter = new MentionArrayAdapter<>(this);
+        hashtagAdapter = new HashtagArrayAdapter<>(this);
 
         setSupportActionBar(binding.toolbarCommentActivity);
         CommentActivity.this.setTitle("Comments");
@@ -339,6 +333,7 @@ public class CommentActivity extends AppCompatActivity {
                                                     binding.commentEt.setMentionAdapter(mentionAdapter);
                                                     binding.commentEt.setMentionEnabled(true);
 
+                                                    setupTagging();
                                                 }
 
                                                 @Override
@@ -365,6 +360,14 @@ public class CommentActivity extends AppCompatActivity {
                     }
                 });
 
+    }
+
+    private void setupTagging() {
+
+        hashtagAdapter.clear();
+        hashtagAdapter.add(new Hashtag("cropAdvisory", 500));
+        binding.commentEt.setHashtagAdapter(hashtagAdapter);
+        binding.commentEt.setHashtagEnabled(true);
     }
 
     private void loadDataFromFirebase() {

@@ -57,7 +57,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
     Context context;
     ArrayList<Comment> list;
     String postId, postedBy;
-    boolean isSolved, isAdmin;
+    boolean isSolved, isAdmin, otherIsAdmin;
     Comment comment;
     PowerMenu powerMenu;
     String commentId;
@@ -186,7 +186,6 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
         }
     };
 
-
     public CommentAdapter(Context context, ArrayList<Comment> list, String postId, String postedBy, boolean isSolved, boolean isAdmin) {
         this.context = context;
         this.list = list;
@@ -294,6 +293,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User user = snapshot.getValue(User.class);
+                otherIsAdmin = user.isAdmin();
                 Picasso.get()
                         .load(user.getProfileImage())
                         .placeholder(R.drawable.placeholder)
@@ -455,6 +455,10 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
             intent.putExtra("userId", comment.getCommentedBy());
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
+        });
+
+        holder.binding.commentData.setOnHashtagClickListener((view, text) -> {
+            Toast.makeText(context, "clicked" + text, Toast.LENGTH_SHORT).show();
         });
 
     }

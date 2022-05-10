@@ -284,6 +284,7 @@ public class UserPostsActivity extends AppCompatActivity {
                 binding.dashboardRv.hideShimmerAdapter();
                 loadProfileImg();
                 postAdapter.notifyDataSetChanged();
+
                 if (binding.swipeRefreshLayout.isRefreshing()) {
                     binding.swipeRefreshLayout.setRefreshing(false);
                 }

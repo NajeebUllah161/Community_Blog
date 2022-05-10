@@ -75,6 +75,7 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
     long timeStamp;
     boolean hasImage = false;
     List<String> cropList = new ArrayList<>();
+
     //Recording
     String AudioSavePathInDevice = null;
     MediaRecorder mediaRecorder;

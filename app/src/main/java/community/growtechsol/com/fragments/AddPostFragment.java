@@ -19,7 +19,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
@@ -33,6 +32,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.chivorn.smartmaterialspinner.SmartMaterialSpinner;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -74,6 +74,7 @@ import okhttp3.Response;
 
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static community.growtechsol.com.utils.helper.hideKeyboard;
 
 public class AddPostFragment extends Fragment {
 
@@ -104,17 +105,6 @@ public class AddPostFragment extends Fragment {
 
     public AddPostFragment() {
         // Required empty public constructor
-    }
-
-    public static void hideKeyboard(Activity activity) {
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        //Find the currently focused view, so we can grab the correct window token from it.
-        View view = activity.getCurrentFocus();
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
-        if (view == null) {
-            view = new View(activity);
-        }
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     @Override
@@ -262,33 +252,49 @@ public class AddPostFragment extends Fragment {
                 removeImgFromPost());
 
         binding.postBtn.setOnClickListener(view -> {
+            if (validateCropName()) {
 
-            progressDialog.show();
+                progressDialog.show();
 
-            timeStamp = new Date().getTime();
-            final StorageReference storageReference = firebaseStorage.getReference().child("postRecordings")
-                    .child(auth.getCurrentUser().getUid())
-                    .child(new Date().getTime() + "");
+                timeStamp = new Date().getTime();
+                final StorageReference storageReference = firebaseStorage.getReference().child("postRecordings")
+                        .child(auth.getCurrentUser().getUid())
+                        .child(new Date().getTime() + "");
 
-            if (mediaRecorder != null && AudioSavePathInDevice != null) {
-                Uri recordingUri = Uri.fromFile(new File(AudioSavePathInDevice));
-                storageReference.putFile(recordingUri).addOnSuccessListener(taskSnapshot -> {
-                    storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
-                        uploadPostImgAudioAndData(uri);
+                if (mediaRecorder != null && AudioSavePathInDevice != null) {
+                    Uri recordingUri = Uri.fromFile(new File(AudioSavePathInDevice));
+                    storageReference.putFile(recordingUri).addOnSuccessListener(taskSnapshot -> {
+                        storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+                            uploadPostImgAudioAndData(uri);
+                        }).addOnFailureListener(e -> {
+                            progressDialog.dismiss();
+                            Toast.makeText(getContext(), "Failed to download audio Url", Toast.LENGTH_SHORT).show();
+                        });
+
                     }).addOnFailureListener(e -> {
                         progressDialog.dismiss();
-                        Toast.makeText(getContext(), "Failed to download audio Url", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Failed to Upload Audio", Toast.LENGTH_SHORT).show();
                     });
-
-                }).addOnFailureListener(e -> {
-                    progressDialog.dismiss();
-                    Toast.makeText(getContext(), "Failed to Upload Audio", Toast.LENGTH_SHORT).show();
-                });
-            } else {
-                uploadPostImgAndData();
+                } else {
+                    uploadPostImgAndData();
+                }
             }
         });
 
+    }
+
+    private boolean validateCropName() {
+        if (!cropName.isEmpty()) {
+            return true;
+        } else {
+            Snackbar snackbar = Snackbar.make(binding.postBtn, "Crop Name is required!", Snackbar.LENGTH_LONG)
+                    .setAction("OK", view -> {//Toast.makeText(getContext(), "Ok", Toast.LENGTH_SHORT).show();
+                    });
+
+            snackbar.show();
+
+            return false;
+        }
     }
 
     private void loadUserData() {
