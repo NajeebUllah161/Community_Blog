@@ -433,8 +433,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         });
 
         holder.binding.postImg.setOnClickListener(view -> {
-            Intent intent = new Intent(context, PostImageZoomActivity.class);
-            intent.putExtra("postImage", model.getPostImage());
+            Intent intent = new Intent(context, CommentActivity.class);
+            intent.putExtra("postId", model.getPostId());
+            intent.putExtra("postedBy", model.getPostedBy());
+            intent.putExtra("isSolved", model.isSolved());
+            intent.putExtra("isAdmin", isAdmin);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
         });
