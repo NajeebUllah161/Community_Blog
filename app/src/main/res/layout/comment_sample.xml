@@ -29,10 +29,10 @@
     <com.hendraanggrian.appcompat.widget.SocialAutoCompleteTextView
         android:id="@+id/commentData"
         android:layout_width="0dp"
-        android:background="@android:color/transparent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_6mdp"
         android:autoLink="all"
+        android:background="@android:color/transparent"
         android:justificationMode="inter_word"
         android:linksClickable="true"
         android:text="Your comment"

@@ -50,7 +50,6 @@ import java.util.List;
 
 import community.growtechsol.com.R;
 import community.growtechsol.com.activities.CommentActivity;
-import community.growtechsol.com.activities.PostImageZoomActivity;
 import community.growtechsol.com.activities.UserProfileActivity;
 import community.growtechsol.com.broadcast.MyReceiver;
 import community.growtechsol.com.databinding.DashboardRvSampleBinding;
@@ -59,7 +58,6 @@ import community.growtechsol.com.models.Notification;
 import community.growtechsol.com.models.Post;
 import community.growtechsol.com.models.User;
 import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip;
-
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
 

@@ -7,8 +7,10 @@ public class Post {
     private long postedAt;
     private boolean solved, isAllowed;
     private int postLikes, postShares, commentCount;
+
     public Post() {
     }
+
     public Post(String postId, String postImage, String postedBy, String postDescription, long postedAt) {
         this.postId = postId;
         this.postImage = postImage;

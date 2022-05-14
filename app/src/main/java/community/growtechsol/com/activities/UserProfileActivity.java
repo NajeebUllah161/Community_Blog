@@ -183,7 +183,7 @@ public class UserProfileActivity extends AppCompatActivity implements DatePicker
 
     private void setupEventListeners() {
         binding.totalPosts.setOnClickListener(view -> {
-            Intent intent = new Intent(UserProfileActivity.this,UserPostsActivity.class);
+            Intent intent = new Intent(UserProfileActivity.this, UserPostsActivity.class);
             intent.putExtra("userId", userId);
             startActivity(intent);
         });
