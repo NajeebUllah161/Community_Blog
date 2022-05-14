@@ -91,6 +91,7 @@ dependencies {
     implementation 'com.github.dmytrodanylyk:circular-progress-button:1.2'
     implementation 'com.github.chivorns:smartmaterialspinner:1.5.0'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+    implementation 'com.github.dhaval2404:imagepicker:2.1'
 
 }
 apply plugin: 'com.google.gms.google-services'

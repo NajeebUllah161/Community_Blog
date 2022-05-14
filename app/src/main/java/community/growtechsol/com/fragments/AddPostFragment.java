@@ -3,18 +3,19 @@ package community.growtechsol.com.fragments;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
+import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,14 +24,14 @@ import android.widget.AdapterView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 
 import com.chivorn.smartmaterialspinner.SmartMaterialSpinner;
+import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -43,8 +44,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
-import com.vansuita.pickimage.bundle.PickSetup;
-import com.vansuita.pickimage.dialog.PickImageDialog;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -332,37 +331,69 @@ public class AddPostFragment extends Fragment {
     }
 
     private void setPickImage() {
-        @SuppressLint("WrongConstant")
-        PickSetup setup = new PickSetup()
-                .setTitle("Choose Option")
-                .setTitleColor(Color.BLACK)
-                .setCameraButtonText("Capture")
-                .setGalleryButtonText("Gallery")
-                .setIconGravity(Gravity.RIGHT)
-                .setButtonOrientation(LinearLayoutCompat.HORIZONTAL)
-                .setBackgroundColor(Color.WHITE)
-                .setCancelText("Cancel");
 
-        PickImageDialog pickImageDialog = PickImageDialog.build(setup).show((FragmentActivity) getContext());
+        ImagePicker.with(this)
+                .crop()                    //Crop image(Optional), Check Customization for more option
+                .compress(1024)            //Final image size will be less than 1 MB(Optional)
+                .maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
+                .start();
 
-        PickImageDialog.build(setup)
-                .setOnPickResult(r -> {
-                    if (r.getError() == null) {
-                        uri = r.getUri();
-                        Log.d("Uri", String.valueOf(uri));
-                        binding.postImage.setImageBitmap(r.getBitmap());
-                        binding.postImage.setVisibility(View.VISIBLE);
-                        binding.removeImg.setVisibility(View.VISIBLE);
-                        setButtonEnabled();
-                        pickImageDialog.dismiss();
+        //        @SuppressLint("WrongConstant")
+//        PickSetup setup = new PickSetup()
+//                .setTitle("Choose Option")
+//                .setTitleColor(Color.BLACK)
+//                .setCameraButtonText("Capture")
+//                .setGalleryButtonText("Gallery")
+//                .setIconGravity(Gravity.RIGHT)
+//                .setButtonOrientation(LinearLayoutCompat.HORIZONTAL)
+//                .setBackgroundColor(Color.WHITE)
+//                .setCancelText("Cancel");
+//
+//        PickImageDialog pickImageDialog = PickImageDialog.build(setup).show((FragmentActivity) getContext());
+//
+//        PickImageDialog.build(setup)
+//                .setOnPickResult(r -> {
+//                    if (r.getError() == null) {
+//                        uri = r.getUri();
+//                        //Log.d("Uri", String.valueOf(uri));
+//                        binding.postImage.setImageBitmap(r.getBitmap());
+//                        binding.postImage.setVisibility(View.VISIBLE);
+//                        binding.removeImg.setVisibility(View.VISIBLE);
+//                        setButtonEnabled();
+//                        pickImageDialog.dismiss();
+//
+//                    }
+//                })
+//                .setOnPickCancel(() -> {
+//                    pickImageDialog.dismiss();
+//                    Toast.makeText(getContext(), "Cancelled", Toast.LENGTH_SHORT).show();
+//                }).show(((FragmentActivity) getContext()).getSupportFragmentManager());
 
-                    }
-                })
-                .setOnPickCancel(() -> {
-                    pickImageDialog.dismiss();
-                    Toast.makeText(getContext(), "Cancelled", Toast.LENGTH_SHORT).show();
-                }).show(((FragmentActivity) getContext()).getSupportFragmentManager());
+    }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            //Image Uri will not be null for RESULT_OK
+
+            try {
+                uri = data.getData();
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
+                binding.postImage.setImageBitmap(bitmap);
+                binding.postImage.setVisibility(View.VISIBLE);
+                binding.removeImg.setVisibility(View.VISIBLE);
+                setButtonEnabled();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            // Use Uri object instead of File to avoid storage permissions
+        } else if (resultCode == ImagePicker.RESULT_ERROR) {
+            Toast.makeText(getContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getContext(), "Task Cancelled", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void getFireBaseNotificationId() {

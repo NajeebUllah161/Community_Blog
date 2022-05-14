@@ -2,9 +2,11 @@ package community.growtechsol.com.fragments;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -19,6 +21,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.flatdialoglibrary.dialog.FlatDialog;
+import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,6 +31,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import community.growtechsol.com.R;
@@ -204,7 +208,7 @@ public class ProfileFragment extends Fragment {
 
             final FlatDialog flatDialog = new FlatDialog(getContext());
             flatDialog.setTitle("Select from gallery/View profile picture")
-                    .setFirstButtonText("Select from gallery")
+                    .setFirstButtonText("Capture/Gallery")
                     .setSecondButtonText("View profile image")
                     .setThirdButtonText("Cancel")
                     .isCancelable(true)
@@ -214,9 +218,14 @@ public class ProfileFragment extends Fragment {
                     .setThirdButtonColor(Color.parseColor("#FF018786"))
                     .withFirstButtonListner(view -> {
 
-                        Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                        galleryIntent.setType("image/*");
-                        startActivityForResult(Intent.createChooser(galleryIntent, "Select Picture"), PROFILE_PHOTO_REQUEST_CODE);
+//                        Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
+//                        galleryIntent.setType("image/*");
+//                        startActivityForResult(Intent.createChooser(galleryIntent, "Select Picture"), PROFILE_PHOTO_REQUEST_CODE);
+                        ImagePicker.with(this)
+                                .crop()
+                                .compress(512)
+                                .maxResultSize(1080, 1080)
+                                .start();
                         flatDialog.dismiss();
 
                     })
@@ -237,7 +246,7 @@ public class ProfileFragment extends Fragment {
 
             final FlatDialog flatDialog = new FlatDialog(getContext());
             flatDialog.setTitle("Select from gallery/View cover photo")
-                    .setFirstButtonText("Select from gallery")
+                    .setFirstButtonText("Capture/Select")
                     .setSecondButtonText("View profile image")
                     .setThirdButtonText("Cancel")
                     .isCancelable(true)
@@ -247,9 +256,15 @@ public class ProfileFragment extends Fragment {
                     .setThirdButtonColor(Color.parseColor("#FF018786"))
                     .withFirstButtonListner(view -> {
 
-                        Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                        galleryIntent.setType("image/*");
-                        startActivityForResult(galleryIntent, COVER_PHOTO_REQUEST_CODE);
+//                        Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
+//                        galleryIntent.setType("image/*");
+//                        startActivityForResult(galleryIntent, COVER_PHOTO_REQUEST_CODE);
+
+                        ImagePicker.with(this)
+                                .crop()
+                                .compress(512)
+                                .maxResultSize(1080, 1080)
+                                .start();
 
                         flatDialog.dismiss();
                     })
@@ -351,9 +366,15 @@ public class ProfileFragment extends Fragment {
         if (resultCode == RESULT_OK) {
             if (requestCode == COVER_PHOTO_REQUEST_CODE) {
                 if (data.getData() != null) {
-                    Uri uri = data.getData();
-                    binding.coverPhoto.setImageURI(uri);
 
+
+                    Uri uri = data.getData();
+                    try {
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
+                        binding.coverPhoto.setImageBitmap(bitmap);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     final StorageReference storageReference = firebaseStorage
                             .getReference()
                             .child("cover_photos/" + auth.getCurrentUser().getUid() + "/cover_photo");
@@ -378,7 +399,12 @@ public class ProfileFragment extends Fragment {
             } else if (requestCode == PROFILE_PHOTO_REQUEST_CODE) {
                 if (data.getData() != null) {
                     Uri uri = data.getData();
-                    binding.profileImgOfUser.setImageURI(uri);
+                    try {
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
+                        binding.profileImgOfUser.setImageBitmap(bitmap);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
 
                     final StorageReference storageReference = firebaseStorage
                             .getReference()
@@ -402,6 +428,10 @@ public class ProfileFragment extends Fragment {
 
                 }
             }
+        } else if (resultCode == ImagePicker.RESULT_ERROR) {
+            Toast.makeText(getContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getContext(), "Task Cancelled", Toast.LENGTH_SHORT).show();
         }
     }
 }

@@ -74,7 +74,7 @@ public class CommentActivity extends AppCompatActivity {
     ArrayList<Comment> list = new ArrayList<>();
     ProgressDialog progressDialog;
     ArrayAdapter<Mention> mentionAdapter;
-    ArrayAdapter<Hashtag> hashtagAdapter;
+    //ArrayAdapter<Hashtag> hashtagAdapter;
     String postImage;
 
     //Recording
@@ -117,7 +117,7 @@ public class CommentActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
 
         mentionAdapter = new MentionArrayAdapter<>(this);
-        hashtagAdapter = new HashtagArrayAdapter<>(this);
+        //hashtagAdapter = new HashtagArrayAdapter<>(this);
 
         setSupportActionBar(binding.toolbarCommentActivity);
         CommentActivity.this.setTitle("Comments");
@@ -331,7 +331,7 @@ public class CommentActivity extends AppCompatActivity {
                                                     binding.commentEt.setMentionAdapter(mentionAdapter);
                                                     binding.commentEt.setMentionEnabled(true);
 
-                                                    setupTagging();
+                                                    //setupTagging();
                                                 }
 
                                                 @Override
@@ -361,11 +361,11 @@ public class CommentActivity extends AppCompatActivity {
     }
 
     private void setupTagging() {
-
-        hashtagAdapter.clear();
-        hashtagAdapter.add(new Hashtag("cropAdvisory", 500));
-        binding.commentEt.setHashtagAdapter(hashtagAdapter);
-        binding.commentEt.setHashtagEnabled(true);
+//
+//        hashtagAdapter.clear();
+//        hashtagAdapter.add(new Hashtag("cropAdvisory", 500));
+//        binding.commentEt.setHashtagAdapter(hashtagAdapter);
+//        binding.commentEt.setHashtagEnabled(true);
     }
 
     private void loadDataFromFirebase() {
