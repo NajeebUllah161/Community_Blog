@@ -182,6 +182,10 @@ public class EditPostDialogue extends AppCompatActivity implements IPickResult {
             Log.d("EditPostDialogue", "Complementary else");
         }
 
+        if (!cropNameSent.equals("")) {
+            binding.crop.setHint(cropNameSent + "");
+        }
+
     }
 
     @SuppressLint("ClickableViewAccessibility")

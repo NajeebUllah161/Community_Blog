@@ -256,6 +256,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         }
 
+        String cropName = model.getCropName();
+        if (!cropName.equals("")) {
+            holder.binding.cropName.setText(cropName + "");
+        }else{
+            holder.binding.cropName.setVisibility(View.GONE);
+        }
+
         FirebaseDatabase.getInstance()
                 .getReference()
                 .child("Users/" + model.getPostedBy()).addValueEventListener(new ValueEventListener() {

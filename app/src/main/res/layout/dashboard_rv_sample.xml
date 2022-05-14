@@ -147,6 +147,23 @@
         app:layout_constraintTop_toBottomOf="@+id/postTitleDesign" />
 
     <TextView
+        android:id="@+id/cropName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/_6mdp"
+        android:layout_marginTop="@dimen/_3mdp"
+        android:autoLink="all"
+        android:justificationMode="inter_word"
+        android:linksClickable="true"
+        android:text="crop"
+        android:textColor="@color/teal_700"
+        android:textIsSelectable="true"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/postDescriptionDesign" />
+
+    <TextView
         android:id="@+id/like"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -159,7 +176,7 @@
         android:textColor="@color/gray"
         android:textSize="@dimen/_11font_mdp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/postDescriptionDesign" />
+        app:layout_constraintTop_toBottomOf="@+id/cropName" />
 
     <TextView
         android:id="@+id/comment"
