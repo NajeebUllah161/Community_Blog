@@ -246,7 +246,7 @@ public class ProfileFragment extends Fragment {
 
             final FlatDialog flatDialog = new FlatDialog(getContext());
             flatDialog.setTitle("Select from gallery/View cover photo")
-                    .setFirstButtonText("Capture/Select")
+                    .setFirstButtonText("Capture/Gallery")
                     .setSecondButtonText("View profile image")
                     .setThirdButtonText("Cancel")
                     .isCancelable(true)
