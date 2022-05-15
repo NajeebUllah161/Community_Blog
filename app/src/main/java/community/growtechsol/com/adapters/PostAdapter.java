@@ -25,6 +25,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.andreseko.SweetAlert.SweetAlertDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.github.marlonlom.utilities.timeago.TimeAgo;
@@ -74,25 +75,44 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             if (item.getTitle().equals("Edit post")) {
                 context.startActivity(intent);
             } else {
-                saveDeletedPost(post);
-                FirebaseDatabase.getInstance().getReference().child("posts/" + postId).removeValue()
-                        .addOnSuccessListener(unused -> {
-                            Toast.makeText(context, "Post deleted Successfully!", Toast.LENGTH_SHORT).show();
-
-                            FirebaseDatabase.getInstance().getReference()
-                                    .child("Users")
-                                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                                    .child("totalPosts")
-                                    .setValue(ServerValue.increment(-1)).addOnSuccessListener(unused1 -> {
-                                Log.d("PostAdapter", "remove -1 from totalPostCount");
-                            }).addOnFailureListener(e -> {
-                                Toast.makeText(context, "Unable to deduct postCount due to" + e.getMessage(), Toast.LENGTH_SHORT).show();
-                            });
-                        }).addOnFailureListener(e -> Toast.makeText(context, "Unable to delete post due to!" + e.getMessage(), Toast.LENGTH_SHORT).show());
+                deletePost();
             }
             powerMenu.dismiss();
         }
     };
+
+    private void deletePost() {
+
+        new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE)
+                .setTitleText("Are you sure?")
+                .setContentText("Won't be able to recover this post!")
+                .setConfirmText("Yes, Delete!")
+                .setCancelText("No, Cancel")
+                .setConfirmClickListener(sDialog -> {
+
+                    saveDeletedPost(post);
+                    FirebaseDatabase.getInstance().getReference().child("posts/" + postId).removeValue()
+                            .addOnSuccessListener(unused -> {
+                                Toast.makeText(context, "Post deleted Successfully!", Toast.LENGTH_SHORT).show();
+
+                                FirebaseDatabase.getInstance().getReference()
+                                        .child("Users")
+                                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                        .child("totalPosts")
+                                        .setValue(ServerValue.increment(-1)).addOnSuccessListener(unused1 -> {
+                                    Log.d("PostAdapter", "remove -1 from totalPostCount");
+                                }).addOnFailureListener(e -> {
+                                    Toast.makeText(context, "Unable to deduct postCount due to" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                });
+                            })
+                            .addOnFailureListener(e -> Toast.makeText(context, "Unable to delete post due to!" + e.getMessage(), Toast.LENGTH_SHORT).show());
+                    sDialog.dismissWithAnimation();
+                })
+                .setCancelClickListener(sDialog -> sDialog.cancel())
+                .show();
+
+    }
+
     private final OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener2 = new OnMenuItemClickListener<PowerMenuItem>() {
         @Override
         public void onItemClick(int position, PowerMenuItem item) {
@@ -259,7 +279,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         String cropName = model.getCropName();
         if (!cropName.equals("")) {
             holder.binding.cropName.setText(cropName + "");
-        }else{
+        } else {
             holder.binding.cropName.setVisibility(View.GONE);
         }
 
@@ -525,6 +545,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     private void saveDeletedPost(Post post) {
         FirebaseDatabase.getInstance().getReference()
                 .child("DeletedPosts")
+                .child("deletedBy")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child("postOwnerId")
                 .child(post.getPostedBy())
                 .child(new Date() + "")
                 .setValue(post);

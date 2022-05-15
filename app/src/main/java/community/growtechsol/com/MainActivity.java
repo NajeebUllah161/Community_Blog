@@ -53,8 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         setSupportActionBar(binding.toolbar);
         MainActivity.this.setTitle("My Profile");
-        checkAppUpdate();
-
+        //checkAppUpdate();
 
         FragmentTransaction defaultFragmentTransaction = getSupportFragmentManager().beginTransaction();
         binding.toolbar.setVisibility(View.GONE);
@@ -197,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        checkAppUpdate();
+        //checkAppUpdate();
     }
 
     @Override

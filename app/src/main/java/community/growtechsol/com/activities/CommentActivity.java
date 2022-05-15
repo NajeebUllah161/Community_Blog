@@ -33,8 +33,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.hendraanggrian.appcompat.widget.Hashtag;
-import com.hendraanggrian.appcompat.widget.HashtagArrayAdapter;
 import com.hendraanggrian.appcompat.widget.Mention;
 import com.hendraanggrian.appcompat.widget.MentionArrayAdapter;
 import com.squareup.picasso.Picasso;
@@ -45,7 +43,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -276,69 +276,75 @@ public class CommentActivity extends AppCompatActivity {
                                 .child("Users").addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                ArrayList<String> commenterNames = new ArrayList<>();
-                                ArrayList<String> commenterPhoto = new ArrayList<>();
+                                Map<String, String> NameAndPhoto = new HashMap<>();
                                 int size = list.size();
 
                                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                                     User user = dataSnapshot.getValue(User.class);
 
-                                    for (int i = 0; i < size; i++) {
-                                        Comment comment = list.get(i);
-                                        if (dataSnapshot.getKey().equals(comment.getCommentedBy())) {
-                                            commenterNames.add(user.getName());
-                                            commenterPhoto.add(user.getProfileImage());
+                                    if(isAdmin){
+                                        NameAndPhoto.put(user.getName(), user.getProfileImage());
+
+                                        Map<String, String> nameAndPhoto = removeDuplicatesFromHashmap(NameAndPhoto);
+                                        mentionAdapter.clear();
+
+                                        Set<String> keySet = nameAndPhoto.keySet();
+
+                                        for (String name : keySet) {
+                                            String photo = nameAndPhoto.get(name);
+                                            mentionAdapter.add(new Mention(name.replaceAll(" ", ""), "", photo));
                                         }
-                                    }
+                                        binding.commentEt.setMentionAdapter(mentionAdapter);
+                                        binding.commentEt.setMentionEnabled(true);
 
-                                    if (dataSnapshot.getKey().equals(postedBy)) {
-                                        commenterNames.add(user.getName());
-                                        commenterPhoto.add(user.getProfileImage());
-                                    }
+                                    }else{
+                                        for (int i = 0; i < size; i++) {
+                                            Comment comment = list.get(i);
+                                            if (dataSnapshot.getKey().equals(comment.getCommentedBy())) {
+                                                NameAndPhoto.put(user.getName(), user.getProfileImage());
+                                            }
+                                        }
 
-                                    firebaseDatabase.getReference().child("Users")
-                                            .child(auth.getCurrentUser().getUid())
-                                            .child("following")
-                                            .addValueEventListener(new ValueEventListener() {
-                                                @Override
-                                                public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                                        if (dataSnapshot.getKey().equals(postedBy)) {
+                                            NameAndPhoto.put(user.getName(), user.getProfileImage());
+                                        }
 
-                                                    for (DataSnapshot dataSnapshot1 : snapshot.getChildren()) {
+                                        firebaseDatabase.getReference().child("Users")
+                                                .child(auth.getCurrentUser().getUid())
+                                                .child("following")
+                                                .addValueEventListener(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
 
-                                                        Following following = dataSnapshot1.getValue(Following.class);
-                                                        if (dataSnapshot.getKey().equals(following.getFollowing())) {
-                                                            commenterNames.add(user.getName());
-                                                            commenterPhoto.add(user.getProfileImage());
+                                                        for (DataSnapshot dataSnapshot1 : snapshot.getChildren()) {
+
+                                                            Following following = dataSnapshot1.getValue(Following.class);
+                                                            if (dataSnapshot.getKey().equals(following.getFollowing())) {
+                                                                NameAndPhoto.put(user.getName(), user.getProfileImage());
+                                                            }
                                                         }
-                                                    }
 
-                                                    ArrayList<String> commenterNamesList = removeDuplicates(commenterNames);
-                                                    ArrayList<String> commenterPhotoList = removeDuplicates(commenterPhoto);
+                                                        Map<String, String> nameAndPhoto = removeDuplicatesFromHashmap(NameAndPhoto);
+                                                        mentionAdapter.clear();
 
-                                                    int incrementedLength = commenterNamesList.size() - commenterPhotoList.size();
-                                                    for (int i = 0; i < incrementedLength; i++) {
-                                                        commenterPhotoList.add(null);
-                                                    }
-                                                    mentionAdapter.clear();
-                                                    for (int i = 0; i < commenterNamesList.size(); i++) {
-                                                        if (commenterPhotoList.get(i) != null) {
-                                                            mentionAdapter.add(new Mention(commenterNamesList.get(i).replaceAll(" ", ""), "", commenterPhotoList.get(i)));
-                                                        } else {
-                                                            mentionAdapter.add(new Mention(commenterNamesList.get(i).replaceAll(" ", ""), "", R.drawable.placeholder));
+                                                        Set<String> keySet = nameAndPhoto.keySet();
+
+                                                        for (String name : keySet) {
+                                                            String photo = nameAndPhoto.get(name);
+                                                            mentionAdapter.add(new Mention(name.replaceAll(" ", ""), "", photo));
                                                         }
+                                                        binding.commentEt.setMentionAdapter(mentionAdapter);
+                                                        binding.commentEt.setMentionEnabled(true);
+
                                                     }
 
-                                                    binding.commentEt.setMentionAdapter(mentionAdapter);
-                                                    binding.commentEt.setMentionEnabled(true);
+                                                    @Override
+                                                    public void onCancelled(@NonNull @NotNull DatabaseError error) {
 
-                                                    //setupTagging();
-                                                }
+                                                    }
+                                                });
 
-                                                @Override
-                                                public void onCancelled(@NonNull @NotNull DatabaseError error) {
-
-                                                }
-                                            });
+                                    }
 
                                 }
 
@@ -357,6 +363,19 @@ public class CommentActivity extends AppCompatActivity {
                         Toast.makeText(CommentActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+
+    }
+
+    private Map<String, String> removeDuplicatesFromHashmap(Map<String, String> nameAndPhoto) {
+        Set<String> keys = nameAndPhoto.keySet(); // The set of keys in the map.
+
+        for (String key : keys) {
+            String value = nameAndPhoto.get(key);
+            nameAndPhoto.put(key, value);
+            Log.d("asaaas", "Key : " + key + " Value : " + value);
+        }
+
+        return nameAndPhoto;
 
     }
 

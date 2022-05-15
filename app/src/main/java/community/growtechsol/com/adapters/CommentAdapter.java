@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.andreseko.SweetAlert.SweetAlertDialog;
 import com.github.marlonlom.utilities.timeago.TimeAgo;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -73,20 +74,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
             if (item.getTitle().equals("Edit comment")) {
                 context.startActivity(intent);
             } else if (item.getTitle().equals("Delete comment")) {
-                FirebaseDatabase.getInstance().getReference().child("posts/" + postId + "/comments/" + comment.getCommentedAt()).removeValue()
-                        .addOnSuccessListener(unused -> {
-                            Toast.makeText(context, "Comment deleted!", Toast.LENGTH_SHORT).show();
-                        })
-                        .addOnFailureListener(e -> {
-                            Toast.makeText(context, "Unable to delete comment due to " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        });
-
-                Map<String, Object> comment = new HashMap<>();
-                comment.put("commentCount", ServerValue.increment(-1));
-                FirebaseDatabase.getInstance().getReference().child("posts/" + postId).updateChildren(comment)
-                        .addOnSuccessListener(unused -> Log.d("CommentAdapter", "Successfully deducted 1 from commentCount"))
-                        .addOnFailureListener(e -> Toast.makeText(context, "Unknown error occurred :" + e.getMessage(), Toast.LENGTH_SHORT).show());
-
+                deleteComment();
             } else if (item.getTitle().equals("Verify comment")) {
                 FirebaseDatabase.getInstance().getReference()
                         .child("posts/" + postId)
@@ -185,6 +173,30 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
             powerMenu.dismiss();
         }
     };
+
+    private void deleteComment() {
+
+        new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE)
+                .setTitleText("Are you sure?")
+                .setContentText("Won't be able to recover this file!")
+                .setConfirmText("Yes, Delete!")
+                .setCancelText("No, Cancel")
+                .setConfirmClickListener(sDialog -> {
+
+                    FirebaseDatabase.getInstance().getReference().child("posts/" + postId + "/comments/" + comment.getCommentedAt()).removeValue()
+                            .addOnSuccessListener(unused -> Toast.makeText(context, "Comment deleted!", Toast.LENGTH_SHORT).show())
+                            .addOnFailureListener(e -> Toast.makeText(context, "Unable to delete comment due to " + e.getMessage(), Toast.LENGTH_SHORT).show());
+
+                    Map<String, Object> comment = new HashMap<>();
+                    comment.put("commentCount", ServerValue.increment(-1));
+                    FirebaseDatabase.getInstance().getReference().child("posts/" + postId).updateChildren(comment)
+                            .addOnSuccessListener(unused -> Log.d("CommentAdapter", "Successfully deducted 1 from commentCount"))
+                            .addOnFailureListener(e -> Toast.makeText(context, "Unknown error occurred :" + e.getMessage(), Toast.LENGTH_SHORT).show());
+                    sDialog.dismissWithAnimation();
+                })
+                .setCancelClickListener(sDialog -> sDialog.cancel())
+                .show();
+    }
 
     public CommentAdapter(Context context, ArrayList<Comment> list, String postId, String postedBy, boolean isSolved, boolean isAdmin) {
         this.context = context;
@@ -298,7 +310,11 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.viewHold
                         .load(user.getProfileImage())
                         .placeholder(R.drawable.placeholder)
                         .into(holder.binding.profileImgOfCommenter);
-                holder.binding.commentData.setText(Html.fromHtml("<b>" + user.getName() + "</b>" + "  " + comment.getCommentBody()));
+                if (!isAdmin && otherIsAdmin) {
+                    holder.binding.commentData.setText(Html.fromHtml("<b>" + "TEAM GROWTECH" + "</b>" + "  " + comment.getCommentBody()));
+                } else {
+                    holder.binding.commentData.setText(Html.fromHtml("<b>" + user.getName() + "</b>" + "  " + comment.getCommentBody()));
+                }
             }
 
             @Override

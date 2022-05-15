@@ -425,14 +425,15 @@ public class AddPostFragment extends Fragment {
 
                             for (String follower : followers) {
                                 if (notificationsKV.containsKey(follower)) {
-                                    Log.d("Match", follower);
+                                    //Log.d("Match", follower);
                                     myArrayList.add(String.valueOf(notificationsKV.get(follower)));
                                 }
                             }
 
 
                             JSONArray regArray = new JSONArray(myArrayList);
-                            sendMessage(regArray, "New Post", binding.userNameAddPost.getText().toString() + " has added a new Post, click to see details", "icon", "message");
+                            Log.d("Cropname",cropName);
+                            sendMessage(regArray, "New Post", binding.userNameAddPost.getText().toString() + " has added a new Post about " + cropName + ", click to see details", "icon", "message");
 
                         }
 
@@ -594,10 +595,10 @@ public class AddPostFragment extends Fragment {
                 .child(auth.getCurrentUser().getUid())
                 .child("totalPosts")
                 .setValue(ServerValue.increment(1)).addOnSuccessListener(unused -> {
-            Log.d("AddPostFragment", "Post count updated");
+            //Log.d("AddPostFragment", "Post count updated");
             ((BottomNavigationView) getActivity().findViewById(R.id.bottom_navigation_bar)).setSelectedItemId(R.id.item_home);
         }).addOnFailureListener(e -> {
-            Log.d("AddPostFragment", "Failed to update post count");
+            //Log.d("AddPostFragment", "Failed to update post count");
             ((BottomNavigationView) getActivity().findViewById(R.id.bottom_navigation_bar)).setSelectedItemId(R.id.item_home);
         });
     }
@@ -627,7 +628,7 @@ public class AddPostFragment extends Fragment {
                     root.put("registration_ids", recipients);
 
                     String result = postToFCM(root.toString());
-                    Log.d("TAG", "Result: " + result);
+                    //Log.d("TAG", "Result: " + result);
                     return result;
                 } catch (Exception ex) {
                     ex.printStackTrace();
